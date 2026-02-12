@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import Sidebar from '../components/layout/Sidebar';
 import { 
   User, 
@@ -128,9 +127,8 @@ const Settings = () => {
       <Toaster position="top-center" reverseOrder={false} />
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-      <motion.main 
-        layout
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
+      <main 
+        className={`flex-1 overflow-y-auto h-full bg-[#020617] transition-all duration-300 ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
       >
         <div className="max-w-5xl mx-auto px-8 py-12 pb-32">
           <div className="mb-10">
@@ -164,11 +162,8 @@ const Settings = () => {
 
             {/* Content Area */}
             <div className="flex-1 min-w-0">
-               <motion.div
+               <div
                  key={activeTab}
-                 initial={{ opacity: 0, x: 20 }}
-                 animate={{ opacity: 1, x: 0 }}
-                 transition={{ duration: 0.3 }}
                  className="space-y-6"
                >
                  {activeTab === 'Account' && (
@@ -381,24 +376,22 @@ const Settings = () => {
                             ></textarea>
                           </div>
                           
-                          <motion.button 
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
+                          <button 
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-3 rounded-xl bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#4245f0]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full py-3 rounded-xl bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#4245f0]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
                           >
                             {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
                             {isSubmitting ? 'Sending...' : 'Send Feedback'}
-                          </motion.button>
+                          </button>
                        </form>
                     </section>
                  )}
-               </motion.div>
+               </div>
             </div>
           </div>
         </div>
-      </motion.main>
+      </main>
     </div>
   );
 };
