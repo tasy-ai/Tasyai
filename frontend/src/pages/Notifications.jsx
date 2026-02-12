@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Building2, 
   User, 
@@ -75,9 +74,8 @@ const Notifications = () => {
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
-      <motion.main 
-        layout
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
+      <main 
+        className={`flex-1 overflow-y-auto h-full bg-[#020617] transition-all duration-300 ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
       >
         <div className="max-w-4xl mx-auto px-6 py-8 pb-32">
           {/* Header */}
@@ -114,11 +112,8 @@ const Notifications = () => {
           <div className="space-y-4">
             {filteredNotifications.length > 0 ? (
               filteredNotifications.map((notif, index) => (
-                <motion.div
+                <div
                   key={notif.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
                   className={`relative p-5 rounded-2xl border ${
                     notif.read ? 'bg-white/5 border-white/5' : 'bg-white/[0.07] border-white/10'
                   } hover:bg-white/10 transition-colors group cursor-pointer`}
@@ -146,7 +141,7 @@ const Notifications = () => {
                   {!notif.read && (
                     <div className="absolute top-5 right-5 w-2 h-2 rounded-full bg-[#4245f0] shadow-[0_0_8px_rgba(66,69,240,0.8)]"></div>
                   )}
-                </motion.div>
+                </div>
               ))
             ) : (
               <div className="text-center py-20">
@@ -159,7 +154,7 @@ const Notifications = () => {
             )}
           </div>
         </div>
-      </motion.main>
+      </main>
     </div>
   );
 };
