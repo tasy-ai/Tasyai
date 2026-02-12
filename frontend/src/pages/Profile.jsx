@@ -26,10 +26,12 @@ import {
   Loader2
 } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
+import Sidebar from '../components/layout/Sidebar';
 
 import { useLocation } from 'react-router-dom';
 
 const Profile = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
   const profileData = location.state?.profileData;
   console.log('Profile loaded with data:', profileData);
@@ -99,77 +101,6 @@ const Profile = () => {
 
   const user = profileData || defaultUser;
   const [activeTab, setActiveTab] = useState('My Ventures');
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneCode: '',
-    phoneNumber: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleContactSubmit = async (e) => {
-    e.preventDefault();
-
-    if (
-      !formData.firstName.trim() ||
-      !formData.lastName.trim() ||
-      !formData.email.trim() ||
-      !formData.phoneCode.trim() ||
-      !formData.phoneNumber.trim() ||
-      !formData.message.trim()
-    ) {
-      toast.error("❌ Please fill out all fields before submitting.");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const res = await fetch(
-        "https://formsubmit.co/ajax/unisire.mainhub@gmail.com",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            phoneCode: formData.phoneCode,
-            phoneNumber: formData.phoneNumber,
-            message: formData.message,
-            _subject: "📩 New Contact Us Submission",
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        toast.success(
-          "✅ Your message has been sent. Our team will reach out soon!"
-        );
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phoneCode: "",
-          phoneNumber: "",
-          message: "",
-        });
-      } else {
-        toast.error("❌ Failed to send message. Please try again later.");
-      }
-    } catch (error) {
-      toast.error("⚠️ Network error. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const getSkillClasses = (level) => {
     const classes = {
@@ -213,9 +144,12 @@ const Profile = () => {
         }
       `}</style>
 
-      <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
-        {/* Header */}
-        <header className="sticky top-0 z-50 w-full px-6 lg:px-20 py-4 glass-card border-t-0 border-x-0 border-b border-white/10">
+      <div className="flex bg-[#020617] min-h-screen overflow-hidden">
+        <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+        
+        <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
+          {/* Header */}
+          <header className="sticky top-0 z-40 w-full px-6 lg:px-20 py-4 glass-card border-t-0 border-x-0 border-b border-white/10 bg-[#020617]/80 backdrop-blur-md">
           <div className="mx-auto flex max-w-7xl items-center justify-between">
             <div className="flex items-center gap-8">
               {/* Logo */}
@@ -394,107 +328,7 @@ const Profile = () => {
                 </div>
               </motion.div>
 
-              {/* Contact Form */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
-                className="glass-card rounded-xl p-8 border border-[#4245f0]/30 relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 p-32 bg-[#4245f0]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-                
-                <h3 className="mb-6 flex items-center gap-2 text-xl font-bold relative z-10">
-                  <Mail className="size-5 text-[#4245f0]" />
-                  Get in Touch
-                </h3>
-                
-                <form onSubmit={handleContactSubmit} className="space-y-4 relative z-10">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-400 uppercase mb-1">First Name</label>
-                      <input 
-                        required
-                        type="text" 
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                        className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                        placeholder="Jordan"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Last Name</label>
-                      <input 
-                        required
-                        type="text" 
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                        className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                        placeholder="Smith"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Email</label>
-                    <input 
-                      required
-                      type="email" 
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                      placeholder="jordan@example.com"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="col-span-1">
-                      <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Code</label>
-                      <input 
-                        required
-                        type="text" 
-                        value={formData.phoneCode}
-                        onChange={(e) => setFormData({...formData, phoneCode: e.target.value})}
-                        className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                        placeholder="+1"
-                      />
-                    </div>
-                    <div className="col-span-3">
-                      <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Phone Number</label>
-                      <input 
-                        required
-                        type="tel" 
-                        value={formData.phoneNumber}
-                        onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
-                        className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                        placeholder="555-0123"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Message</label>
-                    <textarea 
-                      required
-                      rows="4"
-                      value={formData.message}
-                      onChange={(e) => setFormData({...formData, message: e.target.value})}
-                      className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all resize-none placeholder:text-slate-600"
-                      placeholder="Hi, I'd like to discuss a project..."
-                    ></textarea>
-                  </div>
-                  
-                  <motion.button 
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-3 rounded-xl bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#4245f0]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-                    {isSubmitting ? 'Sending...' : 'Send Message'}
-                  </motion.button>
-                </form>
-              </motion.div>
+              {/* Contact Form - Removed */}
             </div>
 
             {/* Right Column */}
@@ -683,6 +517,7 @@ const Profile = () => {
             </div>
           </div>
         </footer>
+        </div>
       </div>
     </div>
   );

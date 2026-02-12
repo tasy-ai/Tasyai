@@ -6,7 +6,7 @@ import {
   Star,
   User,
   Book,
-  RefreshCw,
+  Settings,
   Menu,
   LogOut,
   Bell
@@ -28,10 +28,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
       {/* Sidebar */}
       <aside 
-        className={`fixed left-0 top-0 h-full z-40 flex flex-col sidebar-glass border-r border-white/5 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        className={`fixed left-0 top-0 h-full z-40 flex flex-col sidebar-glass border-r border-white/5 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          isOpen ? 'translate-x-0 w-72' : '-translate-x-full md:translate-x-0 w-20'
         }`}
-        style={{ width: isOpen ? '18rem' : '5rem' }} // Fallback/Base
       >
         <div className={`flex flex-col h-full ${isOpen ? 'p-6' : 'p-4 items-center'} transition-all`}>
           
@@ -44,14 +43,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                <Menu className="size-6" />
             </button>
             
-            {isOpen && (
-              <div className="flex items-center gap-3 overflow-hidden">
-                <div className="whitespace-nowrap">
-                  <h1 className="text-lg font-bold tracking-tight text-white">Tasyai</h1>
-                  <p className="text-[10px] text-slate-400">Discovery Engine</p>
-                </div>
+            <div className={`flex items-center gap-3 overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+              <div className="whitespace-nowrap">
+                <h1 className="text-lg font-bold tracking-tight text-white">Tasyai</h1>
+                <p className="text-[10px] text-slate-400">Discovery Engine</p>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Navigation */}
@@ -67,11 +64,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               }`}
             >
               <Compass className={`size-[22px] shrink-0 ${isActive('/dashboard') ? 'fill-current' : ''}`} />
-              {isOpen && (
-                <span className="text-sm font-semibold whitespace-nowrap overflow-hidden">
-                  Discover Companies
-                </span>
-              )}
+              <span className={`text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                Discover Companies
+              </span>
             </Link>
             
             <Link 
@@ -81,11 +76,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               } text-slate-400 hover:bg-white/5 hover:text-white`}
             >
               <Star className="size-[22px] shrink-0" />
-              {isOpen && (
-                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
-                  My Interests
-                </span>
-              )}
+              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                My Interests
+              </span>
             </Link>
             
             <Link 
@@ -95,11 +88,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               } text-slate-400 hover:bg-white/5 hover:text-white`}
             >
               <Book className="size-[22px] shrink-0" />
-              {isOpen && (
-                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
-                  Saved Companies
-                </span>
-              )}
+              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                Saved Companies
+              </span>
             </Link>
             <Link 
               to="/my-startups" 
@@ -112,11 +103,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               }`}
             >
               <Rocket className={`size-[22px] shrink-0 ${isActive('/my-startups') ? 'fill-current' : ''}`} />
-              {isOpen && (
-                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
-                  My Startups
-                </span>
-              )}
+              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                My Startups
+              </span>
             </Link>
             <Link 
               to="/notifications" 
@@ -129,11 +118,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               }`}
             >
               <Bell className={`size-[22px] shrink-0 ${isActive('/notifications') ? 'fill-current' : ''}`} />
-              {isOpen && (
-                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
-                  Notifications
-                </span>
-              )}
+              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                Notifications
+              </span>
             </Link>
 
             <Link 
@@ -147,11 +134,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               }`}
             >
               <User className={`size-[22px] shrink-0 ${isActive('/found-talent') ? 'fill-current' : ''}`} />
-              {isOpen && (
-                <span className="text-sm font-semibold whitespace-nowrap overflow-hidden">
-                  Peoples
-                </span>
-              )}
+              <span className={`text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                Peoples
+              </span>
             </Link>
           </nav>
 
@@ -167,12 +152,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   : 'text-slate-400 hover:bg-white/5 hover:text-white'
               }`}
             >
-              <RefreshCw className={`size-[22px] shrink-0 ${isActive('/settings') ? 'fill-current' : ''}`} />
-              {isOpen && (
-                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
-                  Reload
-                </span>
-              )}
+              <Settings className={`size-[22px] shrink-0 ${isActive('/settings') ? 'fill-current' : ''}`} />
+              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                Settings
+              </span>
             </Link>
             
             {/* Profile */}
@@ -189,12 +172,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     AR
                   </div>
                 </div>
-                {isOpen && (
-                  <div className="overflow-hidden">
-                    <p className="text-sm font-semibold text-white truncate">Alex Rivera</p>
-                    <p className="text-xs text-slate-500 truncate">Product Designer</p>
-                  </div>
-                )}
+                <div className={`overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                  <p className="text-sm font-semibold text-white truncate">Alex Rivera</p>
+                  <p className="text-xs text-slate-500 truncate">Product Designer</p>
+                </div>
               </button>
 
               {/* Popup Menu */}
