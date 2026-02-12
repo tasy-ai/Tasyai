@@ -6,62 +6,28 @@ import {
   Star,
   User,
   Book,
-  Settings,
+  RefreshCw,
   Menu,
   LogOut,
   Bell
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
-  const sidebarVariants = {
-    open: {
-      width: "18rem",
-      transition: { type: "spring", stiffness: 300, damping: 30 }
-    },
-    closed: {
-      width: "5rem", 
-      transition: { type: "spring", stiffness: 300, damping: 30 }
-    }
-  };
-
-  const textVariants = {
-    hidden: { opacity: 0, width: 0, transition: { duration: 0.2 } },
-    visible: { opacity: 1, width: "auto", transition: { duration: 0.2, delay: 0.1 } }
-  };
-
   return (
     <>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            onClick={toggleSidebar}
-          />
-        )}
-      </AnimatePresence>
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={toggleSidebar}
+        />
+      )}
 
       {/* Sidebar */}
-      <motion.aside 
-        initial={false}
-        animate={isOpen ? "open" : "closed"}
-        variants={{
-          open: { width: "18rem", x: 0 },
-          closed: { 
-            width: "5rem", 
-            // On mobile, we might want x: -100%, but for now relying on CSS classes for mobile transform
-            // We use className for the responsive base, and animate for width smoothing on desktop
-          }
-        }}
-        // Using layout prop for automatic smoothing of class changes especially useful for desktop width
-        layout
+      <aside 
         className={`fixed left-0 top-0 h-full z-40 flex flex-col sidebar-glass border-r border-white/5 ${
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
@@ -78,23 +44,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                <Menu className="size-6" />
             </button>
             
-            <AnimatePresence mode="wait">
-              {isOpen && (
-                <motion.div 
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  variants={textVariants}
-                  className="flex items-center gap-3 overflow-hidden"
-                >
-              
-                  <div className="whitespace-nowrap">
-                    <h1 className="text-lg font-bold tracking-tight text-white">Tasyai</h1>
-                    <p className="text-[10px] text-slate-400">Discovery Engine</p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {isOpen && (
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="whitespace-nowrap">
+                  <h1 className="text-lg font-bold tracking-tight text-white">Tasyai</h1>
+                  <p className="text-[10px] text-slate-400">Discovery Engine</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Navigation */}
@@ -110,19 +67,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               }`}
             >
               <Compass className={`size-[22px] shrink-0 ${isActive('/dashboard') ? 'fill-current' : ''}`} />
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.span 
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="text-sm font-semibold whitespace-nowrap overflow-hidden"
-                  >
-                    Discover Companies
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              {isOpen && (
+                <span className="text-sm font-semibold whitespace-nowrap overflow-hidden">
+                  Discover Companies
+                </span>
+              )}
             </Link>
             
             <Link 
@@ -132,19 +81,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               } text-slate-400 hover:bg-white/5 hover:text-white`}
             >
               <Star className="size-[22px] shrink-0" />
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.span 
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                  >
-                    My Interests
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              {isOpen && (
+                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+                  My Interests
+                </span>
+              )}
             </Link>
             
             <Link 
@@ -154,19 +95,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               } text-slate-400 hover:bg-white/5 hover:text-white`}
             >
               <Book className="size-[22px] shrink-0" />
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.span 
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                  >
-                    Saved Companies
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              {isOpen && (
+                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+                  Saved Companies
+                </span>
+              )}
             </Link>
             <Link 
               to="/my-startups" 
@@ -179,19 +112,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               }`}
             >
               <Rocket className={`size-[22px] shrink-0 ${isActive('/my-startups') ? 'fill-current' : ''}`} />
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.span 
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                  >
-                    My Startups
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              {isOpen && (
+                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+                  My Startups
+                </span>
+              )}
             </Link>
             <Link 
               to="/notifications" 
@@ -204,19 +129,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               }`}
             >
               <Bell className={`size-[22px] shrink-0 ${isActive('/notifications') ? 'fill-current' : ''}`} />
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.span 
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                  >
-                    Notifications
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              {isOpen && (
+                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+                  Notifications
+                </span>
+              )}
             </Link>
 
             <Link 
@@ -230,19 +147,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               }`}
             >
               <User className={`size-[22px] shrink-0 ${isActive('/found-talent') ? 'fill-current' : ''}`} />
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.span 
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="text-sm font-semibold whitespace-nowrap overflow-hidden"
-                  >
-                    Peoples
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              {isOpen && (
+                <span className="text-sm font-semibold whitespace-nowrap overflow-hidden">
+                  Peoples
+                </span>
+              )}
             </Link>
           </nav>
 
@@ -258,20 +167,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   : 'text-slate-400 hover:bg-white/5 hover:text-white'
               }`}
             >
-              <Settings className={`size-[22px] shrink-0 ${isActive('/settings') ? 'fill-current' : ''}`} />
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.span 
-                    variants={textVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="text-sm font-medium whitespace-nowrap overflow-hidden"
-                  >
-                    Settings
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              <RefreshCw className={`size-[22px] shrink-0 ${isActive('/settings') ? 'fill-current' : ''}`} />
+              {isOpen && (
+                <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+                  Reload
+                </span>
+              )}
             </Link>
             
             {/* Profile */}
@@ -288,56 +189,43 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     AR
                   </div>
                 </div>
-                <AnimatePresence>
-                  {isOpen && (
-                    <motion.div 
-                      variants={textVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="hidden"
-                      className="overflow-hidden"
-                    >
-                      <p className="text-sm font-semibold text-white truncate">Alex Rivera</p>
-                      <p className="text-xs text-slate-500 truncate">Product Designer</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {isOpen && (
+                  <div className="overflow-hidden">
+                    <p className="text-sm font-semibold text-white truncate">Alex Rivera</p>
+                    <p className="text-xs text-slate-500 truncate">Product Designer</p>
+                  </div>
+                )}
               </button>
 
               {/* Popup Menu */}
-              <AnimatePresence>
-                {showProfileMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className={`absolute bottom-full mb-2 bg-[#0f172a] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50 ${
-                      isOpen ? 'left-0 w-full' : 'left-full ml-2 w-48'
-                    }`}
-                  >
-                    <div className="p-1">
-                      <Link 
-                        to="/profile"
-                        onClick={() => setShowProfileMenu(false)}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-                      >
-                        <User className="size-4" />
-                        <span>View Profile</span>
-                      </Link>
-                      <button 
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors text-left"
-                      >
-                        <LogOut className="size-4" />
-                        <span>Log Out</span>
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {showProfileMenu && (
+                <div
+                  className={`absolute bottom-full mb-2 bg-[#0f172a] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50 ${
+                    isOpen ? 'left-0 w-full' : 'left-full ml-2 w-48'
+                  }`}
+                >
+                  <div className="p-1">
+                    <Link 
+                      to="/profile"
+                      onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                    >
+                      <User className="size-4" />
+                      <span>View Profile</span>
+                    </Link>
+                    <button 
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors text-left"
+                    >
+                      <LogOut className="size-4" />
+                      <span>Log Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </motion.aside>
+      </aside>
     </>
   );
 };
