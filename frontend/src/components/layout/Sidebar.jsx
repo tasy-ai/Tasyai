@@ -35,20 +35,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <div className={`flex flex-col h-full ${isOpen ? 'p-6' : 'p-4 items-center'} transition-all`}>
           
           {/* Header */}
-          <div className={`flex items-center mb-8 ${isOpen ? 'justify-start gap-4' : 'justify-center'}`}>
-            <button 
-              onClick={toggleSidebar}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors absolute right-0 top-6 mr-[-12px] md:static md:mr-0 z-50 bg-[#020617] md:bg-transparent border md:border-none border-white/10"
-            >
-               <Menu className="size-6" />
-            </button>
-            
+          <div className={`flex items-center mb-8 ${isOpen ? 'justify-between' : 'justify-center'}`}>
             <div className={`flex items-center gap-3 overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
               <div className="whitespace-nowrap">
                 <h1 className="text-lg font-bold tracking-tight text-white">Tasyai</h1>
                 <p className="text-[10px] text-slate-400">Discovery Engine</p>
               </div>
             </div>
+
+            <button 
+              onClick={toggleSidebar}
+              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors absolute right-0 top-6 mr-[-12px] md:static md:mr-0 z-50 bg-[#020617] md:bg-transparent border md:border-none border-white/10"
+            >
+               <Menu className="size-6" />
+            </button>
           </div>
 
           {/* Navigation */}
