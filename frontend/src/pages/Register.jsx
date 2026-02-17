@@ -39,8 +39,9 @@ const Register = () => {
       alert("Registration successful! Please login to continue to onboarding.");
       navigate('/login');
     } catch (error) {
-      console.error(error);
-      alert(error.response?.data?.message || 'Registration failed');
+      console.error('Registration Error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
+      alert(`Error during registration: ${errorMessage}`);
     }
   };
 
@@ -211,8 +212,8 @@ const Register = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              type="button"
-              onClick={() => navigate('/OnboardingChatbot')}
+              type="submit"
+              // onClick removed so form onSubmit triggers
               className="w-full bg-[#5a5cf2] hover:bg-[#5a5cf2]/90 text-white font-bold py-4 rounded-full shadow-lg shadow-[#5a5cf2]/30 transition-all flex items-center justify-center gap-2 group"
             >
               Start Onboarding
