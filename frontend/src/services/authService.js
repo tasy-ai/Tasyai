@@ -72,13 +72,31 @@ const getCurrentUser = () => {
     return JSON.parse(localStorage.getItem('user'));
 };
 
+const getUsers = async () => {
+    // Ensure we are hitting the correct endpoint. 
+    // If baseURL is .../api/auth, then .get('/users') -> .../api/auth/users
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+    const excludeId = currentUser ? currentUser._id : null;
+    const response = await api.get('/users', {
+        params: { exclude: excludeId }
+    }); 
+    return response.data;
+};
+
+const getUserById = async (id) => {
+    const response = await api.get(`/users/${id}`);
+    return response.data;
+};
+
 const authService = {
     register,
     login,
     logout,
     getProfile,
     updateProfile,
-    getCurrentUser
+    getCurrentUser,
+    getUsers,
+    getUserById
 };
 
 export default authService;

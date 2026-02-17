@@ -197,9 +197,49 @@ const updateUserProfile = async (req, res) => {
 };
 
 
+// @desc    Get all users
+// @route   GET /api/auth/users
+// @access  Public (or Private)
+const getAllUsers = async (req, res) => {
+    try {
+        const excludeId = req.query.exclude;
+        // console.log('Get Users Request. Exclude ID:', excludeId); // Debugging
+        
+        let query = {};
+        if (excludeId) {
+            query = { _id: { $ne: excludeId } };
+        }
+        
+        const users = await User.find(query).select('-password');
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// @desc    Get user by ID
+// @route   GET /api/auth/users/:id
+// @access  Public
+const getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select('-password');
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 module.exports = {
     registerUser,
     authUser,
     getUserProfile,
     updateUserProfile,
+    getAllUsers,
+    getUserById
 };

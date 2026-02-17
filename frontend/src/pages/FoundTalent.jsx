@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Sidebar from '../components/layout/Sidebar';
+import authService from '../services/authService';
 import { 
   Filter,
   ArrowUpDown,
   Bookmark,
-  UserPlus
+  UserPlus,
+  Loader2
 } from 'lucide-react';
-import { candidates, roles, stats } from '../data/foundTalentData';
-
+import { roles, stats } from '../data/foundTalentData';
 
 import { useNavigate, Link } from 'react-router-dom';
 const FoundTalent = () => {
@@ -16,6 +17,50 @@ const FoundTalent = () => {
 
   const [activeRole, setActiveRole] = useState('All Roles');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await authService.getUsers();
+        // Map backend user to candidate format if needed, or use directly
+        // Backend user: name, role, skills, country, experience, profilePicture
+        const mappedUsers = data.map(u => ({
+            id: u._id,
+            name: u.name,
+            role: u.role || 'Member',
+            experience: u.experience || 'N/A',
+            location: u.country || 'Remote',
+            image: u.profilePicture || `https://ui-avatars.com/api/?name=${u.name}&background=random`,
+            status: 'offline',
+            matchScore: Math.floor(Math.random() * 20) + 80,
+            badge: u.role || 'Member',
+            badgeColor: 'primary',
+            quote: u.motto || 'No bio available',
+            skills: u.skills ? u.skills.map(s => ({ name: s, level: 'high' })) : [],
+            about: [u.achievements || "No detailed about section available.", u.motto || ""],
+            partnership: u.partnership || 'N/A',
+            experienceList: [
+                {
+                    title: u.role || 'Professional',
+                    company: u.partnership || 'Independent',
+                    period: `${u.experience || 'N/A'} Experience`,
+                    description: u.achievements || 'Detailed background not provided.',
+                    active: true
+                }
+            ]
+        }));
+        setUsers(mappedUsers);
+      } catch (error) {
+        console.error("Failed to fetch users", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
   
 
 
@@ -103,7 +148,7 @@ const FoundTalent = () => {
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-extrabold">
-              Interested Talent <span className="text-[#4245f0] font-normal text-lg ml-2">(128)</span>
+              Interested Talent <span className="text-[#4245f0] font-normal text-lg ml-2">({users.length})</span>
             </h2>
             <div className="flex items-center gap-3">
               <button className="glass p-2 rounded-lg flex items-center justify-center hover:bg-white/10">
@@ -115,9 +160,14 @@ const FoundTalent = () => {
             </div>
           </div>
 
-          {/* Candidate Grid */}
+          {loading ? (
+             <div className="flex justify-center items-center py-20">
+                <Loader2 className="animate-spin size-10 text-[#4245f0]" />
+             </div>
+          ) : (
+          /* Candidate Grid */
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {candidates.map((candidate, index) => (
+            {users.map((candidate, index) => (
               <motion.div
                 key={candidate.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -168,6 +218,7 @@ const FoundTalent = () => {
                 <div className="flex gap-3 pt-2">
                   <Link 
                     to={`/profile-expansion?id=${candidate.id}`}
+                    state={{ candidate }}
 
                     onClick={(e) => console.log("View Profile Link Clicked for", candidate.name)}
                     style={{ zIndex: 100, position: 'relative' }}
@@ -195,6 +246,7 @@ const FoundTalent = () => {
               </button>
             </div>
           </div>
+          )}
         </section>
 
         {/* Footer */}

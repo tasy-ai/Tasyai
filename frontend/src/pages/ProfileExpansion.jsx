@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import authService from '../services/authService';
 import { 
   Rocket,
   Compass,
@@ -29,15 +30,64 @@ const ProfileExpansion = () => {
   const queryParams = new URLSearchParams(location.search);
   const candidateId = queryParams.get('id');
 
-  let candidate = location.state?.candidate;
-
-  if (!candidate && candidateId) {
-      candidate = candidates.find(c => c.id === parseInt(candidateId));
-  }
-
-  console.log('ProfileExpansion loaded. State:', location.state, 'ID:', candidateId, 'Found:', candidate);
-  
+  const [candidate, setCandidate] = useState(location.state?.candidate || null);
+  const [loading, setLoading] = useState(!location.state?.candidate && !!candidateId);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    const fetchCandidate = async () => {
+        if (!candidateId || candidate) return;
+        
+        try {
+            setLoading(true);
+            const user = await authService.getUserById(candidateId);
+            if (user) {
+                // Map backend user to candidate schema
+                const mappedCandidate = {
+                    id: user._id,
+                    name: user.name,
+                    role: user.role || 'Member',
+                    experience: user.experience || 'N/A',
+                    location: user.country || 'Remote',
+                    image: user.profilePicture || `https://ui-avatars.com/api/?name=${user.name}&background=random`,
+                    status: 'offline',
+                    matchScore: 85,
+                    badge: user.role || 'Member',
+                    badgeColor: 'primary',
+                    quote: user.motto || 'No bio available',
+                    skills: user.skills ? user.skills.map(s => ({ name: s, level: 'high' })) : [],
+                    about: [user.achievements || "No detailed about section available.", user.motto || ""],
+                    partnership: user.partnership || 'N/A',
+                    experienceList: [
+                        {
+                            title: user.role || 'Professional',
+                            company: user.partnership || 'Independent',
+                            period: `${user.experience || 'N/A'} Experience`,
+                            description: user.achievements || 'Detailed background not provided.',
+                            active: true
+                        }
+                    ]
+                };
+                setCandidate(mappedCandidate);
+            }
+        } catch (error) {
+            console.error("Error fetching candidate:", error);
+            toast.error("Failed to load profile.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchCandidate();
+  }, [candidateId, candidate]);
+
+  if (loading) {
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-[#020617] text-white">
+            <Loader2 className="animate-spin size-10 text-[#4245f0]" />
+        </div>
+    );
+  }
 
   if (!candidate) {
     return (
@@ -58,6 +108,7 @@ const ProfileExpansion = () => {
 
   const getStatusColor = (status) => {
     const colors = {
+
       online: 'bg-emerald-500',
       offline: 'bg-slate-500',
       away: 'bg-amber-500'
