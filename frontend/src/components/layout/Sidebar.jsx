@@ -168,22 +168,36 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             {/* Profile */}
             {/* Profile Menu Trigger */}
             <div className="relative">
-              <button 
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className={`mt-4 w-full flex items-center gap-3 rounded-xl transition-colors hover:bg-white/5 ${
-                  isOpen ? 'px-2 py-2 text-left' : 'p-2 justify-center'
-                }`}
-              >
-                <div className="size-10 rounded-full border border-white/10 overflow-hidden bg-gradient-to-br from-indigo-500/30 to-purple-500/30 shrink-0">
-                  <div className="w-full h-full flex items-center justify-center text-white font-bold text-sm">
-                    AR
+              {(() => {
+                const user = authService.getCurrentUser() || {};
+                const name = user.name || 'Guest User';
+                const role = user.role || 'Member';
+                const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+                
+                return (
+                  <button 
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className={`mt-4 w-full flex items-center gap-3 rounded-xl transition-colors hover:bg-white/5 ${
+                    isOpen ? 'px-2 py-2 text-left' : 'p-2 justify-center'
+                  }`}
+                >
+                  <div className="size-10 rounded-full border border-white/10 overflow-hidden bg-gradient-to-br from-indigo-500/30 to-purple-500/30 shrink-0">
+                    {user.profilePicture ? (
+                         <img src={user.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center text-white font-bold text-sm">
+                        {initials}
+                        </div>
+                    )}
                   </div>
-                </div>
-                <div className={`overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                  <p className="text-sm font-semibold text-white truncate">Alex Rivera</p>
-                  <p className="text-xs text-slate-500 truncate">Product Designer</p>
-                </div>
-              </button>
+                  <div className={`overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                    <p className="text-sm font-semibold text-white truncate">{name}</p>
+                    <p className="text-xs text-slate-500 truncate">{role}</p>
+                  </div>
+                </button>
+                );
+              })()}
+
 
               {/* Popup Menu */}
               {showProfileMenu && (
