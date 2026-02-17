@@ -1,0 +1,8 @@
+2026-02-17T06:34:53.591Z - Update Error: next is not a function
+Stack: TypeError: next is not a function
+    at model.<anonymous> (D:\Tasyai\backend\models\User.js:73:16)
+    at Kareem.execPre (D:\Tasyai\backend\node_modules\kareem\index.js:68:39)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async model.$__save (D:\Tasyai\backend\node_modules\mongoose\lib\model.js:371:5)
+    at async model.save (D:\Tasyai\backend\node_modules\mongoose\lib\model.js:614:5)
+    at async updateUserProfile (D:\Tasyai\backend\controllers\authController.js:168:33)

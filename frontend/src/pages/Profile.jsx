@@ -36,6 +36,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('My Ventures');
   
   // Default User Data (Fallback)
   const defaultUser = {
@@ -107,9 +108,11 @@ const Profile = () => {
         const currentUser = authService.getCurrentUser();
         if (!currentUser) {
             navigate('/login');
-            // Allow state update to finish before redirecting completely if needed, 
-            // but we usually return here. However, strict mode might double mount.
-            // Let's just return.
+            return;
+        }
+
+        if (!currentUser.isOnboarded) {
+            navigate('/OnboardingChatbot');
             return;
         }
 
@@ -167,7 +170,7 @@ const Profile = () => {
 
   // Fallback if user is null for some reason (shouldn't happen due to defaultUser fallback on error, but good for safety)
   if (!user) return null;
-  const [activeTab, setActiveTab] = useState('My Ventures');
+
 
   const getSkillClasses = (level) => {
     const classes = {
@@ -236,9 +239,13 @@ const Profile = () => {
                 <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-[#4245f0] ring-2 ring-[#020617]"></span>
               </button>
               
-              <div className="h-10 w-10 rounded-full border-2 border-[#4245f0]/30 bg-gradient-to-br from-primary/30 to-purple-500/30 flex items-center justify-center text-white font-bold text-sm">
-                AR
-              </div>
+              {user.image ? (
+                <img src={user.image} className="h-10 w-10 rounded-full border-2 border-[#4245f0]/30 object-cover" alt="Avatar" />
+              ) : (
+                <div className="h-10 w-10 rounded-full border-2 border-[#4245f0]/30 bg-gradient-to-br from-[#4245f0]/30 to-purple-500/30 flex items-center justify-center text-white font-bold text-sm">
+                  {user.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'AR'}
+                </div>
+              )}
             </div>
           </div>
         </header>

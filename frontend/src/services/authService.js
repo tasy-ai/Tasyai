@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/auth/';
+const API_URL = 'http://localhost:5000/api/auth';
 
 // Create axios instance with interceptor to add token
 const api = axios.create({
@@ -19,19 +19,23 @@ api.interceptors.request.use((config) => {
 
 
 const register = async (userData) => {
-    const response = await axios.post(API_URL + 'signup', userData);
-    if (response.data) {
-        localStorage.setItem('user', JSON.stringify(response.data));
-    }
+    const response = await axios.post(`${API_URL}/signup`, userData);
     return response.data;
 };
 
 const login = async (email, password) => {
-    const response = await axios.post(API_URL + 'login', { email, password });
-    if (response.data) {
-        localStorage.setItem('user', JSON.stringify(response.data));
+    console.log('Attempting login for:', email);
+    try {
+        const response = await axios.post(`${API_URL}/login`, { email, password });
+        console.log('Login response:', response.data);
+        if (response.data) {
+            localStorage.setItem('user', JSON.stringify(response.data));
+        }
+        return response.data;
+    } catch (error) {
+        console.error('Login error details:', error.response?.data || error.message);
+        throw error;
     }
-    return response.data;
 };
 
 const logout = () => {

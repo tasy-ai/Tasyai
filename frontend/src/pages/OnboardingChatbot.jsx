@@ -49,7 +49,7 @@ const OnboardingChatbot = ({ onComplete }) => {
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null); // Ref to trigger file input programmatically
  
-  const totalSteps = 12;
+  const totalSteps = steps.length;
   const progress = ((currentStep) / (totalSteps - 1)) * 100;
 
   useEffect(() => {

@@ -35,7 +35,9 @@ const Register = () => {
         email: formData.email,
         password: formData.password
       });
-      navigate('/OnboardingChatbot');
+      // Redirect to Login instead of Chatbot
+      alert("Registration successful! Please login to continue to onboarding.");
+      navigate('/login');
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || 'Registration failed');
