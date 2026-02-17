@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import authService from '../services/authService';
 import { 
   Mail, 
   Lock, 
@@ -10,15 +11,27 @@ import {
 } from 'lucide-react';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login submitted:', formData);
+    setLoading(true);
+    setError(null);
+    try {
+      await authService.login(formData.email, formData.password);
+      navigate('/dashboard'); // or /chat depending on flow
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -32,33 +45,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-[#020617] flex items-center justify-center overflow-hidden relative font-sans">
 
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
-        
-        body {
-          font-family: 'Manrope', sans-serif;
-        }
-        
-        .glass-card {
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-        }
-        
-        .orb-1 {
-          background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0) 70%);
-        }
-        
-        .orb-2 {
-          background: radial-gradient(circle, rgba(20, 184, 166, 0.3) 0%, rgba(20, 184, 166, 0) 70%);
-        }
-        
-        .primary-gradient {
-          background: linear-gradient(135deg, #6467f2 0%, #4338ca 100%);
-        }
-      `}</style>
+
 
       <div className="fixed inset-0 z-0">
         <motion.div 
@@ -101,6 +88,12 @@ const Login = () => {
             <h1 className="text-white text-3xl font-bold mb-2">Welcome back</h1>
             <p className="text-slate-400 text-sm">Login to continue collaborating</p>
           </div>
+
+          {error && (
+            <div className="w-full bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-lg text-sm mb-4 text-center">
+              {error}
+            </div>
+          )}
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="w-full space-y-6">

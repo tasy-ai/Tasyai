@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Code2,
@@ -27,14 +27,15 @@ import {
 } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
 import Sidebar from '../components/layout/Sidebar';
-
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import authService from '../services/authService';
 
 const Profile = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
-  const profileData = location.state?.profileData;
-  console.log('Profile loaded with data:', profileData);
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   
   // Default User Data (Fallback)
   const defaultUser = {
@@ -43,6 +44,7 @@ const Profile = () => {
     headline: 'Building decentralized futures | UX Engineer',
     location: 'San Francisco, CA',
     email: 'alex.rivera@tasyai.dev',
+    year: '2024',
     about: [
       'A detailed personal introduction focusing on building decentralized systems and scaling startup teams. Dedicated to bridging the gap between high-level product strategy and technical execution in the Web3 space.',
       'Currently focused on developing open-source tooling for DAO governance and peer-to-peer collaboration protocols. Looking for passionate designers and frontend architects to join the core team for Project Nexus.'
@@ -99,7 +101,72 @@ const Profile = () => {
     ]
   };
 
-  const user = profileData || defaultUser;
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const currentUser = authService.getCurrentUser();
+        if (!currentUser) {
+            navigate('/login');
+            // Allow state update to finish before redirecting completely if needed, 
+            // but we usually return here. However, strict mode might double mount.
+            // Let's just return.
+            return;
+        }
+
+        if (location.state?.profileData) {
+             setUser(location.state.profileData);
+             setLoading(false);
+             return;
+        }
+
+        // Fetch from backend
+        try {
+            const backendUser = await authService.getProfile();
+            // Map backendUser to frontend user format
+            const mappedUser = {
+                name: backendUser.name || defaultUser.name,
+                role: backendUser.role || defaultUser.role,
+                headline: backendUser.motto || defaultUser.headline,
+                location: backendUser.country || defaultUser.location,
+                email: backendUser.email || defaultUser.email,
+                image: backendUser.profilePicture, 
+                about: [
+                    backendUser.achievements ? `Achievements: ${backendUser.achievements}` : null,
+                    backendUser.partnership ? `Looking for: ${backendUser.partnership}` : null,
+                    backendUser.time ? `Availability: ${backendUser.time}` : null,
+                    (!backendUser.achievements && !backendUser.partnership) ? defaultUser.about[0] : null
+                ].filter(Boolean),
+                skills: (backendUser.skills && backendUser.skills.length > 0) 
+                    ? backendUser.skills.map(s => ({ name: s, level: 'high' })) 
+                    : defaultUser.skills,
+                ventures: defaultUser.ventures,
+                experienceList: defaultUser.experienceList,
+                links: defaultUser.links
+            };
+            setUser(mappedUser);
+        } catch (err) {
+            console.error("Failed to fetch profile", err);
+            toast.error("Failed to load profile");
+            setUser(defaultUser);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProfile();
+  }, [navigate, location]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#020617] text-white">
+        <Loader2 className="animate-spin size-10 text-[#4245f0]" />
+      </div>
+    );
+  }
+
+  // Fallback if user is null for some reason (shouldn't happen due to defaultUser fallback on error, but good for safety)
+  if (!user) return null;
   const [activeTab, setActiveTab] = useState('My Ventures');
 
   const getSkillClasses = (level) => {
@@ -124,25 +191,7 @@ const Profile = () => {
     <div className="bg-[#020617] text-white font-sans min-h-screen">
       <Toaster position="top-center" reverseOrder={false} />
       {/* Global Styles */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        body {
-          font-family: 'Inter', sans-serif;
-          background-color: #020617;
-        }
-        
-        .glass-card {
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .avatar-glow {
-          box-shadow: 0 0 25px 2px rgba(66, 69, 240, 0.4);
-        }
-      `}</style>
+
 
       <div className="flex bg-[#020617] min-h-screen overflow-hidden">
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import authService from '../services/authService';
 import { 
   Rocket, 
   User, 
@@ -22,9 +23,23 @@ const Register = () => {
     terms: false
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    try {
+      if (!formData.terms) {
+        alert("Please accept the terms and conditions");
+        return;
+      }
+      await authService.register({
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password
+      });
+      navigate('/OnboardingChatbot');
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Registration failed');
+    }
   };
 
   const handleChange = (e) => {
@@ -38,25 +53,7 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-[#020617] flex flex-col font-sans overflow-x-hidden relative">
       {/* Global Styles */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
-        
-        body {
-          font-family: 'Manrope', sans-serif;
-        }
-        
-        .glass-card {
-          background: rgba(255, 255, 255, 0.08);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .bg-grain {
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-          opacity: 0.03;
-        }
-      `}</style>
+
 
       {/* Background Elements */}
       <div className="fixed inset-0 bg-gradient-to-br from-[#020617] via-[#0F172A] to-[#020617] z-0" />
