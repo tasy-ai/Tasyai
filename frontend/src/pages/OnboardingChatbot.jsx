@@ -14,6 +14,7 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { steps } from '../data/chatbotData';
+import authService from '../services/authService';
 
 const OnboardingChatbot = ({ onComplete }) => {
   const navigate = useNavigate();
@@ -52,11 +53,54 @@ const OnboardingChatbot = ({ onComplete }) => {
   const progress = ((currentStep) / (totalSteps - 1)) * 100;
 
   useEffect(() => {
+    const user = authService.getCurrentUser();
+    if (!user) {
+      navigate('/login');
+    }
     scrollToBottom();
-  }, [messages, isTyping, userData.profile_picture_preview]);
+  }, [messages, isTyping, userData.profile_picture_preview, navigate]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  };
+
+  // ... (existing functions)
+
+  const handleComplete = async () => {
+    try {
+      // Map frontend fields to backend schema if needed
+      // Frontend: experience_desc, skills_experience, profile_picture_preview (ignore preview)
+      // Backend: name, country, experience, role, skills, achievements, partnership, motto, time, profilePicture (base64/URL)
+      
+      // We might need to handle file upload separately or convert to base64 if it's a File object
+      // For now assuming profile_picture is handled or we send it as is if backend supports multer (which I didn't set up)
+      // Wait, I set backend profilePicture to String. So I should probably convert file to base64 here or upload to cloud.
+      // The user just said "profilePicture (base64/URL)".
+      // So I'll convert File to base64.
+      
+      let profilePictureData = userData.profile_picture;
+      if (userData.profile_picture instanceof File) {
+          // Convert to base64
+          const reader = new FileReader();
+          reader.readAsDataURL(userData.profile_picture);
+          await new Promise(resolve => reader.onload = () => {
+              profilePictureData = reader.result;
+              resolve();
+          });
+      }
+
+      const dataToSend = {
+          ...userData,
+          profilePicture: profilePictureData
+      };
+
+      await authService.updateProfile(dataToSend);
+      if (onComplete) onComplete(userData);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Profile update failed', error);
+      alert('Failed to save profile. Please try again.');
+    }
   };
 
   const addMessage = (type, content, delay = 0) => {
@@ -186,11 +230,7 @@ const OnboardingChatbot = ({ onComplete }) => {
 
   // --- END FILE UPLOAD ---
 
-  const handleComplete = () => {
-    if (onComplete) onComplete(userData);
-    console.log('Final Data:', userData);
-    navigate('/profile');
-  };
+
 
   const currentStepData = steps[currentStep];
 

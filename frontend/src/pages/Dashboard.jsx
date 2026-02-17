@@ -17,12 +17,21 @@ import {
 } from 'lucide-react';
 import { filters, companies } from '../data/dashboardData';
 
+import authService from '../services/authService';
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('All Roles');
   const [searchQuery, setSearchQuery] = useState('');
   const [savedCompanies, setSavedCompanies] = useState(['Nebula Systems']);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  React.useEffect(() => {
+    const user = authService.getCurrentUser();
+    if (!user) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const toggleSave = (companyName) => {
     setSavedCompanies(prev => 
