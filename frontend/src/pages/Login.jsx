@@ -25,8 +25,12 @@ const Login = () => {
     setLoading(true);
     setError(null);
     try {
-      await authService.login(formData.email, formData.password);
-      navigate('/dashboard'); // or /chat depending on flow
+      const user = await authService.login(formData.email, formData.password);
+      if (user.isOnboarded) {
+        navigate('/dashboard');
+      } else {
+        navigate('/OnboardingChatbot');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {

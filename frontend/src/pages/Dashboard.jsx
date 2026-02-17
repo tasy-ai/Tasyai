@@ -30,6 +30,8 @@ const Dashboard = () => {
     const user = authService.getCurrentUser();
     if (!user) {
       navigate('/login');
+    } else if (!user.isOnboarded) {
+      navigate('/OnboardingChatbot');
     }
   }, [navigate]);
 

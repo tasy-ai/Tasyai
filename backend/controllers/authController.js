@@ -12,30 +12,46 @@ const generateToken = (id) => {
 // @route   POST /api/auth/signup
 // @access  Public
 const registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    try {
+        const { name, email, password } = req.body;
+        console.log('--- REGISTER REQUEST RECEIVED ---');
+        console.log('Body:', JSON.stringify(req.body));
 
-    const userExists = await User.findOne({ email });
+        if (!name || !email || !password) {
+            console.log('Missing required fields');
+            return res.status(400).json({ message: 'Please add all fields' });
+        }
 
-    if (userExists) {
-        return res.status(400).json({ message: 'User already exists' });
-    }
+        const userExists = await User.findOne({ email: email.toLowerCase() });
 
-    const user = await User.create({
-        name,
-        email,
-        password,
-    });
+        if (userExists) {
+            console.log(`User already exists: ${email}`);
+            return res.status(400).json({ message: 'User already exists' });
+        }
 
-    if (user) {
-        res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            token: generateToken(user._id),
-            isOnboarded: user.isOnboarded,
+        console.log('Creating user in DB...');
+        const user = await User.create({
+            name,
+            email: email.toLowerCase(),
+            password,
         });
-    } else {
-        res.status(400).json({ message: 'Invalid user data' });
+
+        if (user) {
+            console.log(`User registered successfully: ${user.email} with ID: ${user._id}`);
+            res.status(201).json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                token: generateToken(user._id),
+                isOnboarded: user.isOnboarded,
+            });
+        } else {
+            console.log('User creation returned null/undefined');
+            res.status(400).json({ message: 'Invalid user data' });
+        }
+    } catch (error) {
+        console.error('Error in registerUser:', error);
+        res.status(500).json({ message: 'Server error during registration', error: error.message });
     }
 };
 
@@ -43,21 +59,36 @@ const registerUser = async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 const authUser = async (req, res) => {
+    console.log('--- LOGIN REQUEST RECEIVED ---');
+    console.log('Body:', JSON.stringify(req.body));
     const { email, password } = req.body;
+    
+    console.log(`Login attempt for: ${email}`);
+    
+    // Find user and include password field
+    const user = await User.findOne({ email: email ? email.toLowerCase() : '' }).select('+password');
 
-    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+        console.log(`User not found in DB: ${email}`);
+        return res.status(401).json({ message: 'Debug: User not found' });
+    }
 
-    if (user && (await user.matchPassword(password))) {
+    const isMatch = await user.matchPassword(password);
+    console.log(`Password match result: ${isMatch} (Provided length: ${password ? password.length : 0})`);
+    
+    if (isMatch) {
+        console.log(`Login successful: ${email}`);
         res.json({
             _id: user._id,
             name: user.name,
             email: user.email,
             token: generateToken(user._id),
             isOnboarded: user.isOnboarded,
-            profilePicture: user.profilePicture // send back existing profile pic if needed
+            profilePicture: user.profilePicture
         });
     } else {
-        res.status(401).json({ message: 'Invalid email or password' });
+        console.log(`Password mismatch for: ${email}`);
+        res.status(401).json({ message: 'Debug: Password mismatch' });
     }
 };
 
@@ -92,50 +123,80 @@ const getUserProfile = async (req, res) => {
 // @route   PUT /api/auth/profile
 // @access  Private
 const updateUserProfile = async (req, res) => {
-    const user = await User.findById(req.user._id);
-
-    if (user) {
-        user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
-        if (req.body.password) {
-            user.password = req.body.password;
+    try {
+        console.log('--- UPDATE PROFILE REQUEST ---');
+        // Check if req.user exists (set by protect middleware)
+        if (!req.user || !req.user._id) {
+             console.log('Error: req.user is missing. Middleware might have failed.');
+             return res.status(401).json({ message: 'Not authorized, user not found in request' });
         }
 
-        // Updating onboarding fields
-        user.country = req.body.country || user.country;
-        user.experience = req.body.experience || user.experience;
-        user.role = req.body.role || user.role;
-        user.skills = req.body.skills || user.skills;
-        user.achievements = req.body.achievements || user.achievements;
-        user.partnership = req.body.partnership || user.partnership;
-        user.motto = req.body.motto || user.motto;
-        user.time = req.body.time || user.time;
-        user.profilePicture = req.body.profilePicture || user.profilePicture;
-        
-        // Mark onboarding complete if all critical info is filled (simple heuristic)
-        if (req.body.role || req.body.skills) {
-            user.isOnboarded = true;
+        console.log('User ID from token:', req.user._id);
+        console.log('Update Data Body:', JSON.stringify(req.body));
+
+        const user = await User.findById(req.user._id);
+
+        if (user) {
+            user.name = req.body.name || user.name;
+            user.email = req.body.email || user.email;
+            if (req.body.password) {
+                user.password = req.body.password;
+            }
+
+            // Updating onboarding fields
+            user.country = req.body.country || user.country;
+            user.experience = req.body.experience || user.experience;
+            user.role = req.body.role || user.role;
+            user.skills = req.body.skills || user.skills;
+            user.achievements = req.body.achievements || user.achievements;
+            user.partnership = req.body.partnership || user.partnership;
+            user.motto = req.body.motto || user.motto;
+            user.time = req.body.time || user.time;
+            user.profilePicture = req.body.profilePicture || user.profilePicture;
+            
+            // Mark onboarding complete if critical info is filled
+            if (req.body.role || (req.body.skills && req.body.skills.length > 0)) {
+                user.isOnboarded = true;
+            }
+
+            // Check if there are any other fields to update
+            if (req.body.isOnboarded !== undefined) {
+                 user.isOnboarded = req.body.isOnboarded;
+            }
+
+            console.log('Saving user...');
+            const updatedUser = await user.save();
+            console.log('User saved successfully');
+
+            res.json({
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                country: updatedUser.country,
+                experience: updatedUser.experience,
+                role: updatedUser.role,
+                skills: updatedUser.skills,
+                achievements: updatedUser.achievements,
+                partnership: updatedUser.partnership,
+                motto: updatedUser.motto,
+                time: updatedUser.time,
+                profilePicture: updatedUser.profilePicture,
+                isOnboarded: updatedUser.isOnboarded,
+                token: generateToken(updatedUser._id),
+            });
+        } else {
+            console.log('User not found in DB by ID');
+            res.status(404).json({ message: 'User not found' });
         }
-
-        // Check if there are any other fields to update
-        if (req.body.isOnboarded !== undefined) {
-             user.isOnboarded = req.body.isOnboarded;
-        }
-
-        const updatedUser = await user.save();
-
-        res.json({
-            _id: updatedUser._id,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            token: generateToken(updatedUser._id), 
-            isOnboarded: updatedUser.isOnboarded,
-        });
-
-    } else {
-        res.status(404).json({ message: 'User not found' });
+    } catch (error) {
+        console.error('CRITICAL ERROR in updateUserProfile:', error);
+        const logError = require('../utils/logger');
+        logError(`Update Error: ${error.message}\nStack: ${error.stack}`);
+        res.status(500).json({ message: 'Server error updating profile', error: error.message, stack: error.stack });
     }
 };
+
+
 
 module.exports = {
     registerUser,
