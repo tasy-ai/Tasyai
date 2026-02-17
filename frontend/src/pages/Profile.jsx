@@ -127,24 +127,24 @@ const Profile = () => {
             const backendUser = await authService.getProfile();
             // Map backendUser to frontend user format
             const mappedUser = {
-                name: backendUser.name || defaultUser.name,
-                role: backendUser.role || defaultUser.role,
-                headline: backendUser.motto || defaultUser.headline,
-                location: backendUser.country || defaultUser.location,
-                email: backendUser.email || defaultUser.email,
+                name: backendUser.name || "User",
+                role: backendUser.role || "Role not set",
+                headline: backendUser.motto || "No headline yet",
+                location: backendUser.country || "Location not set",
+                email: backendUser.email || "",
                 image: backendUser.profilePicture, 
                 about: [
                     backendUser.achievements ? `Achievements: ${backendUser.achievements}` : null,
                     backendUser.partnership ? `Looking for: ${backendUser.partnership}` : null,
                     backendUser.time ? `Availability: ${backendUser.time}` : null,
-                    (!backendUser.achievements && !backendUser.partnership) ? defaultUser.about[0] : null
+                    (!backendUser.achievements && !backendUser.partnership && !backendUser.time) ? "No additional details provided." : null
                 ].filter(Boolean),
                 skills: (backendUser.skills && backendUser.skills.length > 0) 
                     ? backendUser.skills.map(s => ({ name: s, level: 'high' })) 
-                    : defaultUser.skills,
-                ventures: defaultUser.ventures,
-                experienceList: defaultUser.experienceList,
-                links: defaultUser.links
+                    : [],
+                ventures: [], // Backend doesn't support this yet
+                experienceList: [], // Backend stores experience as a string range, not a list
+                links: [] // Backend doesn't support links yet
             };
             setUser(mappedUser);
         } catch (err) {
@@ -243,7 +243,7 @@ const Profile = () => {
                 <img src={user.image} className="h-10 w-10 rounded-full border-2 border-[#4245f0]/30 object-cover" alt="Avatar" />
               ) : (
                 <div className="h-10 w-10 rounded-full border-2 border-[#4245f0]/30 bg-gradient-to-br from-[#4245f0]/30 to-purple-500/30 flex items-center justify-center text-white font-bold text-sm">
-                  {user.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'AR'}
+                  {user.name ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '?'}
                 </div>
               )}
             </div>
@@ -360,27 +360,31 @@ const Profile = () => {
                   Portfolio & Links
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {user.links && user.links.map((link) => {
-                    const IconComponent = link.icon;
-                    return (
-                      <motion.a 
-                        key={link.name}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ x: 4 }}
-                        className="flex items-center gap-4 rounded-xl bg-white/5 p-4 transition-all hover:bg-white/10"
-                      >
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${link.color || 'bg-slate-700'}`}>
-                          {IconComponent && <IconComponent className="size-5 text-white" />}
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold">{link.name}</p>
-                          <p className="text-xs text-slate-500 truncate max-w-[150px]">{link.url.replace(/^https?:\/\//, '')}</p>
-                        </div>
-                      </motion.a>
-                    );
-                  })}
+                  {user.links && user.links.length > 0 ? (
+                    user.links.map((link) => {
+                      const IconComponent = link.icon;
+                      return (
+                        <motion.a 
+                          key={link.name}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          whileHover={{ x: 4 }}
+                          className="flex items-center gap-4 rounded-xl bg-white/5 p-4 transition-all hover:bg-white/10"
+                        >
+                          <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${link.color || 'bg-slate-700'}`}>
+                            {IconComponent && <IconComponent className="size-5 text-white" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold">{link.name}</p>
+                            <p className="text-xs text-slate-500 truncate max-w-[150px]">{link.url.replace(/^https?:\/\//, '')}</p>
+                          </div>
+                        </motion.a>
+                      );
+                    })
+                  ) : (
+                    <p className="text-slate-500 text-sm col-span-2 text-center py-4">No portfolio links added yet.</p>
+                  )}
                 </div>
               </motion.div>
 

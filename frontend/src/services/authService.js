@@ -19,8 +19,15 @@ api.interceptors.request.use((config) => {
 
 
 const register = async (userData) => {
-    const response = await axios.post(`${API_URL}/signup`, userData);
-    return response.data;
+    try {
+        console.log('Sending registration request:', userData);
+        const response = await axios.post(`${API_URL}/signup`, userData);
+        console.log('Registration response:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('AuthService Registration Error:', error);
+        throw error;
+    }
 };
 
 const login = async (email, password) => {

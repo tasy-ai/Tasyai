@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import authService from '../../services/authService';
 import { 
   Rocket,
   Compass,
@@ -14,8 +15,14 @@ import {
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const handleLogout = () => {
+    authService.logout();
+    navigate('/login');
+  };
 
   return (
     <>
@@ -195,6 +202,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                       <span>View Profile</span>
                     </Link>
                     <button 
+                      onClick={handleLogout}
                       className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors text-left"
                     >
                       <LogOut className="size-4" />
