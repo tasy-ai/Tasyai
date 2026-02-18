@@ -5,7 +5,7 @@ const protect = require('../middleware/authMiddleware');
 
 router.post('/signup', registerUser);
 router.post('/login', authUser);
-router.post('/google', googleLogin); // New route for Google auth
+router.post('/google', googleLogin); 
 router.get('/profile', protect, getUserProfile);
 
 router.put('/profile', protect, updateUserProfile);
