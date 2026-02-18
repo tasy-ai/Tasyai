@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import authService from '../services/authService';
@@ -9,6 +9,10 @@ import {
   EyeOff,
   Hexagon
 } from 'lucide-react';
+import { useSignIn } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
+
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,6 +23,8 @@ const Login = () => {
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,6 +43,65 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  const { signIn } = useSignIn();
+  const { isSignedIn, isLoaded, user } = useUser();
+
+
+const handleGoogleLogin = async () => {
+  try {
+    if (isSignedIn) {
+      navigate("/OnboardingChatbot");
+      return;
+    }
+
+    await signIn.authenticateWithRedirect({
+      strategy: "oauth_google",
+      redirectUrl: "/sso-callback",
+      redirectUrlComplete: "/OnboardingChatbot"
+    });
+  } catch (err) {
+    console.error("Google login error:", err);
+  }
+};
+
+//   useEffect(() => {
+//   if (isSignedIn) {
+//     navigate("/OnboardingChatbot");
+//   }
+// }, [isSignedIn]);
+
+useEffect(() => {
+  const syncClerkUser = async () => {
+    if (!isLoaded) return;
+
+    if (isSignedIn && user) {
+      try {
+        // Call your backend Google auth route
+        const res = await authService.googleLogin({
+          name: user.fullName,
+          email: user.primaryEmailAddress.emailAddress,
+        });
+
+        // Store backend JWT only
+        localStorage.setItem("token", res.token);
+
+        if (res.user.isOnboarded) {
+          navigate("/dashboard");
+        } else {
+          navigate("/OnboardingChatbot");
+        }
+
+      } catch (err) {
+        console.error("Backend sync failed:", err);
+      }
+    }
+  };
+
+  syncClerkUser();
+}, [isSignedIn, isLoaded]);
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -166,6 +231,7 @@ const Login = () => {
                 whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' }}
                 whileTap={{ scale: 0.98 }}
                 type="button"
+                onClick={handleGoogleLogin}
                 className="flex items-center justify-center gap-2 bg-white/5 border border-slate-700/50 py-3 rounded-full text-slate-300 text-sm font-semibold transition-colors"
               >
                 <svg className="size-5" viewBox="0 0 24 24">

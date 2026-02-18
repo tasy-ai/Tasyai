@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { filters, companies } from '../data/dashboardData';
 
+import { useUser } from "@clerk/clerk-react";
 import authService from '../services/authService';
 
 const Dashboard = () => {
@@ -25,15 +26,61 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [savedCompanies, setSavedCompanies] = useState(['Nebula Systems']);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { user: clerkUser, isLoaded: clerkLoaded, isSignedIn: clerkSignedIn } = useUser();
+  const [isSyncing, setIsSyncing] = useState(false);
 
   React.useEffect(() => {
-    const user = authService.getCurrentUser();
-    if (!user) {
-      navigate('/login');
-    } else if (!user.isOnboarded) {
-      navigate('/OnboardingChatbot');
-    }
-  }, [navigate]);
+    const handleAuth = async () => {
+      const localUser = authService.getCurrentUser();
+      
+      if (!clerkLoaded) return;
+
+      if (clerkSignedIn) {
+        if (!localUser) {
+          setIsSyncing(true);
+          try {
+            console.log('Syncing Clerk user to backend...', clerkUser);
+            const userData = {
+              email: clerkUser.primaryEmailAddress?.emailAddress,
+              name: clerkUser.fullName,
+              profilePicture: clerkUser.imageUrl,
+            };
+            const syncedUser = await authService.googleLogin(userData);
+            if (!syncedUser.isOnboarded) {
+              navigate('/OnboardingChatbot');
+            }
+          } catch (error) {
+            console.error('Failed to sync Clerk user:', error);
+            navigate('/login');
+          } finally {
+            setIsSyncing(false);
+          }
+        } else if (!localUser.isOnboarded) {
+          navigate('/OnboardingChatbot');
+        }
+      } else {
+        if (!localUser) {
+          navigate('/login');
+        } else if (!localUser.isOnboarded) {
+          navigate('/OnboardingChatbot');
+        }
+      }
+    };
+
+    handleAuth();
+  }, [navigate, clerkLoaded, clerkSignedIn, clerkUser]);
+
+  if (isSyncing || !clerkLoaded) {
+    return (
+      <div className="bg-[#020617] text-white flex items-center justify-center h-screen">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-[#6467f2] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-slate-400 font-medium">Syncing your account...</p>
+        </div>
+      </div>
+    );
+  }
+
 
   const toggleSave = (companyName) => {
     setSavedCompanies(prev => 

@@ -88,9 +88,25 @@ const getUserById = async (id) => {
     return response.data;
 };
 
+const googleLogin = async (googleData) => {
+    try {
+        console.log('Sending Google auth request:', googleData);
+        const response = await axios.post(`${API_URL}/google`, googleData);
+        console.log('Google auth response:', response.data);
+        if (response.data) {
+            localStorage.setItem('user', JSON.stringify(response.data));
+        }
+        return response.data;
+    } catch (error) {
+        console.error('Google login error details:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
 const authService = {
     register,
     login,
+    googleLogin,
     logout,
     getProfile,
     updateProfile,
@@ -98,5 +114,6 @@ const authService = {
     getUsers,
     getUserById
 };
+
 
 export default authService;
