@@ -12,6 +12,9 @@ import {
   ArrowRight,
   Hexagon
 } from 'lucide-react';
+import { useSignUp } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
+import { useEffect } from 'react';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -22,6 +25,59 @@ const Register = () => {
     password: '',
     terms: false
   });
+
+  const { signUp, isLoaded: signUpLoaded } = useSignUp();
+  const { isSignedIn, isLoaded: userLoaded, user } = useUser();
+
+  const handleGoogleSignup = async () => {
+    try {
+      if (!signUpLoaded) {
+        console.warn("Clerk: signUp is not loaded yet.");
+        return;
+      }
+
+      if (isSignedIn) {
+        navigate("/OnboardingChatbot");
+        return;
+      }
+
+      await signUp.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/OnboardingChatbot"
+      });
+    } catch (err) {
+      console.error("Google signup error:", err);
+    }
+  };
+
+  useEffect(() => {
+    const syncClerkUser = async () => {
+      if (!userLoaded) return;
+
+      if (isSignedIn && user) {
+        try {
+          // Call your backend Google auth route
+          const res = await authService.googleLogin({
+            name: user.fullName,
+            email: user.primaryEmailAddress.emailAddress,
+            profilePicture: user.imageUrl
+          });
+
+          if (res.isOnboarded) {
+            navigate("/dashboard");
+          } else {
+            navigate("/OnboardingChatbot");
+          }
+
+        } catch (err) {
+          console.error("Backend sync failed:", err);
+        }
+      }
+    };
+
+    syncClerkUser();
+  }, [isSignedIn, userLoaded, navigate, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -230,10 +286,12 @@ const Register = () => {
             {/* Social Buttons */}
             <div className="flex justify-center gap-4">
               <motion.button
-                whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.15)' }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={signUpLoaded ? { scale: 1.05, backgroundColor: 'rgba(255,255,255,0.15)' } : {}}
+                whileTap={signUpLoaded ? { scale: 0.95 } : {}}
                 type="button"
-                className="size-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white transition-colors"
+                onClick={handleGoogleSignup}
+                disabled={!signUpLoaded}
+                className={`size-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white transition-colors ${!signUpLoaded ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <svg className="size-6" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
