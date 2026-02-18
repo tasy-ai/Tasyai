@@ -235,11 +235,63 @@ const getUserById = async (req, res) => {
     }
 };
 
+// @desc    Google login or register
+// @route   POST /api/auth/google
+// @access  Public
+const googleLogin = async (req, res) => {
+    try {
+        const { email, name, profilePicture } = req.body;
+        console.log('--- GOOGLE LOGIN REQUEST RECEIVED ---');
+        console.log('Body:', JSON.stringify(req.body));
+
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+
+        let user = await User.findOne({ email: email.toLowerCase() });
+
+        if (user) {
+            console.log(`User found: ${user.email}. Generating token...`);
+            // Update profile picture if it's missing
+            if (!user.profilePicture && profilePicture) {
+                user.profilePicture = profilePicture;
+                await user.save();
+            }
+        } else {
+            console.log(`User not found: ${email}. Creating new user...`);
+            // Create user with a random password since it's required by the schema
+            const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+            user = await User.create({
+                name: name || email.split('@')[0],
+                email: email.toLowerCase(),
+                password: randomPassword,
+                profilePicture: profilePicture || '',
+                isOnboarded: false
+            });
+            console.log(`New user created: ${user.email} with ID: ${user._id}`);
+        }
+
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            token: generateToken(user._id),
+            isOnboarded: user.isOnboarded,
+            profilePicture: user.profilePicture
+        });
+    } catch (error) {
+        console.error('Error in googleLogin:', error);
+        res.status(500).json({ message: 'Server error during Google login', error: error.message });
+    }
+};
+
 module.exports = {
     registerUser,
     authUser,
     getUserProfile,
     updateUserProfile,
     getAllUsers,
-    getUserById
+    getUserById,
+    googleLogin
 };
+

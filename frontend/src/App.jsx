@@ -15,14 +15,53 @@ import CompanyDetail from './pages/CompanyDetail'
 import Settings from './pages/Settings'
 import OnboardingChatbot from './pages/OnboardingChatbot'
 
+import { useUser } from "@clerk/clerk-react";
+import authService from './services/authService';
+import React, { useEffect } from 'react';
+
+import SsoCallback from './pages/SsoCallback'
+
+// Hidden component to handle Clerk -> Backend sync
+const AuthSync = () => {
+  const { user: clerkUser, isLoaded: clerkLoaded, isSignedIn: clerkSignedIn } = useUser();
+
+  useEffect(() => {
+    const sync = async () => {
+      const localUser = authService.getCurrentUser();
+      if (clerkLoaded && clerkSignedIn && !localUser) {
+        try {
+          console.log('Global Sync: Syncing Clerk user to backend...', clerkUser.primaryEmailAddress?.emailAddress);
+          const userData = {
+            email: clerkUser.primaryEmailAddress?.emailAddress,
+            name: clerkUser.fullName,
+            profilePicture: clerkUser.imageUrl,
+          };
+          await authService.googleLogin(userData);
+          // Reloading ensures all components (like Sidebar, Profile, etc) 
+          // that read from localStorage immediately see the new user.
+          window.location.reload(); 
+        } catch (error) {
+          console.error('Global Sync: Failed to sync Clerk user:', error);
+        }
+      }
+    };
+    sync();
+  }, [clerkLoaded, clerkSignedIn, clerkUser]);
+
+  return null;
+};
+
 function App() {
   return (
     <BrowserRouter>
+      <AuthSync />
       <Routes>
+
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/sso-callback" element={<SsoCallback />} />  
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/found-talent" element={<FoundTalent />} />
         <Route path="/profile" element={<Profile />} />
