@@ -44,26 +44,30 @@ const Login = () => {
     }
   };
 
-  const { signIn } = useSignIn();
-  const { isSignedIn, isLoaded, user } = useUser();
+  const { signIn, isLoaded: signInLoaded } = useSignIn();
+  const { isSignedIn, isLoaded: userLoaded, user } = useUser();
 
+  const handleGoogleLogin = async () => {
+    try {
+      if (!signInLoaded) {
+        console.warn("Clerk: signIn is not loaded yet.");
+        return;
+      }
 
-const handleGoogleLogin = async () => {
-  try {
-    if (isSignedIn) {
-      navigate("/OnboardingChatbot");
-      return;
+      if (isSignedIn) {
+        navigate("/OnboardingChatbot");
+        return;
+      }
+
+      await signIn.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/OnboardingChatbot"
+      });
+    } catch (err) {
+      console.error("Google login error:", err);
     }
-
-    await signIn.authenticateWithRedirect({
-      strategy: "oauth_google",
-      redirectUrl: "/sso-callback",
-      redirectUrlComplete: "/OnboardingChatbot"
-    });
-  } catch (err) {
-    console.error("Google login error:", err);
-  }
-};
+  };
 
 //   useEffect(() => {
 //   if (isSignedIn) {
@@ -73,7 +77,7 @@ const handleGoogleLogin = async () => {
 
 useEffect(() => {
   const syncClerkUser = async () => {
-    if (!isLoaded) return;
+    if (!userLoaded) return;
 
     if (isSignedIn && user) {
       try {
@@ -81,12 +85,10 @@ useEffect(() => {
         const res = await authService.googleLogin({
           name: user.fullName,
           email: user.primaryEmailAddress.emailAddress,
+          profilePicture: user.imageUrl
         });
 
-        // Store backend JWT only
-        localStorage.setItem("token", res.token);
-
-        if (res.user.isOnboarded) {
+        if (res.isOnboarded) {
           navigate("/dashboard");
         } else {
           navigate("/OnboardingChatbot");
@@ -99,7 +101,7 @@ useEffect(() => {
   };
 
   syncClerkUser();
-}, [isSignedIn, isLoaded]);
+}, [isSignedIn, userLoaded]);
 
 
 
@@ -228,11 +230,12 @@ useEffect(() => {
             {/* Social Login */}
             <div className="grid grid-cols-2 gap-4">
               <motion.button
-                whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={signInLoaded ? { scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' } : {}}
+                whileTap={signInLoaded ? { scale: 0.98 } : {}}
                 type="button"
                 onClick={handleGoogleLogin}
-                className="flex items-center justify-center gap-2 bg-white/5 border border-slate-700/50 py-3 rounded-full text-slate-300 text-sm font-semibold transition-colors"
+                disabled={!signInLoaded}
+                className={`flex items-center justify-center gap-2 bg-white/5 border border-slate-700/50 py-3 rounded-full text-slate-300 text-sm font-semibold transition-colors ${!signInLoaded ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <svg className="size-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

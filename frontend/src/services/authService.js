@@ -8,9 +8,16 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.token) {
-        config.headers.Authorization = `Bearer ${user.token}`;
+    try {
+        const user = localStorage.getItem('user');
+        if (user && user !== 'undefined') {
+            const parsedUser = JSON.parse(user);
+            if (parsedUser && parsedUser.token) {
+                config.headers.Authorization = `Bearer ${parsedUser.token}`;
+            }
+        }
+    } catch (error) {
+        console.error('Error parsing user for auth header:', error);
     }
     return config;
 }, (error) => {
@@ -59,7 +66,13 @@ const updateProfile = async (userData) => {
     const response = await api.put('profile', userData);
     // Update local storage if critical info changed? Usually best to refresh from source.
     // But we might want to keep the token.
-    const currentUser = JSON.parse(localStorage.getItem('user'));
+    let currentUser = null;
+    try {
+        const userStr = localStorage.getItem('user');
+        currentUser = userStr ? JSON.parse(userStr) : null;
+    } catch (e) {
+        console.error('Error parsing user in updateProfile:', e);
+    }
     if (response.data && currentUser) {
         const updatedUser = { ...currentUser, ...response.data, token: currentUser.token }; // Keep token? Backend sent new token?
         // My backend sends new token on update.
@@ -69,13 +82,21 @@ const updateProfile = async (userData) => {
 };
 
 const getCurrentUser = () => {
-    return JSON.parse(localStorage.getItem('user'));
+    try {
+        const user = localStorage.getItem('user');
+        if (!user || user === 'undefined') return null;
+        return JSON.parse(user);
+    } catch (e) {
+        console.error('Error parsing user from localStorage:', e);
+        localStorage.removeItem('user'); // Clear invalid data
+        return null;
+    }
 };
 
 const getUsers = async () => {
     // Ensure we are hitting the correct endpoint. 
     // If baseURL is .../api/auth, then .get('/users') -> .../api/auth/users
-    const currentUser = JSON.parse(localStorage.getItem('user'));
+    const currentUser = getCurrentUser();
     const excludeId = currentUser ? currentUser._id : null;
     const response = await api.get('/users', {
         params: { exclude: excludeId }
