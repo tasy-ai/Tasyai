@@ -36,7 +36,8 @@ const Dashboard = () => {
       if (!clerkLoaded) return;
 
       if (clerkSignedIn) {
-        if (!localUser) {
+        // If no local user OR if user is not onboarded, we should sync to get latest status
+        if (!localUser || !localUser.isOnboarded) {
           setIsSyncing(true);
           try {
             console.log('Syncing Clerk user to backend...', clerkUser);
@@ -51,14 +52,16 @@ const Dashboard = () => {
             }
           } catch (error) {
             console.error('Failed to sync Clerk user:', error);
-            navigate('/login');
+            // If sync fails but we have a local user who is not onboarded, still redirect
+            if (!localUser || !localUser.isOnboarded) {
+              navigate('/login');
+            }
           } finally {
             setIsSyncing(false);
           }
-        } else if (!localUser.isOnboarded) {
-          navigate('/OnboardingChatbot');
         }
       } else {
+        // Not signed in to Clerk
         if (!localUser) {
           navigate('/login');
         } else if (!localUser.isOnboarded) {

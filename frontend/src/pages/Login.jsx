@@ -54,41 +54,36 @@ const Login = () => {
         return;
       }
 
+      // If already signed in, let the useEffect handle the sync and navigation
       if (isSignedIn) {
-        navigate("/OnboardingChatbot");
         return;
       }
 
       await signIn.authenticateWithRedirect({
         strategy: "oauth_google",
         redirectUrl: "/sso-callback",
-        redirectUrlComplete: "/OnboardingChatbot"
+        redirectUrlComplete: "/dashboard" // Changed from /OnboardingChatbot to /dashboard
       });
     } catch (err) {
       console.error("Google login error:", err);
     }
   };
 
-//   useEffect(() => {
-//   if (isSignedIn) {
-//     navigate("/OnboardingChatbot");
-//   }
-// }, [isSignedIn]);
+  useEffect(() => {
+    const syncClerkUser = async () => {
+      // Wait for Clerk to load
+      if (!userLoaded || !isSignedIn || !user) return;
 
-useEffect(() => {
-  const syncClerkUser = async () => {
-    if (!userLoaded) return;
-
-    if (isSignedIn && user) {
       try {
-        // Call your backend Google auth route
+        // Call backend Google auth route to sync Clerk user with our DB
         const res = await authService.googleLogin({
           name: user.fullName,
-          email: user.primaryEmailAddress.emailAddress,
+          email: user.primaryEmailAddress?.emailAddress,
           profilePicture: user.imageUrl
         });
 
-        if (res.isOnboarded) {
+        // Redirect based on onboarding status
+        if (res && res.isOnboarded) {
           navigate("/dashboard");
         } else {
           navigate("/OnboardingChatbot");
@@ -97,11 +92,12 @@ useEffect(() => {
       } catch (err) {
         console.error("Backend sync failed:", err);
       }
-    }
-  };
+    };
 
-  syncClerkUser();
-}, [isSignedIn, userLoaded]);
+    if (isSignedIn && userLoaded) {
+      syncClerkUser();
+    }
+  }, [isSignedIn, userLoaded, user, navigate]);
 
 
 
