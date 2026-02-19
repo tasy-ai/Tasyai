@@ -62,7 +62,11 @@ const userSchema = mongoose.Schema({
     isOnboarded: {
         type: Boolean,
         default: false
-    }
+    },
+    savedCompanies: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company'
+    }]
 }, {
     timestamps: true
 });

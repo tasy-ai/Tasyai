@@ -89,12 +89,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             </Link>
             
             <Link 
-              to="/dashboard" 
+              to="/saved-companies" 
               className={`flex items-center gap-3 rounded-xl transition-all group ${
                 isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } text-slate-400 hover:bg-white/5 hover:text-white`}
+              } ${
+                isActive('/saved-companies')
+                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
+                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
+              }`}
             >
-              <Book className="size-[22px] shrink-0" />
+              <Book className={`size-[22px] shrink-0 ${isActive('/saved-companies') ? 'fill-current' : ''}`} />
               <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
                 Saved Companies
               </span>

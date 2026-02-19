@@ -27,13 +27,26 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('All Roles');
   const [searchQuery, setSearchQuery] = useState('');
-  const [savedCompanies, setSavedCompanies] = useState(['Nebula Systems']);
+  const [savedCompanyIds, setSavedCompanyIds] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { user: clerkUser, isLoaded: clerkLoaded, isSignedIn: clerkSignedIn } = useUser();
   const [isSyncing, setIsSyncing] = useState(false);
   
   const [companies, setCompanies] = useState([]);
   const [loadingCompanies, setLoadingCompanies] = useState(true);
+
+  // Fetch saved companies status
+  useEffect(() => {
+    const fetchSavedStatus = async () => {
+      try {
+        const saved = await authService.getSavedCompanies();
+        setSavedCompanyIds(saved.map(c => c._id));
+      } catch (err) {
+        console.error("Error fetching saved status:", err);
+      }
+    };
+    if (clerkSignedIn) fetchSavedStatus();
+  }, [clerkSignedIn]);
 
   // Auth sync logic
   useEffect(() => {
@@ -100,12 +113,17 @@ const Dashboard = () => {
     company.tagline.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const toggleSave = (companyName) => {
-    setSavedCompanies(prev => 
-      prev.includes(companyName) 
-        ? prev.filter(name => name !== companyName)
-        : [...prev, companyName]
-    );
+  const toggleSave = async (companyId) => {
+    try {
+      const res = await authService.toggleSaveCompany(companyId);
+      if (res.isSaved) {
+        setSavedCompanyIds(prev => [...prev, companyId]);
+      } else {
+        setSavedCompanyIds(prev => prev.filter(id => id !== companyId));
+      }
+    } catch (err) {
+      console.error("Save toggle failed:", err);
+    }
   };
 
   return (
@@ -190,7 +208,7 @@ const Dashboard = () => {
             ) : filteredCompanies.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredCompanies.map((company, index) => {
-                  const isSaved = savedCompanies.includes(company.name);
+                  const isSaved = savedCompanyIds.includes(company._id);
                   
                   return (
                     <motion.div
@@ -213,7 +231,7 @@ const Dashboard = () => {
                         <button 
                           onClick={(e) => {
                             e.preventDefault();
-                            toggleSave(company.name);
+                            toggleSave(company._id);
                           }}
                           className="p-2 rounded-lg text-slate-500 hover:text-[#6467f2] hover:bg-[#6467f2]/10 transition-all"
                         >

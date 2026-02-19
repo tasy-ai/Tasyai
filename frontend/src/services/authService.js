@@ -124,6 +124,16 @@ const googleLogin = async (googleData) => {
     }
 };
 
+const toggleSaveCompany = async (id) => {
+    const response = await api.post(`/save-company/${id}`);
+    return response.data;
+};
+
+const getSavedCompanies = async () => {
+    const response = await api.get('/saved-companies');
+    return response.data;
+};
+
 const authService = {
     register,
     login,
@@ -133,7 +143,9 @@ const authService = {
     updateProfile,
     getCurrentUser,
     getUsers,
-    getUserById
+    getUserById,
+    toggleSaveCompany,
+    getSavedCompanies
 };
 
 
