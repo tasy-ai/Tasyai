@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Sidebar from '../components/layout/Sidebar';
@@ -13,12 +13,15 @@ import {
   PlusCircle,
   Bookmark,
   BookmarkPlus,
-  ChevronDown
+  ChevronDown,
+  Building2,
+  MapPin
 } from 'lucide-react';
-import { filters, companies } from '../data/dashboardData';
+import { filters } from '../data/dashboardData'; // Still using filters for UI
 
 import { useUser } from "@clerk/clerk-react";
 import authService from '../services/authService';
+import companyService from '../services/companyService';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -28,19 +31,19 @@ const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { user: clerkUser, isLoaded: clerkLoaded, isSignedIn: clerkSignedIn } = useUser();
   const [isSyncing, setIsSyncing] = useState(false);
+  
+  const [companies, setCompanies] = useState([]);
+  const [loadingCompanies, setLoadingCompanies] = useState(true);
 
-  React.useEffect(() => {
+  // Auth sync logic
+  useEffect(() => {
     const handleAuth = async () => {
       const localUser = authService.getCurrentUser();
-      
       if (!clerkLoaded) return;
-
       if (clerkSignedIn) {
-        // If no local user OR if user is not onboarded, we should sync to get latest status
         if (!localUser || !localUser.isOnboarded) {
           setIsSyncing(true);
           try {
-            console.log('Syncing Clerk user to backend...', clerkUser);
             const userData = {
               email: clerkUser.primaryEmailAddress?.emailAddress,
               name: clerkUser.fullName,
@@ -52,26 +55,33 @@ const Dashboard = () => {
             }
           } catch (error) {
             console.error('Failed to sync Clerk user:', error);
-            // If sync fails but we have a local user who is not onboarded, still redirect
-            if (!localUser || !localUser.isOnboarded) {
-              navigate('/login');
-            }
+            if (!localUser || !localUser.onboarded) navigate('/login');
           } finally {
             setIsSyncing(false);
           }
         }
-      } else {
-        // Not signed in to Clerk
-        if (!localUser) {
-          navigate('/login');
-        } else if (!localUser.isOnboarded) {
-          navigate('/OnboardingChatbot');
-        }
+      } else if (!localUser) {
+        navigate('/login');
       }
     };
-
     handleAuth();
   }, [navigate, clerkLoaded, clerkSignedIn, clerkUser]);
+
+  // Fetch companies
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        setLoadingCompanies(true);
+        const data = await companyService.getCompanies();
+        setCompanies(data);
+      } catch (err) {
+        console.error("Failed to fetch companies:", err);
+      } finally {
+        setLoadingCompanies(false);
+      }
+    };
+    fetchCompanies();
+  }, []);
 
   if (isSyncing || !clerkLoaded) {
     return (
@@ -84,6 +94,11 @@ const Dashboard = () => {
     );
   }
 
+  const filteredCompanies = companies.filter(company => 
+    company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    company.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    company.tagline.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const toggleSave = (companyName) => {
     setSavedCompanies(prev => 
@@ -93,23 +108,8 @@ const Dashboard = () => {
     );
   };
 
-  const getColorClasses = (color) => {
-    const colors = {
-      primary: 'bg-primary/20 border-primary/30 text-primary',
-      orange: 'bg-orange-500/20 border-orange-500/30 text-orange-400',
-      emerald: 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400',
-      rose: 'bg-rose-500/20 border-rose-500/30 text-rose-400',
-      cyan: 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400',
-      purple: 'bg-purple-500/20 border-purple-500/30 text-purple-400',
-    };
-    return colors[color] || colors.primary;
-  };
-
   return (
     <div className="bg-[#020617] text-white font-sans overflow-hidden h-screen">
-
-
-
       <div className="flex h-screen w-full relative">
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
@@ -177,88 +177,115 @@ const Dashboard = () => {
                     </motion.button>
                   );
                 })}
-                
-                <div className="h-6 w-[1px] bg-white/10 mx-2"></div>
-                
-                <button className="text-slate-400 hover:text-white text-sm font-medium flex items-center gap-1 transition-colors">
-                  <Settings className="size-4" />
-                  More Filters
-                </button>
               </div>
             </div>
 
             {/* Company Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {companies.map((company, index) => {
-                const isSaved = savedCompanies.includes(company.name);
-                
-                return (
-                  <motion.div
-                    key={company.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    whileHover={{ y: -4, borderColor: 'rgba(100, 103, 242, 0.5)' }}
-                    className="group p-6 rounded-2xl glass-effect flex flex-col transition-all cursor-pointer"
-                  >
-                    {/* Card Header */}
-                    <div className="flex justify-between items-start mb-6">
-                      <div className="size-14 rounded-xl overflow-hidden border border-white/10">
-                        <img 
-                          src={company.image} 
-                          alt={company.name} 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <button 
-                        onClick={() => toggleSave(company.name)}
-                        className="p-2 rounded-lg text-slate-500 hover:text-[#6467f2] hover:bg-[#6467f2]/10 transition-all"
-                      >
-                        {isSaved ? (
-                          <Bookmark className="size-5 fill-[#6467f2] text-[#6467f2]" />
-                        ) : (
-                          <BookmarkPlus className="size-5" />
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Content */}
-                    <h3 className="text-xl font-bold text-white mb-2">{company.name}</h3>
-                    <p className="text-slate-400 text-sm leading-relaxed mb-6">{company.description}</p>
-                    
-                    {/* Roles */}
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {company.roles.map((role) => (
-                        <span 
-                          key={role} 
-                          className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-xs font-semibold text-slate-300"
+            {loadingCompanies ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <div key={i} className="h-80 rounded-2xl glass-effect animate-pulse bg-white/5"></div>
+                ))}
+              </div>
+            ) : filteredCompanies.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredCompanies.map((company, index) => {
+                  const isSaved = savedCompanies.includes(company.name);
+                  
+                  return (
+                    <motion.div
+                      key={company._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      whileHover={{ y: -4, borderColor: 'rgba(100, 103, 242, 0.5)' }}
+                      className="group p-6 rounded-2xl glass-effect flex flex-col transition-all cursor-pointer border border-white/5"
+                    >
+                      {/* Card Header */}
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="size-14 rounded-xl overflow-hidden border border-white/10 bg-slate-900 flex items-center justify-center">
+                          {company.logo ? (
+                            <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Building2 className="text-slate-600 size-8" />
+                          )}
+                        </div>
+                        <button 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleSave(company.name);
+                          }}
+                          className="p-2 rounded-lg text-slate-500 hover:text-[#6467f2] hover:bg-[#6467f2]/10 transition-all"
                         >
-                          {role}
-                        </span>
-                      ))}
-                    </div>
+                          {isSaved ? (
+                            <Bookmark className="size-5 fill-[#6467f2] text-[#6467f2]" />
+                          ) : (
+                            <BookmarkPlus className="size-5" />
+                          )}
+                        </button>
+                      </div>
 
-                    {/* Actions */}
-                    <div className="mt-auto flex gap-3">
-                      <motion.button 
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="flex-1 py-3 px-4 bg-[#6467f2] hover:bg-indigo-500 text-white text-sm font-bold rounded-xl transition-all"
-                      >
-                        Show Interest
-                      </motion.button>
-                      <Link 
-                        to={`/company-detail?id=${company.id}`}
-                        state={{ company }}
-                        className="flex-1 py-3 px-4 glass-effect text-white text-sm font-bold rounded-xl transition-all flex items-center justify-center hover:bg-white/10"
-                      >
-                        View Details
-                      </Link>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+                      {/* Content */}
+                      <h3 className="text-xl font-bold text-white mb-2">{company.name}</h3>
+                      <p className="text-slate-400 text-sm italic mb-3">"{company.tagline}"</p>
+                      <p className="text-slate-500 text-xs leading-relaxed mb-6 line-clamp-2">{company.description}</p>
+                      
+                      <div className="flex items-center gap-4 mb-6 text-xs text-slate-400">
+                         <div className="flex items-center gap-1">
+                            <Compass className="size-3 text-[#6467f2]" />
+                            <span>{company.industry}</span>
+                         </div>
+                         {company.location && (
+                           <div className="flex items-center gap-1">
+                              <MapPin className="size-3 text-[#6467f2]" />
+                              <span>{company.location}</span>
+                           </div>
+                         )}
+                      </div>
+
+                      {/* Roles */}
+                      <div className="flex flex-wrap gap-2 mb-8">
+                        {company.openings?.slice(0, 2).map((op, i) => (
+                          <span 
+                            key={i} 
+                            className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] font-bold text-slate-300 uppercase tracking-tight"
+                          >
+                            {op.role}
+                          </span>
+                        ))}
+                        {company.openings?.length > 2 && (
+                           <span className="text-[10px] text-slate-500 font-bold self-center">+{company.openings.length - 2} more</span>
+                        )}
+                      </div>
+
+                      {/* Actions */}
+                      <div className="mt-auto flex gap-3">
+                        <motion.button 
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="flex-1 py-3 px-4 bg-[#6467f2] hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-all"
+                        >
+                          Show Interest
+                        </motion.button>
+                        <Link 
+                          to={`/company-detail?id=${company._id}`}
+                          state={{ company }}
+                          className="flex-1 py-3 px-4 glass-effect text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center hover:bg-white/10"
+                        >
+                          View Details
+                        </Link>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                 <Building2 className="size-16 text-slate-700 mx-auto mb-4" />
+                 <h3 className="text-xl font-bold text-slate-300">No companies found</h3>
+                 <p className="text-slate-500">Try adjusting your search or filters.</p>
+              </div>
+            )}
 
             {/* Load More */}
             <div className="mt-16 flex justify-center">
@@ -267,7 +294,7 @@ const Dashboard = () => {
                 whileTap={{ scale: 0.98 }}
                 className="px-8 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white font-semibold transition-all flex items-center gap-2"
               >
-                Load More Startups
+                Explore More Ecosystems
                 <ChevronDown className="size-5" />
               </motion.button>
             </div>
