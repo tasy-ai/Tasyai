@@ -23,6 +23,7 @@ import { companies as mockCompanies } from '../data/dashboardData';
 import companyService from '../services/companyService';
 import authService from '../services/authService';
 import { toast } from 'react-hot-toast';
+import notificationService from '../services/notificationService';
 
 const CompanyDetail = () => {
   const navigate = useNavigate();
@@ -88,8 +89,22 @@ const CompanyDetail = () => {
           setIsSaved(res.isSaved);
           if (res.isSaved) {
               toast.success("Added to Vault");
+              notificationService.addNotification({
+                  title: 'Company Saved',
+                  message: `${company.name} has been added to your interests.`,
+                  type: 'company',
+                  iconName: 'BookmarkPlus',
+                  color: 'bg-amber-500/10 border-amber-500/20'
+              });
           } else {
               toast.success("Removed from Vault");
+              notificationService.addNotification({
+                  title: 'Company Removed',
+                  message: `${company.name} was removed from your interests.`,
+                  type: 'info',
+                  iconName: 'Bookmark',
+                  color: 'bg-slate-500/10 border-slate-500/20'
+              });
           }
       } catch (err) {
           toast.error("Failed to update Vault");

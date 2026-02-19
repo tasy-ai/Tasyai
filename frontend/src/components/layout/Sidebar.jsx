@@ -14,12 +14,28 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import companyService from '../../services/companyService';
+import notificationService from '../../services/notificationService';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const checkNotifications = () => {
+      const all = notificationService.getNotifications();
+      const unread = all.filter(n => !n.read).length;
+      setUnreadCount(unread);
+    };
+
+    checkNotifications();
+    
+    // Listen for new notifications
+    window.addEventListener('new_notification', checkNotifications);
+    return () => window.removeEventListener('new_notification', checkNotifications);
+  }, [location.pathname]); // Also re-check on navigation
 
 
   const handleLogout = () => {
@@ -137,7 +153,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                   : 'text-slate-400 hover:bg-white/5 hover:text-white'
               }`}
             >
-              <Bell className={`size-[22px] shrink-0 ${isActive('/notifications') ? 'fill-current' : ''}`} />
+              <div className="relative">
+                <Bell className={`size-[22px] shrink-0 ${isActive('/notifications') ? 'fill-current' : ''}`} />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 size-2 bg-red-500 rounded-full border border-[#020617] animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
+                )}
+              </div>
               <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
                 Notifications
               </span>

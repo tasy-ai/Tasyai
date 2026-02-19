@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import authService from '../services/authService';
 import companyService from '../services/companyService';
+import notificationService from '../services/notificationService';
 import { useUser } from "@clerk/clerk-react";
 
 const MyInterests = () => {
@@ -101,10 +102,26 @@ const MyInterests = () => {
   const toggleSave = async (companyId) => {
     try {
       const res = await authService.toggleSaveCompany(companyId);
+      const company = matchedCompanies.find(c => c._id === companyId);
+      
       if (res.isSaved) {
         setSavedCompanyIds(prev => [...prev, companyId]);
+        notificationService.addNotification({
+            title: 'Company Saved',
+            message: `${company?.name || 'Company'} added to your top interests.`,
+            type: 'company',
+            iconName: 'BookmarkPlus',
+            color: 'bg-amber-500/10 border-amber-500/20'
+        });
       } else {
         setSavedCompanyIds(prev => prev.filter(id => id !== companyId));
+        notificationService.addNotification({
+            title: 'Interest Removed',
+            message: `${company?.name || 'Company'} removed from saved.`,
+            type: 'info',
+            iconName: 'Bookmark',
+            color: 'bg-slate-500/10 border-slate-500/20'
+        });
       }
     } catch (err) {
       console.error("Save toggle failed:", err);
