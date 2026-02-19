@@ -56,6 +56,8 @@ const OnboardingChatbot = ({ onComplete }) => {
     const user = authService.getCurrentUser();
     if (!user) {
       navigate('/login');
+    } else if (user.isOnboarded) {
+      navigate('/dashboard');
     }
     scrollToBottom();
   }, [messages, isTyping, userData.profile_picture_preview, navigate]);
