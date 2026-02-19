@@ -29,6 +29,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import Sidebar from '../components/layout/Sidebar';
 import { useLocation, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
+import companyService from '../services/companyService';
 
 const Profile = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -124,7 +125,11 @@ const Profile = () => {
 
         // Fetch from backend
         try {
-            const backendUser = await authService.getProfile();
+            const [backendUser, myCompanies] = await Promise.all([
+                authService.getProfile(),
+                companyService.getMyCompanies()
+            ]);
+
             // Map backendUser to frontend user format
             const mappedUser = {
                 name: backendUser.name || "User",
@@ -142,7 +147,15 @@ const Profile = () => {
                 skills: (backendUser.skills && backendUser.skills.length > 0) 
                     ? backendUser.skills.map(s => ({ name: s, level: 'high' })) 
                     : [],
-                ventures: [], // Backend doesn't support this yet
+                ventures: myCompanies.map(company => ({
+                    id: company._id,
+                    name: company.name,
+                    role: 'Founder',
+                    description: company.tagline,
+                    icon: Building2,
+                    color: 'from-slate-700 to-slate-600',
+                    fullData: company
+                })),
                 experienceList: [], // Backend stores experience as a string range, not a list
                 links: [] // Backend doesn't support links yet
             };

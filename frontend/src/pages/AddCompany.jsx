@@ -144,7 +144,7 @@ const CreateCompanyProfile = () => {
 
       await companyService.createCompany(dataToSubmit);
       alert("Company Profile Published Successfully!");
-      navigate('/dashboard');
+      navigate('/my-startups');
     } catch (err) {
       console.error("Submission failed:", err);
       alert("Failed to publish profile. Are you logged in?");
