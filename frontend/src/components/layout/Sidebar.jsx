@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import authService from '../../services/authService';
 import { 
@@ -10,14 +10,17 @@ import {
   Settings,
   Menu,
   LogOut,
-  Bell
+  Bell,
+  CheckCircle2
 } from 'lucide-react';
+import companyService from '../../services/companyService';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
 
   const handleLogout = () => {
     authService.logout();
@@ -77,14 +80,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             </Link>
             
             <Link 
-              to="/dashboard" 
+              to="/my-interests" 
               className={`flex items-center gap-3 rounded-xl transition-all group ${
                 isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } text-slate-400 hover:bg-white/5 hover:text-white`}
+              } ${
+                isActive('/my-interests')
+                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
+                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
+              }`}
             >
-              <Star className="size-[22px] shrink-0" />
+              <div className={`p-1.5 rounded-lg transition-colors ${isActive('/my-interests') ? 'bg-amber-500/20 text-amber-500' : 'bg-white/5 text-slate-400 group-hover:text-amber-500 group-hover:bg-amber-500/10'}`}>
+                <Star className={`size-4 ${isActive('/my-interests') ? 'fill-current' : ''}`} />
+              </div>
               <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                My Interests
+                My Interest
               </span>
             </Link>
             

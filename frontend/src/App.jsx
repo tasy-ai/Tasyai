@@ -15,6 +15,7 @@ import CompanyDetail from './pages/CompanyDetail'
 import Settings from './pages/Settings'
 import OnboardingChatbot from './pages/OnboardingChatbot'
 import SavedCompanies from './pages/SavedCompanies'
+import MyInterests from './pages/MyInterests'
 
 import { useUser } from "@clerk/clerk-react";
 import authService from './services/authService';
@@ -80,6 +81,7 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/OnboardingChatbot" element={<OnboardingChatbot />} />
         <Route path="/saved-companies" element={<SavedCompanies />} />
+        <Route path="/my-interests" element={<MyInterests />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
