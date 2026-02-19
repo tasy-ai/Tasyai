@@ -285,6 +285,54 @@ const googleLogin = async (req, res) => {
     }
 };
 
+// @desc    Toggle save company
+// @route   POST /api/auth/save-company/:id
+// @access  Private
+const toggleSaveCompany = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        const companyId = req.params.id;
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const isAlreadySaved = user.savedCompanies.includes(companyId);
+
+        if (isAlreadySaved) {
+            // Unsave
+            user.savedCompanies = user.savedCompanies.filter(id => id.toString() !== companyId);
+        } else {
+            // Save
+            user.savedCompanies.push(companyId);
+        }
+
+        await user.save();
+        res.json({ savedCompanies: user.savedCompanies, isSaved: !isAlreadySaved });
+    } catch (error) {
+        console.error('Error toggling save company:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// @desc    Get saved companies
+// @route   GET /api/auth/saved-companies
+// @access  Private
+const getSavedCompanies = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).populate('savedCompanies');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json(user.savedCompanies);
+    } catch (error) {
+        console.error('Error fetching saved companies:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 module.exports = {
     registerUser,
     authUser,
@@ -292,6 +340,8 @@ module.exports = {
     updateUserProfile,
     getAllUsers,
     getUserById,
-    googleLogin
+    googleLogin,
+    toggleSaveCompany,
+    getSavedCompanies
 };
 

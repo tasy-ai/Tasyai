@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { companies as mockCompanies } from '../data/dashboardData';
 import companyService from '../services/companyService';
+import authService from '../services/authService';
+import { toast } from 'react-hot-toast';
 
 const CompanyDetail = () => {
   const navigate = useNavigate();
@@ -28,21 +30,32 @@ const CompanyDetail = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [loading, setLoading] = useState(true);
   const [company, setCompany] = useState(location.state?.company || null);
+  const [isSaved, setIsSaved] = useState(false);
 
   const queryParams = new URLSearchParams(location.search);
   const companyId = queryParams.get('id');
 
   useEffect(() => {
+    const checkSaveStatus = async () => {
+        const user = authService.getCurrentUser();
+        if (user && companyId) {
+            try {
+                const savedCompanies = await authService.getSavedCompanies();
+                setIsSaved(savedCompanies.some(c => c._id === companyId));
+            } catch (err) {
+                console.error("Error checking save status:", err);
+            }
+        }
+    };
+
     const fetchCompanyData = async () => {
       if (!company && companyId) {
         try {
           setLoading(true);
-          // Try fetching from backend first
           const data = await companyService.getCompanyById(companyId);
           setCompany(data);
         } catch (err) {
           console.error("Backend fetch failed, trying mock data:", err);
-          // Fallback to mock data
           const mock = mockCompanies.find(c => c.id === parseInt(companyId));
           if (mock) {
             setCompany({
@@ -66,7 +79,22 @@ const CompanyDetail = () => {
     };
 
     fetchCompanyData();
+    checkSaveStatus();
   }, [companyId]);
+
+  const handleToggleSave = async () => {
+      try {
+          const res = await authService.toggleSaveCompany(company._id || companyId);
+          setIsSaved(res.isSaved);
+          if (res.isSaved) {
+              toast.success("Added to Vault");
+          } else {
+              toast.success("Removed from Vault");
+          }
+      } catch (err) {
+          toast.error("Failed to update Vault");
+      }
+  };
 
   if (loading) {
     return (
@@ -163,8 +191,15 @@ const CompanyDetail = () => {
                             <button className="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
                                 <Share2 className="size-5 text-slate-400" />
                             </button>
-                            <button className="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                                <Bookmark className="size-5 text-slate-400" />
+                            <button 
+                                onClick={handleToggleSave}
+                                className={`p-3 rounded-xl border transition-all ${
+                                    isSaved 
+                                    ? 'bg-amber-500/20 border-amber-500/50 text-amber-500 shadow-lg shadow-amber-500/10' 
+                                    : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'
+                                }`}
+                            >
+                                <Bookmark className={`size-5 ${isSaved ? 'fill-current' : ''}`} />
                             </button>
                             <button className="py-3 px-8 rounded-xl bg-[#4245f0] hover:bg-indigo-500 font-bold transition-all shadow-lg shadow-[#4245f0]/20">
                                 Join Team
