@@ -66,7 +66,11 @@ const userSchema = mongoose.Schema({
     savedCompanies: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Company'
-    }]
+    }],
+    interests: {
+        type: [String],
+        default: []
+    }
 }, {
     timestamps: true
 });

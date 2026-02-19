@@ -23,11 +23,12 @@ import {
   History,
   Mail,
   Send,
-  Loader2
+  Loader2,
+  ArrowRight
 } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
 import Sidebar from '../components/layout/Sidebar';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 import companyService from '../services/companyService';
 
@@ -508,7 +509,7 @@ const Profile = () => {
               >
                 <h3 className="mb-6 flex items-center gap-2 text-xl font-bold">
                   <Clock className="size-5 text-[#4245f0]" />
-                  Status
+                  Status & Interest Discovery
                 </h3>
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center justify-between rounded-xl bg-white/5 p-4 border border-white/5">
@@ -518,9 +519,18 @@ const Profile = () => {
                       Open to Collaborate
                     </span>
                   </div>
-                  <div className="space-y-2 px-1">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Interests</p>
-                    <p className="text-sm text-slate-300 italic">"Always looking for Web3 infrastructure projects and AI-driven governance experiments."</p>
+                  <div className="space-y-4 px-1">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Profile Discovery Match</p>
+                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 italic text-sm text-slate-400 leading-relaxed">
+                        "Your profile is currently matching with <span className="text-white font-bold">{user.role}</span> specific roles. 
+                        We've identified several opportunities that align with your <span className="text-[#4245f0]">{(user.skills && user.skills.length > 0) ? user.skills[0].name : 'expertise'}</span>."
+                    </div>
+                    <Link 
+                      to="/my-interests"
+                      className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-amber-500 hover:bg-amber-500/10 transition-all group"
+                    >
+                       View All Matches <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
+                    </Link>
                   </div>
                 </div>
               </motion.div>
