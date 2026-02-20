@@ -65,6 +65,10 @@ const FoundTalent = () => {
     fetchUsers();
   }, []);
   
+  const filteredUsers = users.filter(user => {
+    if (activeRole === 'All Roles') return true;
+    return user.role?.toLowerCase() === activeRole.toLowerCase();
+  });
 
 
   const getStatusColor = (status) => {
@@ -151,7 +155,7 @@ const FoundTalent = () => {
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-extrabold">
-              Interested Talent <span className="text-[#4245f0] font-normal text-lg ml-2">({users.length})</span>
+              Interested Talent <span className="text-[#4245f0] font-normal text-lg ml-2">({filteredUsers.length})</span>
             </h2>
             <div className="flex items-center gap-3">
               <button className="glass p-2 rounded-lg flex items-center justify-center hover:bg-white/10">
@@ -170,7 +174,7 @@ const FoundTalent = () => {
           ) : (
           /* Candidate Grid */
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {users.map((candidate, index) => (
+            {filteredUsers.map((candidate, index) => (
               <motion.div
                 key={candidate.id}
                 initial={{ opacity: 0, y: 20 }}

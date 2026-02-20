@@ -128,11 +128,19 @@ const MyInterests = () => {
     }
   };
 
-  const filteredMatches = matchedCompanies.filter(company => 
-    company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.tagline.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredMatches = matchedCompanies.filter(company => {
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      company.name?.toLowerCase().includes(searchLower) ||
+      company.industry?.toLowerCase().includes(searchLower) ||
+      company.tagline?.toLowerCase().includes(searchLower) ||
+      company.description?.toLowerCase().includes(searchLower) ||
+      company.openings?.some(op => 
+        op.role?.toLowerCase().includes(searchLower) || 
+        op.techStack?.some(tech => tech.toLowerCase().includes(searchLower))
+      )
+    );
+  });
 
   return (
     <div className="bg-[#020617] text-white font-sans overflow-hidden h-screen">
