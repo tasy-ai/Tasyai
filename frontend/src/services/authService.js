@@ -27,7 +27,8 @@ api.interceptors.request.use((config) => {
 
 const register = async (userData) => {
     try {
-        console.log('Sending registration request:', userData);
+        console.log('--- DB SIGNUP ATTEMPT ---');
+        console.log('Payload:', JSON.stringify(userData, null, 2));
         const response = await axios.post(`${API_URL}/signup`, userData);
         console.log('Registration response:', response.data);
         return response.data;
@@ -134,6 +135,21 @@ const getSavedCompanies = async () => {
     return response.data;
 };
 
+const getSecurityQuestion = async (email) => {
+    const response = await axios.post(`${API_URL}/forgot-password/question`, { email });
+    return response.data;
+};
+
+const resetPassword = async (email, answer, newPassword) => {
+    const response = await axios.post(`${API_URL}/forgot-password/reset`, { email, answer, newPassword });
+    return response.data;
+};
+
+const submitFallbackRequest = async (fallbackData) => {
+    const response = await axios.post(`${API_URL}/forgot-password/request-fallback`, fallbackData);
+    return response.data;
+};
+
 const authService = {
     register,
     login,
@@ -145,7 +161,10 @@ const authService = {
     getUsers,
     getUserById,
     toggleSaveCompany,
-    getSavedCompanies
+    getSavedCompanies,
+    getSecurityQuestion,
+    resetPassword,
+    submitFallbackRequest
 };
 
 

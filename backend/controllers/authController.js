@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const ResetRequest = require('../models/ResetRequest');
 const jwt = require('jsonwebtoken');
 
 // Helper to generate JWT
@@ -13,13 +14,13 @@ const generateToken = (id) => {
 // @access  Public
 const registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, securityQuestion, securityAnswer } = req.body;
         console.log('--- REGISTER REQUEST RECEIVED ---');
         console.log('Body:', JSON.stringify(req.body));
 
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !securityQuestion || !securityAnswer) {
             console.log('Missing required fields');
-            return res.status(400).json({ message: 'Please add all fields' });
+            return res.status(400).json({ message: 'Please add all fields including security question and answer' });
         }
 
         const userExists = await User.findOne({ email: email.toLowerCase() });
@@ -34,6 +35,8 @@ const registerUser = async (req, res) => {
             name,
             email: email.toLowerCase(),
             password,
+            securityQuestion,
+            securityAnswer
         });
 
         if (user) {
@@ -345,6 +348,68 @@ const getSavedCompanies = async (req, res) => {
     }
 };
 
+// @desc    Get security question by email
+// @route   POST /api/auth/forgot-password/question
+// @access  Public
+const getSecurityQuestion = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ message: 'Email is required' });
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        res.json({ securityQuestion: user.securityQuestion });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// @desc    Verify security answer and reset password
+// @route   POST /api/auth/forgot-password/reset
+// @access  Public
+const resetPasswordWithSecurityAnswer = async (req, res) => {
+    try {
+        const { email, answer, newPassword } = req.body;
+        if (!email || !answer || !newPassword) {
+            return res.status(400).json({ message: 'Please provide email, answer and new password' });
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() }).select('+securityAnswer +password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        const isMatch = await user.matchSecurityAnswer(answer);
+        if (!isMatch) return res.status(401).json({ message: 'Incorrect security answer' });
+
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ message: 'Password reset successful. You can now login with your new password.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// @desc    Submit fallback reset request
+// @route   POST /api/auth/forgot-password/request-fallback
+// @access  Public
+const submitFallbackResetRequest = async (req, res) => {
+    try {
+        const { email, fullName, reason } = req.body;
+        if (!email || !fullName || !reason) {
+            return res.status(400).json({ message: 'Please provide email, name and reason' });
+        }
+
+        const request = await ResetRequest.create({ email, fullName, reason });
+        res.status(210).json({ 
+            message: 'Your request has been submitted. Our admin will review it and contact you soon.',
+            requestID: request._id
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 module.exports = {
     registerUser,
     authUser,
@@ -354,6 +419,9 @@ module.exports = {
     getUserById,
     googleLogin,
     toggleSaveCompany,
-    getSavedCompanies
+    getSavedCompanies,
+    getSecurityQuestion,
+    resetPasswordWithSecurityAnswer,
+    submitFallbackResetRequest
 };
 
