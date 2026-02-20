@@ -82,24 +82,43 @@ const userSchema = mongoose.Schema({
     github: {
         type: String,
         default: ''
+    },
+    securityQuestion: {
+        type: String,
+        required: [true, 'Please add a security question']
+    },
+    securityAnswer: {
+        type: String,
+        required: [true, 'Please add a security answer'],
+        select: false
     }
 }, {
     timestamps: true
 });
 
-// Encrypt password using bcrypt
+// Encrypt password and security answer using bcrypt
 userSchema.pre('save', async function() {
-    if (!this.isModified('password')) {
-        return;
+    if (this.isModified('password')) {
+        console.log(`Hashing password for: ${this.email}`);
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
     }
-    console.log(`Hashing password for: ${this.email}`);
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+
+    if (this.isModified('securityAnswer')) {
+        console.log(`Hashing security answer for: ${this.email}`);
+        const salt = await bcrypt.genSalt(10);
+        this.securityAnswer = await bcrypt.hash(this.securityAnswer.toLowerCase().trim(), salt);
+    }
 });
 
 // Match user entered password to hashed password in database
 userSchema.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Match user entered security answer to hashed answer in database
+userSchema.methods.matchSecurityAnswer = async function(enteredAnswer) {
+    return await bcrypt.compare(enteredAnswer.toLowerCase().trim(), this.securityAnswer);
 };
 
 module.exports = mongoose.model('User', userSchema);

@@ -10,7 +10,10 @@ import {
   Eye, 
   EyeOff, 
   ArrowRight,
-  Hexagon
+  Hexagon,
+  ShieldQuestion,
+  KeyRound,
+  ChevronDown
 } from 'lucide-react';
 import { useSignUp } from "@clerk/clerk-react";
 import { useUser } from "@clerk/clerk-react";
@@ -23,6 +26,8 @@ const Register = () => {
     fullName: '',
     email: '',
     password: '',
+    securityQuestion: 'What was the name of your first pet?',
+    securityAnswer: '',
     terms: false
   });
 
@@ -86,16 +91,28 @@ const Register = () => {
         alert("Please accept the terms and conditions");
         return;
       }
+      if (!formData.securityAnswer) {
+        alert("Please provide an answer to your security question.");
+        return;
+      }
+      console.log('Submitting Registration Data:', {
+        name: formData.fullName,
+        email: formData.email,
+        securityQuestion: formData.securityQuestion,
+        securityAnswer: !!formData.securityAnswer
+      });
       await authService.register({
         name: formData.fullName,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        securityQuestion: formData.securityQuestion,
+        securityAnswer: formData.securityAnswer
       });
       // Redirect to Login instead of Chatbot
       alert("Registration successful! Please login to continue to onboarding.");
       navigate('/login');
     } catch (error) {
-      console.error('Registration Error:', error);
+      console.error('Registration Full Error Object:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
       alert(`Error during registration: ${errorMessage}`);
     }
@@ -245,6 +262,49 @@ const Register = () => {
                   >
                     {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                   </button>
+                </div>
+              </div>
+
+              {/* Security Question */}
+              <div className="space-y-2">
+                <label className="text-slate-300 text-sm font-semibold ml-1">Security Question</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-4 flex items-center text-slate-500 group-focus-within:text-[#5a5cf2] transition-colors pointer-events-none z-10">
+                    <ShieldQuestion className="size-5" />
+                  </div>
+                  <select
+                    name="securityQuestion"
+                    value={formData.securityQuestion}
+                    onChange={handleChange}
+                    className="w-full bg-white/5 border border-white/10 focus:border-[#5a5cf2]/50 focus:ring-4 focus:ring-[#5a5cf2]/20 rounded-2xl py-4 pl-12 pr-10 text-white outline-none transition-all appearance-none cursor-pointer relative z-0"
+                  >
+                    <option className="bg-[#020617] text-white" value="What was the name of your first pet?">What was the name of your first pet?</option>
+                    <option className="bg-[#020617] text-white" value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                    <option className="bg-[#020617] text-white" value="What was the name of your first school?">What was the name of your first school?</option>
+                    <option className="bg-[#020617] text-white" value="In what city were you born?">In what city were you born?</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-4 flex items-center text-slate-500 pointer-events-none group-focus-within:text-[#5a5cf2] transition-colors">
+                    <ChevronDown className="size-4" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Security Answer */}
+              <div className="space-y-2">
+                <label className="text-slate-300 text-sm font-semibold ml-1">Your Answer</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-4 flex items-center text-slate-500 group-focus-within:text-[#5a5cf2] transition-colors">
+                    <KeyRound className="size-5" />
+                  </div>
+                  <input
+                    type="text"
+                    name="securityAnswer"
+                    value={formData.securityAnswer}
+                    onChange={handleChange}
+                    className="w-full bg-white/5 border border-white/10 focus:border-[#5a5cf2]/50 focus:ring-4 focus:ring-[#5a5cf2]/20 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 outline-none transition-all"
+                    placeholder="Enter your security answer"
+                    required
+                  />
                 </div>
               </div>
             </div>
