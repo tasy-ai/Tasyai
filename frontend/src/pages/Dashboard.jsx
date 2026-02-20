@@ -108,11 +108,62 @@ const Dashboard = () => {
     );
   }
 
-  const filteredCompanies = companies.filter(company => 
-    company.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    company.tagline.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCompanies = companies.filter(company => {
+    // 1. Search Logic
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = 
+      company.name?.toLowerCase().includes(searchLower) ||
+      company.industry?.toLowerCase().includes(searchLower) ||
+      company.tagline?.toLowerCase().includes(searchLower) ||
+      company.description?.toLowerCase().includes(searchLower) ||
+      company.openings?.some(op => 
+        op.role?.toLowerCase().includes(searchLower) || 
+        op.techStack?.some(tech => tech.toLowerCase().includes(searchLower))
+      );
+
+    if (!matchesSearch) return false;
+
+    // 2. Filter Logic
+    if (activeFilter === 'All Roles') return true;
+
+    if (activeFilter === 'Remote') {
+      return company.location?.toLowerCase().includes('remote') || 
+             company.openings?.some(op => op.workModel === 'Remote');
+    }
+
+    if (activeFilter === 'Equity') {
+      return company.benefits?.some(b => b.toLowerCase().includes('equity')) ||
+             company.description?.toLowerCase().includes('equity');
+    }
+
+    if (activeFilter === 'Full-time') {
+      // Assuming full-time if not specified otherwise in typical startup context
+      // Or check if 'Full-time' appears in description
+      return company.description?.toLowerCase().includes('full-time') || 
+             company.description?.toLowerCase().includes('fulltime') ||
+             true; // Defaulting to true for startups usually implies commitment
+    }
+
+    if (activeFilter === 'AI/ML') {
+      const aiKeywords = ['ai', 'ml', 'machine learning', 'artificial intelligence', 'nlp', 'vision'];
+      return company.industry?.toLowerCase().includes('ai') ||
+             company.industry?.toLowerCase().includes('machine learning') ||
+             company.tagline?.toLowerCase().includes('ai') ||
+             company.description?.toLowerCase().includes('intelligence') ||
+             company.openings?.some(op => 
+                op.techStack?.some(tech => aiKeywords.includes(tech.toLowerCase()))
+             );
+    }
+
+    if (activeFilter === 'Sustainability') {
+      const greenKeywords = ['sustainability', 'green', 'clean', 'energy', 'climate', 'eco'];
+      return company.industry?.toLowerCase().includes('sustain') ||
+             company.industry?.toLowerCase().includes('energy') ||
+             greenKeywords.some(kd => company.description?.toLowerCase().includes(kd));
+    }
+
+    return true;
+  });
 
   const toggleSave = async (companyId) => {
     try {
