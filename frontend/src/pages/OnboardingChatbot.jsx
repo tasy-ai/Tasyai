@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { steps } from '../data/chatbotData';
 import authService from '../services/authService';
+import notificationService from '../services/notificationService';
 
 const OnboardingChatbot = ({ onComplete }) => {
   const navigate = useNavigate();
@@ -66,23 +67,10 @@ const OnboardingChatbot = ({ onComplete }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   };
 
-  // ... (existing functions)
-
   const handleComplete = async () => {
     try {
-      // Map frontend fields to backend schema if needed
-      // Frontend: experience_desc, skills_experience, profile_picture_preview (ignore preview)
-      // Backend: name, country, experience, role, skills, achievements, partnership, motto, time, profilePicture (base64/URL)
-      
-      // We might need to handle file upload separately or convert to base64 if it's a File object
-      // For now assuming profile_picture is handled or we send it as is if backend supports multer (which I didn't set up)
-      // Wait, I set backend profilePicture to String. So I should probably convert file to base64 here or upload to cloud.
-      // The user just said "profilePicture (base64/URL)".
-      // So I'll convert File to base64.
-      
       let profilePictureData = userData.profile_picture;
       if (userData.profile_picture instanceof File) {
-          // Convert to base64
           const reader = new FileReader();
           reader.readAsDataURL(userData.profile_picture);
           await new Promise(resolve => reader.onload = () => {
@@ -97,6 +85,15 @@ const OnboardingChatbot = ({ onComplete }) => {
       };
 
       await authService.updateProfile(dataToSend);
+      
+      notificationService.addNotification({
+          title: 'Profile Created!',
+          message: 'Your profile has been successfully set up. Welcome to Tasyai!',
+          type: 'success',
+          iconName: 'CheckCircle2',
+          color: 'bg-emerald-500/10 border-emerald-500/20'
+      });
+
       if (onComplete) onComplete(userData);
       navigate('/dashboard');
     } catch (error) {
@@ -175,11 +172,8 @@ const OnboardingChatbot = ({ onComplete }) => {
     proceedToNextStep();
   };
 
-  // --- FILE UPLOAD LOGIC ---
-
   const handleFileChange = (file) => {
     if (!file) return;
-    // Simple validation
     if (!file.type.startsWith('image/')) {
         alert('Please upload an image file');
         return;
@@ -201,7 +195,6 @@ const OnboardingChatbot = ({ onComplete }) => {
     handleFileChange(e.target.files[0]);
   };
 
-  // Drag and Drop Handlers
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -230,23 +223,16 @@ const OnboardingChatbot = ({ onComplete }) => {
     proceedToNextStep();
   };
 
-  // --- END FILE UPLOAD ---
-
-
-
   const currentStepData = steps[currentStep];
 
   return (
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen w-full flex items-center justify-center p-0 md:p-6 overflow-hidden relative">
-      {/* Background */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[120px]" />
       </div>
 
       <div className="relative z-10 w-full max-w-3xl h-[100dvh] md:h-[85vh] flex flex-col bg-[#0B1120]/80 backdrop-blur-xl md:border md:border-white/10 md:rounded-2xl shadow-2xl overflow-hidden">
-        
-        {/* Header */}
         <header className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-[#0B1120]/50">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
@@ -277,7 +263,6 @@ const OnboardingChatbot = ({ onComplete }) => {
           </div>
         </header>
 
-        {/* Chat Area */}
         <main className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth">
           <AnimatePresence initial={false}>
             {messages.map((msg, index) => (
@@ -307,7 +292,6 @@ const OnboardingChatbot = ({ onComplete }) => {
             ))}
           </AnimatePresence>
 
-          {/* Interactive Components Area */}
           {currentStepData && !isTyping && currentStep < totalSteps - 1 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -315,7 +299,6 @@ const OnboardingChatbot = ({ onComplete }) => {
               transition={{ delay: 0.2 }}
               className="ml-11 mt-2"
             >
-              {/* Option Cards */}
               {currentStepData.options && (
                 <div className={`grid gap-3 ${currentStepData.options.length > 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
                   {currentStepData.options.map((option) => {
@@ -340,7 +323,6 @@ const OnboardingChatbot = ({ onComplete }) => {
                 </div>
               )}
 
-              {/* --- ENHANCED FILE UPLOAD ZONE --- */}
               {currentStepData.file && (
                 <div className="space-y-4">
                   {!userData.profile_picture_preview ? (
@@ -374,7 +356,6 @@ const OnboardingChatbot = ({ onComplete }) => {
                       />
                     </div>
                   ) : (
-                    // Preview State
                     <div className="relative w-full bg-slate-800/40 border border-white/5 rounded-xl p-4 flex flex-col items-center animate-in fade-in zoom-in duration-300">
                       <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-indigo-500/30 shadow-xl mb-4 group">
                         <img 
@@ -382,7 +363,6 @@ const OnboardingChatbot = ({ onComplete }) => {
                           alt="Preview" 
                           className="w-full h-full object-cover"
                         />
-                        {/* Hover Overlay to change */}
                         <div 
                           onClick={clearFile}
                           className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
@@ -416,7 +396,6 @@ const OnboardingChatbot = ({ onComplete }) => {
                 </div>
               )}
 
-              {/* Dynamic Skill Input */}
               {currentStepData.isSkillInput && (
                 <div className="space-y-4">
                   <div className="flex flex-wrap gap-2 min-h-[40px]">
@@ -468,7 +447,6 @@ const OnboardingChatbot = ({ onComplete }) => {
             </motion.div>
           )}
 
-          {/* Summary View */}
           {currentStepData?.summary && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -514,7 +492,6 @@ const OnboardingChatbot = ({ onComplete }) => {
             </motion.div>
           )}
 
-          {/* --- WHATSAPP STYLE TYPING INDICATOR --- */}
           {isTyping && (
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
@@ -524,22 +501,17 @@ const OnboardingChatbot = ({ onComplete }) => {
               <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 border border-white/10">
                 <Bot className="text-indigo-400 size-4" />
               </div>
-              
-              {/* The Bubble */}
               <div className="bg-slate-800/80 border border-white/5 px-4 py-3 rounded-2xl rounded-bl-none flex gap-1 items-center h-10 w-16 justify-center">
-                {/* Dot 1 */}
                 <motion.span 
                   animate={{ y: [0, -4, 0] }}
                   transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
                   className="w-1.5 h-1.5 bg-slate-400 rounded-full"
                 />
-                {/* Dot 2 */}
                 <motion.span 
                   animate={{ y: [0, -4, 0] }}
                   transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut", delay: 0.2 }}
                   className="w-1.5 h-1.5 bg-slate-400 rounded-full"
                 />
-                {/* Dot 3 */}
                 <motion.span 
                   animate={{ y: [0, -4, 0] }}
                   transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut", delay: 0.4 }}
@@ -552,9 +524,7 @@ const OnboardingChatbot = ({ onComplete }) => {
           <div ref={messagesEndRef} className="h-4" />
         </main>
 
-        {/* Footer */}
         <footer className="p-4 md:p-6 bg-[#0B1120]/80 border-t border-white/5 backdrop-blur-md">
-          {/* Standard Text Input */}
           {!currentStepData?.options && !currentStepData?.file && !currentStepData?.isSkillInput && !currentStepData?.summary && (
             <form onSubmit={handleInputSubmit} className="relative flex items-center gap-2">
               <input
@@ -575,7 +545,6 @@ const OnboardingChatbot = ({ onComplete }) => {
             </form>
           )}
           
-          {/* Helper text for specific states */}
           {currentStepData?.isSkillInput && (
               <div className="text-center text-xs text-slate-500">
                 Press <span className="text-indigo-400 font-bold">Enter</span> to add a skill

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Building2, 
   User, 
@@ -9,66 +9,86 @@ import {
   Briefcase,
   CheckCircle2,
   XCircle,
+  Rocket,
+  Sparkles,
   Clock,
   ChevronLeft
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
+import notificationService from '../services/notificationService';
 
 const Notifications = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('All');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Mock Notification Data
-  const notifications = [
-    {
-      id: 1,
-      type: 'company',
-      title: 'Interview Request',
-      message: 'TechCorp Inc. wants to schedule an interview for the Senior React Developer role.',
-      time: '2 hours ago',
-      read: false,
-      icon: <Building2 className="size-5 text-indigo-400" />,
-      color: 'bg-indigo-500/10 border-indigo-500/20'
-    },
-    {
-      id: 2,
-      type: 'people',
-      title: 'New Connection',
-      message: 'Sarah Jenkins sent you a connection request.',
-      time: '5 hours ago',
-      read: true,
-      icon: <User className="size-5 text-emerald-400" />,
-      color: 'bg-emerald-500/10 border-emerald-500/20'
-    },
-    {
-      id: 3,
-      type: 'company',
-      title: 'Application Viewed',
-      message: 'Your application for Frontend Engineer at StartupX was viewed.',
-      time: '1 day ago',
-      read: true,
-      icon: <Briefcase className="size-5 text-blue-400" />,
-      color: 'bg-blue-500/10 border-blue-500/20'
-    },
-    {
-      id: 4,
-      type: 'people',
-      title: 'Profile Endorsement',
-      message: 'Michael Chen endorsed your React skills.',
-      time: '2 days ago',
-      read: true,
-      icon: <CheckCircle2 className="size-5 text-amber-400" />,
-      color: 'bg-amber-500/10 border-amber-500/20'
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const fetchNotifications = () => {
+        let stored = notificationService.getNotifications();
+        
+        // Force refresh if old dummy data exists
+        const hasOldData = stored.some(n => 
+          n.title === 'New Connection Request' || 
+          n.title === 'Interview Request'
+        );
+        
+        if (hasOldData) {
+            notificationService.clearAll();
+            stored = [];
+        }
+        
+        // Populate if empty
+        if (stored.length === 0) {
+            notificationService.addNotification({
+                title: 'Welcome to Tasyai!',
+                message: 'Your journey to discovering the next big startup begins here. Complete your profile to get personalized matches.',
+                type: 'info',
+                iconName: 'Rocket',
+                color: 'bg-indigo-500/10 border-indigo-500/20'
+            });
+            notificationService.addNotification({
+                title: 'New Features Unlocked!',
+                message: 'Explore the new Discovery Engine, Personalized Interests matching, and Secure Vault features added to your workspace.',
+                type: 'info',
+                iconName: 'Sparkles',
+                color: 'bg-emerald-500/10 border-emerald-500/20'
+            });
+            notificationService.addNotification({
+                title: 'System Update',
+                message: 'The Discovery Engine matching algorithm has been upgraded. You may see new high-quality matches.',
+                type: 'info',
+                iconName: 'Briefcase',
+                color: 'bg-blue-500/10 border-blue-500/20'
+            });
+            stored = notificationService.getNotifications();
+        }
+        setNotifications(stored);
+    };
+
+    fetchNotifications();
+    notificationService.markAllAsRead(); // Mark as read when page is opened
+  }, []);
+
+  const getIcon = (iconName) => {
+    switch(iconName) {
+        case 'Building2': return <Building2 className="size-5 text-indigo-400" />;
+        case 'User': return <User className="size-5 text-emerald-400" />;
+        case 'Briefcase': return <Briefcase className="size-5 text-blue-400" />;
+        case 'CheckCircle2': return <CheckCircle2 className="size-5 text-amber-400" />;
+        case 'Rocket': return <Rocket className="size-5 text-purple-400" />;
+        case 'Sparkles': return <Sparkles className="size-5 text-emerald-400" />;
+        default: return <Bell className="size-5 text-slate-400" />;
     }
-  ];
+  };
 
   const filteredNotifications = activeFilter === 'All' 
     ? notifications 
-    : notifications.filter(n => n.type === activeFilter.toLowerCase());
+    : notifications.filter(n => n.type === activeFilter.toLowerCase() || (activeFilter === 'System' && n.type === 'info'));
 
-  const filters = ['All', 'Company', 'People'];
+  const filters = ['All', 'Company', 'People', 'System'];
 
   return (
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
@@ -120,7 +140,7 @@ const Notifications = () => {
                 >
                   <div className="flex gap-4">
                     <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center border ${notif.color}`}>
-                      {notif.icon}
+                      {getIcon(notif.iconName)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4 mb-1">

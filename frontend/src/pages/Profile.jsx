@@ -31,6 +31,9 @@ import Sidebar from '../components/layout/Sidebar';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 import companyService from '../services/companyService';
+import Achievements from '../components/profile/Achievements';
+import Moto from '../components/profile/Moto';
+import Availability from '../components/profile/Availability';
 
 const Profile = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -52,6 +55,9 @@ const Profile = () => {
       'A detailed personal introduction focusing on building decentralized systems and scaling startup teams. Dedicated to bridging the gap between high-level product strategy and technical execution in the Web3 space.',
       'Currently focused on developing open-source tooling for DAO governance and peer-to-peer collaboration protocols. Looking for passionate designers and frontend architects to join the core team for Project Nexus.'
     ],
+    achievements: "Built a layer-2 scaling solution for 50k+ daily users and led design for 5 Fortune 500 startups.",
+    motto: "Building decentralized futures | UX Engineer",
+    availability: "Available for full-time roles and strategic consulting",
     skills: [
       { name: 'React.js', level: 'high' },
       { name: 'Product Strategy', level: 'high' },
@@ -139,12 +145,10 @@ const Profile = () => {
                 location: backendUser.country || "Location not set",
                 email: backendUser.email || "",
                 image: backendUser.profilePicture, 
-                about: [
-                    backendUser.achievements ? `Achievements: ${backendUser.achievements}` : null,
-                    backendUser.partnership ? `Looking for: ${backendUser.partnership}` : null,
-                    backendUser.time ? `Availability: ${backendUser.time}` : null,
-                    (!backendUser.achievements && !backendUser.partnership && !backendUser.time) ? "No additional details provided." : null
-                ].filter(Boolean),
+                achievements: backendUser.achievements,
+                motto: backendUser.motto,
+                availability: backendUser.time,
+                about: [], // Clear about since we use distinct components now
                 skills: (backendUser.skills && backendUser.skills.length > 0) 
                     ? backendUser.skills.map(s => ({ name: s, level: 'high' })) 
                     : [],
@@ -319,22 +323,46 @@ const Profile = () => {
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
             {/* Left Column */}
             <div className="space-y-8 lg:col-span-7">
-              {/* About */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="glass-card rounded-xl p-8"
-              >
-                <h3 className="mb-6 flex items-center gap-2 text-xl font-bold">
-                  <User className="size-5 text-[#4245f0]" />
-                  About
-                </h3>
-                <div className="space-y-4 text-slate-300 leading-relaxed">
-                  {user.about && user.about.map((paragraph, idx) => (
-                    <p key={idx}>{paragraph}</p>
-                  ))}
-                </div>
-              </motion.div>
+              {/* Insights & About */}
+              <div className="space-y-6">
+                {(user.achievements || user.motto || user.availability) && (
+                  <div className="flex flex-col gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <Achievements content={user.achievements} />
+                      <Moto content={user.motto} />
+                    </div>
+                    <Availability content={user.availability} />
+                  </div>
+                )}
+                
+                {user.about && user.about.length > 0 && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="glass-card rounded-xl p-8"
+                  >
+                    <h3 className="mb-6 flex items-center gap-2 text-xl font-bold">
+                      <User className="size-5 text-[#4245f0]" />
+                      About
+                    </h3>
+                    <div className="space-y-4 text-slate-300 leading-relaxed">
+                      {user.about.map((paragraph, idx) => (
+                        <p key={idx}>{paragraph}</p>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {(!user.achievements && !user.motto && !user.availability && (!user.about || user.about.length === 0)) && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="glass-card rounded-xl p-8 text-center"
+                  >
+                    <p className="text-slate-500 italic">No additional profile details provided yet.</p>
+                  </motion.div>
+                )}
+              </div>
 
               {/* Skills */}
               <motion.div 

@@ -22,6 +22,7 @@ import { filters } from '../data/dashboardData'; // Still using filters for UI
 import { useUser } from "@clerk/clerk-react";
 import authService from '../services/authService';
 import companyService from '../services/companyService';
+import notificationService from '../services/notificationService';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -116,10 +117,26 @@ const Dashboard = () => {
   const toggleSave = async (companyId) => {
     try {
       const res = await authService.toggleSaveCompany(companyId);
+      const company = companies.find(c => c._id === companyId);
+      
       if (res.isSaved) {
         setSavedCompanyIds(prev => [...prev, companyId]);
+        notificationService.addNotification({
+            title: 'Company Saved',
+            message: `${company?.name || 'Company'} has been added to your interests.`,
+            type: 'company',
+            iconName: 'BookmarkPlus',
+            color: 'bg-[#6467f2]/10 border-[#6467f2]/20'
+        });
       } else {
         setSavedCompanyIds(prev => prev.filter(id => id !== companyId));
+        notificationService.addNotification({
+            title: 'Company Removed',
+            message: `${company?.name || 'Company'} has been removed from your saved list.`,
+            type: 'info',
+            iconName: 'Bookmark',
+            color: 'bg-slate-500/10 border-slate-500/20'
+        });
       }
     } catch (err) {
       console.error("Save toggle failed:", err);

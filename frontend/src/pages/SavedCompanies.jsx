@@ -12,8 +12,9 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
-import authService from '../services/authService';
 import { toast } from 'react-hot-toast';
+import notificationService from '../services/notificationService';
+import authService from '../services/authService';
 
 const SavedCompanies = () => {
   const navigate = useNavigate();
@@ -40,9 +41,18 @@ const SavedCompanies = () => {
   const handleUnsave = async (id, e) => {
     e.stopPropagation();
     try {
+      const company = savedCompanies.find(c => c._id === id);
       await authService.toggleSaveCompany(id);
       setSavedCompanies(savedCompanies.filter(c => c._id !== id));
       toast.success("Startup removed from vault");
+      
+      notificationService.addNotification({
+          title: 'Company Removed',
+          message: `${company?.name || 'Company'} was removed from your saved list.`,
+          type: 'info',
+          iconName: 'Bookmark',
+          color: 'bg-slate-500/10 border-slate-500/20'
+      });
     } catch (err) {
       toast.error("Failed to update status");
     }
@@ -73,7 +83,6 @@ const SavedCompanies = () => {
         className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
       >
         <div className="max-w-7xl mx-auto px-8 py-10 pb-32">
-          {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div>
               <div className="flex items-center gap-3 mb-2">
@@ -110,7 +119,6 @@ const SavedCompanies = () => {
                   onClick={() => navigate(`/company-detail?id=${company._id}`)}
                   className="group relative bg-[#0f172a] border border-white/5 rounded-3xl overflow-hidden hover:border-[#4245f0]/30 transition-all cursor-pointer"
                 >
-                  {/* Card Banner */}
                   <div className={`h-24 bg-gradient-to-br ${getRandomGradient(company.name)} opacity-20`}></div>
                   
                   <div className="px-6 pb-6 -mt-10">
