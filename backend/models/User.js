@@ -70,6 +70,18 @@ const userSchema = mongoose.Schema({
     interests: {
         type: [String],
         default: []
+    },
+    linkedin: {
+        type: String,
+        default: ''
+    },
+    portfolio: {
+        type: String,
+        default: ''
+    },
+    github: {
+        type: String,
+        default: ''
     }
 }, {
     timestamps: true

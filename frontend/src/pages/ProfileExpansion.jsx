@@ -18,7 +18,9 @@ import {
   Award,
   Briefcase,
   Send,
-  Loader2
+  Loader2,
+  Globe,
+  Link2
 } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
 import Sidebar from '../components/layout/Sidebar';
@@ -66,7 +68,12 @@ const ProfileExpansion = () => {
                             description: user.achievements || 'Detailed background not provided.',
                             active: true
                         }
-                    ]
+                    ],
+                    links: [
+                        user.linkedin ? { name: 'LinkedIn', url: user.linkedin, icon: Linkedin, color: 'bg-[#0077b5]' } : null,
+                        user.github ? { name: 'GitHub', url: user.github, icon: Github, color: 'bg-slate-800' } : null,
+                        user.portfolio ? { name: 'Portfolio', url: user.portfolio, icon: Globe, color: 'bg-primary/40' } : null
+                    ].filter(Boolean)
                 };
                 setCandidate(mappedCandidate);
             }
@@ -271,6 +278,34 @@ const ProfileExpansion = () => {
                             ))}
                         </div>
                     </div>
+
+                    {candidate.links && candidate.links.length > 0 && (
+                        <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6">
+                            <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+                                <Link2 className="size-5 text-[#4245f0]" />
+                                Links
+                            </h3>
+                            <div className="grid grid-cols-1 gap-3">
+                                {candidate.links.map((link) => {
+                                    const IconComponent = link.icon;
+                                    return (
+                                        <a 
+                                            key={link.name}
+                                            href={link.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group"
+                                        >
+                                            <div className={`w-8 h-8 rounded-lg ${link.color} flex items-center justify-center shrink-0`}>
+                                                <IconComponent className="size-4 text-white" />
+                                            </div>
+                                            <span className="text-sm font-medium text-slate-300 group-hover:text-white truncate">{link.name}</span>
+                                        </a>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Right Column: Detailed Info */}

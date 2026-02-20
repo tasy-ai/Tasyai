@@ -30,6 +30,9 @@ const OnboardingChatbot = ({ onComplete }) => {
     partnership: '',
     motto: '',
     time: '',
+    linkedin: '',
+    github: '',
+    portfolio: '',
     skills: [],
     skills_experience: '',
     profile_picture: null,
@@ -472,6 +475,9 @@ const OnboardingChatbot = ({ onComplete }) => {
                 <SummaryItem label="Availability" value={userData.time} />
                 <SummaryItem label="Motto" value={userData.motto} />
                 <SummaryItem label="Looking for" value={userData.partnership} />
+                <SummaryItem label="LinkedIn" value={userData.linkedin} />
+                <SummaryItem label="GitHub" value={userData.github} />
+                <SummaryItem label="Portfolio" value={userData.portfolio} />
                 <div className="col-span-1 md:col-span-2">
                     <span className="block text-slate-500 text-xs uppercase tracking-wider mb-1">Skills</span>
                     <div className="flex flex-wrap gap-2">

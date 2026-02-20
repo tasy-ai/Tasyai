@@ -49,7 +49,10 @@ const FoundTalent = () => {
                     description: u.achievements || 'Detailed background not provided.',
                     active: true
                 }
-            ]
+            ],
+            linkedin: u.linkedin,
+            github: u.github,
+            portfolio: u.portfolio
         }));
         setUsers(mappedUsers);
       } catch (error) {

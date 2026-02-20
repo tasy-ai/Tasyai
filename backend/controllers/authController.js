@@ -113,7 +113,10 @@ const getUserProfile = async (req, res) => {
             time: user.time,
             profilePicture: user.profilePicture,
             isOnboarded: user.isOnboarded,
-            interests: user.interests || []
+            interests: user.interests || [],
+            linkedin: user.linkedin || '',
+            portfolio: user.portfolio || '',
+            github: user.github || ''
         });
     } else {
         res.status(404).json({ message: 'User not found' });
@@ -155,6 +158,9 @@ const updateUserProfile = async (req, res) => {
             user.time = req.body.time || user.time;
             user.profilePicture = req.body.profilePicture || user.profilePicture;
             user.interests = req.body.interests || user.interests;
+            user.linkedin = req.body.linkedin || user.linkedin;
+            user.portfolio = req.body.portfolio || user.portfolio;
+            user.github = req.body.github || user.github;
             
             // Mark onboarding complete if critical info is filled
             if (req.body.role || (req.body.skills && req.body.skills.length > 0)) {
@@ -185,6 +191,9 @@ const updateUserProfile = async (req, res) => {
                 profilePicture: updatedUser.profilePicture,
                 isOnboarded: updatedUser.isOnboarded,
                 interests: updatedUser.interests || [],
+                linkedin: updatedUser.linkedin || '',
+                portfolio: updatedUser.portfolio || '',
+                github: updatedUser.github || '',
                 token: generateToken(updatedUser._id),
             });
         } else {
