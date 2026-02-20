@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Code2,
-  Search,
-  Bell,
   MapPin,
   Edit3,
   Share2,
@@ -20,11 +18,12 @@ import {
   Clock,
   Users,
   Eye,
-  History,
   Mail,
   Send,
   Loader2,
-  ArrowRight
+  ArrowRight,
+  Linkedin,
+  Github
 } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
 import Sidebar from '../components/layout/Sidebar';
@@ -139,6 +138,7 @@ const Profile = () => {
 
             // Map backendUser to frontend user format
             const mappedUser = {
+                id: backendUser._id,
                 name: backendUser.name || "User",
                 role: backendUser.role || "Role not set",
                 headline: backendUser.motto || "No headline yet",
@@ -162,7 +162,11 @@ const Profile = () => {
                     fullData: company
                 })),
                 experienceList: [], // Backend stores experience as a string range, not a list
-                links: [] // Backend doesn't support links yet
+                links: [
+                    backendUser.linkedin ? { name: 'LinkedIn', url: backendUser.linkedin, icon: Linkedin, color: 'bg-[#0077b5]' } : null,
+                    backendUser.github ? { name: 'GitHub', url: backendUser.github, icon: Github, color: 'bg-slate-800' } : null,
+                    backendUser.portfolio ? { name: 'Portfolio', url: backendUser.portfolio, icon: Globe, color: 'bg-primary/40' } : null
+                ].filter(Boolean)
             };
             setUser(mappedUser);
         } catch (err) {
@@ -177,6 +181,27 @@ const Profile = () => {
     
     fetchProfile();
   }, [navigate, location]);
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/profile-expansion?id=${user.id}`;
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${user.name} | Tasyai Profile`,
+          text: `Check out ${user.name}'s professional profile on Tasyai!`,
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success('Profile link copied to clipboard!');
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        toast.error('Could not share profile');
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -230,33 +255,11 @@ const Profile = () => {
                 <h1 className="text-xl font-bold tracking-tight">Tasyai</h1>
               </div>
               
-              {/* Navigation */}
-              <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-                {['Explore', 'Network', 'Projects', 'Messages'].map((item) => (
-                  <a key={item} href="#" className="hover:text-white transition-colors relative group">
-                    {item}
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#4245f0] transition-all group-hover:w-full" />
-                  </a>
-                ))}
-              </nav>
+       
             </div>
 
             {/* Right Section */}
             <div className="flex items-center gap-6">
-              <div className="relative hidden sm:block">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 size-4" />
-                <input 
-                  type="text"
-                  className="h-10 w-64 rounded-xl border-none bg-white/5 pl-10 text-sm text-white focus:ring-2 focus:ring-[#4245f0]/50 transition-all outline-none placeholder:text-slate-500"
-                  placeholder="Search talent..."
-                />
-              </div>
-              
-              <button className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                <Bell className="size-5" />
-                <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-[#4245f0] ring-2 ring-[#020617]"></span>
-              </button>
-              
               {user.image ? (
                 <img src={user.image} className="h-10 w-10 rounded-full border-2 border-[#4245f0]/30 object-cover" alt="Avatar" />
               ) : (
@@ -303,6 +306,7 @@ const Profile = () => {
               <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/settings')}
                 className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#4245f0] to-[#6366f1] px-8 py-3 text-sm font-bold text-white transition-all hover:opacity-90 shadow-lg shadow-[#4245f0]/20"
               >
                 <Edit3 className="size-4" />
@@ -311,6 +315,7 @@ const Profile = () => {
               <motion.button 
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={handleShare}
                 className="flex items-center gap-2 rounded-xl border border-white/10 glass-card px-8 py-3 text-sm font-bold text-white transition-all hover:bg-white/10"
               >
                 <Share2 className="size-4" />
@@ -590,26 +595,7 @@ const Profile = () => {
               </div>
 
               {/* Experience */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="glass-card rounded-xl p-8"
-              >
-                <h3 className="mb-6 flex items-center gap-2 text-xl font-bold">
-                  <History className="size-5 text-[#4245f0]" />
-                  Experience Highlights
-                </h3>
-                <div className="space-y-6">
-                  {user.experienceList && user.experienceList.map((exp, index) => (
-                    <div key={index} className={`relative pl-6 ${exp.active ? 'before:absolute before:left-0 before:top-1.5 before:h-2 before:w-2 before:rounded-full before:bg-[#4245f0] before:ring-4 before:ring-[#4245f0]/20' : 'before:absolute before:left-0 before:top-1.5 before:h-2 before:w-2 before:rounded-full before:bg-slate-700'}`}>
-                      <p className="text-xs text-slate-500">{exp.period}</p>
-                      <h4 className="font-bold">{exp.title} • {exp.company}</h4>
-                      <p className="text-sm text-slate-400 mt-1 leading-snug">{exp.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
+             
             </div>
           </div>
         </main>

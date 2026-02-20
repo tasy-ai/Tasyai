@@ -43,6 +43,9 @@ export const steps = [
   { id: 'partnership', question: "What are you looking to connect for?", placeholder: "e.g., Find a co-founder, Fundraising, Mentorship, Collaboration" },
   { id: 'motto', question: "What's your personal motto?", placeholder: "e.g., Move fast and break things" },
   { id: 'time', question: "How much time can you dedicate per week?", placeholder: "e.g., 20 hours, Full-time" },
+  { id: 'linkedin', question: "What's your LinkedIn profile URL?", placeholder: "e.g., https://linkedin.com/in/username" },
+  { id: 'github', question: "What's your GitHub profile URL?", placeholder: "e.g., https://github.com/username" },
+  { id: 'portfolio', question: "Do you have a personal portfolio or website?", placeholder: "e.g., https://my-portfolio.com" },
   { id: 'profile_picture', question: "Upload a profile picture to finish.", file: true },
   { id: 'complete', question: "You're all set! Here's your profile:", summary: true }
 ];

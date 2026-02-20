@@ -271,9 +271,6 @@ const MyInterests = () => {
                  <Star className="size-16 text-slate-700 mx-auto mb-4" />
                  <h3 className="text-xl font-bold text-slate-300">No interest matches yet</h3>
                  <p className="text-slate-500 max-w-md mx-auto mt-2">Update your profile with more skills or experience to help our matching engine find the perfect startups for you.</p>
-                 <Link to="/profile" className="inline-flex items-center gap-2 mt-8 px-6 py-3 bg-[#6467f2] rounded-xl font-bold hover:scale-105 transition-all">
-                    Complete Profile <ArrowRight className="size-4" />
-                 </Link>
               </div>
             )}
           </div>
