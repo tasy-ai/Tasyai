@@ -27,10 +27,7 @@ api.interceptors.request.use((config) => {
 
 const register = async (userData) => {
     try {
-        console.log('--- DB SIGNUP ATTEMPT ---');
-        console.log('Payload:', JSON.stringify(userData, null, 2));
         const response = await axios.post(`${API_URL}/signup`, userData);
-        console.log('Registration response:', response.data);
         return response.data;
     } catch (error) {
         console.error('AuthService Registration Error:', error);
@@ -39,10 +36,8 @@ const register = async (userData) => {
 };
 
 const login = async (email, password) => {
-    console.log('Attempting login for:', email);
     try {
         const response = await axios.post(`${API_URL}/login`, { email, password });
-        console.log('Login response:', response.data);
         if (response.data) {
             localStorage.setItem('user', JSON.stringify(response.data));
         }
@@ -112,9 +107,7 @@ const getUserById = async (id) => {
 
 const googleLogin = async (googleData) => {
     try {
-        console.log('Sending Google auth request:', googleData);
         const response = await axios.post(`${API_URL}/google`, googleData);
-        console.log('Google auth response:', response.data);
         if (response.data) {
             localStorage.setItem('user', JSON.stringify(response.data));
         }

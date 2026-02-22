@@ -96,12 +96,6 @@ const Register = () => {
         alert("Please provide an answer to your security question.");
         return;
       }
-      console.log('Submitting Registration Data:', {
-        name: formData.fullName,
-        email: formData.email,
-        securityQuestion: formData.securityQuestion,
-        securityAnswer: !!formData.securityAnswer
-      });
       await authService.register({
         name: formData.fullName,
         email: formData.email,
