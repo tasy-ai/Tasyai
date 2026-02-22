@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = window.location.hostname === 'localhost' 
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:5000/api/auth' 
   : 'https://tasyai-9d31.onrender.com/api/auth';
 
