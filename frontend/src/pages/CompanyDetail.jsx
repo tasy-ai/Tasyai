@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SEO from '../components/SEO';
 import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
@@ -153,6 +154,10 @@ const CompanyDetail = () => {
 
   return (
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
+      <SEO 
+        title={company?.name || "Startup Detail"}
+        description={company?.tagline || "Learn more about this startup on Tasyai."}
+      />
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       <motion.main 

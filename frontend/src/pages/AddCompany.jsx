@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 import { 
   Rocket,
   X,
@@ -155,6 +156,10 @@ const CreateCompanyProfile = () => {
 
   return (
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
+      <SEO 
+        title="Launch Venture"
+        description="Craft a detailed profile to showcase your vision and team."
+      />
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       <motion.main 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SEO from '../components/SEO';
 import { 
   Building2, 
   User, 
@@ -92,6 +93,10 @@ const Notifications = () => {
 
   return (
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
+      <SEO 
+        title="Notifications"
+        description="Stay updated with your latest activity and matches on Tasyai."
+      />
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       <main 

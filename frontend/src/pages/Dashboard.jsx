@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 import Sidebar from '../components/layout/Sidebar';
 import { 
   Rocket,
@@ -195,7 +196,11 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="bg-[#020617] text-white font-sans overflow-hidden h-screen">
+    <div className="bg-[#020617] text-white font-sans min-h-screen">
+      <SEO 
+        title="Dashboard"
+        description="Discover high-growth startups and collaborative opportunities on Tasyai."
+      />
       <div className="flex h-screen w-full relative">
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
