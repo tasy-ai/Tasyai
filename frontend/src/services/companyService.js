@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = 'https://tasyai-9d31.onrender.com/api/companies';
+const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000/api/companies' 
+  : 'https://tasyai-9d31.onrender.com/api/companies';
 
 // Get token from local storage
 const getAuthHeader = () => {
