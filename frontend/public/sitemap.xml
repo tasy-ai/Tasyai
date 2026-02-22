@@ -10,7 +10,58 @@
   </url>
   <url>
     <loc>https://tasyai.com/register</loc>
-    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/reset-password</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/dashboard</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/found-talent</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/profile</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/add-company</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/notifications</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/my-startups</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/company-detail</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/profile-expansion</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/settings</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/OnboardingChatbot</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/saved-companies</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://tasyai.com/my-interests</loc>
+    <priority>0.6</priority>
   </url>
 </urlset>

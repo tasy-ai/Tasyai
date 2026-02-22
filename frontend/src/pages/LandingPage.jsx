@@ -81,6 +81,10 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-black uppercase tracking-widest mb-6">
+            <Sparkles className="size-3" />
+            The Tasyai Experience
+          </div>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.1] tracking-tight mb-8">
             Don’t Apply for Jobs.<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-violet-400 italic">
@@ -358,9 +362,9 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-[#020617] text-white font-sans selection:bg-indigo-500/30">
       <SEO 
-        title="Connecting Talent with Startups"
+        title="Smart Startup Collaboration & Talent Hub"
         description="Tasyai is a smart job searching platform and startup collaboration hub. Build something that matters with the best founders and talent."
-        keywords="tasyai, job searching platform, startup hiring, tech jobs, founder matching, talent collaboration, build startups"
+        keywords="tasyai, tasy-ai, job searching platform, startup hiring, tech jobs, founder matching, talent collaboration, build startups"
       />
       
       <Navbar />

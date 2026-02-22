@@ -95,7 +95,7 @@ const CompanyDetail = () => {
                   message: `${company.name} has been added to your interests.`,
                   type: 'company',
                   iconName: 'BookmarkPlus',
-                  color: 'bg-amber-500/10 border-amber-500/20'
+                  color: 'bg-[#4245f0]/10 border-[#4245f0]/20'
               });
           } else {
               toast.success("Removed from Vault");
@@ -202,7 +202,7 @@ const CompanyDetail = () => {
                                     {company.website || 'Global'}
                                 </div>
                                 <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
-                                    <TrendingUp className="size-4 text-amber-400" />
+                                    <TrendingUp className="size-4 text-[#4245f0]" />
                                     {company.industry}
                                 </div>
                             </div>
@@ -215,7 +215,7 @@ const CompanyDetail = () => {
                                 onClick={handleToggleSave}
                                 className={`p-3 rounded-xl border transition-all ${
                                     isSaved 
-                                    ? 'bg-amber-500/20 border-amber-500/50 text-amber-500 shadow-lg shadow-amber-500/10' 
+                                    ? 'bg-[#4245f0]/20 border-[#4245f0]/50 text-[#4245f0] shadow-lg shadow-[#4245f0]/10' 
                                     : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:text-white'
                                 }`}
                             >
@@ -246,7 +246,7 @@ const CompanyDetail = () => {
                     {/* Open Roles */}
                     <section className="space-y-4">
                         <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                            <Briefcase className="size-5 text-amber-400" />
+                            <Briefcase className="size-5 text-[#4245f0]" />
                             Open Positions
                         </h3>
                         {company.openings && company.openings.length > 0 ? (
