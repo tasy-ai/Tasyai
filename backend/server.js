@@ -13,8 +13,9 @@ connectDB();
 const app = express();
 
 const allowedOrigins = [
+    'https://www.tasyai.com',
+    'https://tasyai.com',
     'https://tasyai-theta.vercel.app',
-    'https://tasyai-theta.vercel.app/',
     'http://localhost:5173',
     'http://localhost:3000'
 ];
