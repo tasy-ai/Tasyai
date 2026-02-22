@@ -70,8 +70,27 @@ const Notifications = () => {
     };
 
     fetchNotifications();
-    notificationService.markAllAsRead(); // Mark as read when page is opened
+    // Removed markAllAsRead from here so users can use the filters
   }, []);
+
+  const handleToggleRead = (id) => {
+    const updated = notifications.map(n => n.id === id ? { ...n, read: !n.read } : n);
+    setNotifications(updated);
+    
+    // Persist to local storage
+    try {
+        const stored = notificationService.getNotifications();
+        const updatedStored = stored.map(n => n.id === id ? { ...n, read: !n.read } : n);
+        localStorage.setItem('tasyai_notifications', JSON.stringify(updatedStored));
+    } catch (err) {
+        console.error("Failed to update notification state", err);
+    }
+  };
+
+  const handleMarkAllRead = () => {
+    notificationService.markAllAsRead();
+    setNotifications(notificationService.getNotifications());
+  };
 
   const getIcon = (iconName) => {
     switch(iconName) {
@@ -85,11 +104,15 @@ const Notifications = () => {
     }
   };
 
-  const filteredNotifications = activeFilter === 'All' 
-    ? notifications 
-    : notifications.filter(n => n.type === activeFilter.toLowerCase() || (activeFilter === 'System' && n.type === 'info'));
+  const filteredNotifications = notifications.filter(n => {
+    if (activeFilter === 'All') return true;
+    if (activeFilter === 'Unread') return !n.read;
+    if (activeFilter === 'Read') return n.read;
+    if (activeFilter === 'System') return n.type === 'info';
+    return n.type === activeFilter.toLowerCase();
+  });
 
-  const filters = ['All', 'Company', 'People', 'System'];
+  const filters = ['All', 'Unread', 'Read', 'Company', 'People', 'System'];
 
   return (
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
@@ -114,6 +137,13 @@ const Notifications = () => {
                 <p className="text-slate-400 text-sm">Stay updated with your latest activity</p>
               </div>
             </div>
+
+            <button 
+              onClick={handleMarkAllRead}
+              className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs font-bold text-slate-300 transition-all"
+            >
+              Mark all as read
+            </button>
           </div>
 
           {/* Filters */}
@@ -122,13 +152,19 @@ const Notifications = () => {
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all relative ${
                   activeFilter === filter
                     ? 'bg-[#4245f0] text-white shadow-lg shadow-[#4245f0]/20'
                     : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/5'
                 }`}
               >
                 {filter}
+                {filter === 'Unread' && notifications.filter(n => !n.read).length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -139,9 +175,10 @@ const Notifications = () => {
               filteredNotifications.map((notif, index) => (
                 <div
                   key={notif.id}
-                  className={`relative p-5 rounded-2xl border ${
-                    notif.read ? 'bg-white/5 border-white/5' : 'bg-white/[0.07] border-white/10'
-                  } hover:bg-white/10 transition-colors group cursor-pointer`}
+                  onClick={() => handleToggleRead(notif.id)}
+                  className={`relative p-5 rounded-2xl border transition-all duration-300 group cursor-pointer ${
+                    notif.read ? 'bg-white/5 border-white/5 opacity-70' : 'bg-white/[0.08] border-[#4245f0]/30 shadow-lg shadow-indigo-500/5'
+                  } hover:bg-white/10`}
                 >
                   <div className="flex gap-4">
                     <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center border ${notif.color}`}>

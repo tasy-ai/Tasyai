@@ -124,25 +124,36 @@ const SavedCompanies = () => {
                   onClick={() => navigate(`/company-detail?id=${company._id}`)}
                   className="group relative bg-[#0f172a] border border-white/5 rounded-3xl overflow-hidden hover:border-[#4245f0]/30 transition-all cursor-pointer"
                 >
-                  <div className={`h-24 bg-gradient-to-br ${getRandomGradient(company.name)} opacity-20`}></div>
-                  
-                  <div className="px-6 pb-6 -mt-10">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="w-20 h-20 rounded-2xl bg-[#0f172a] border-4 border-[#020617] flex items-center justify-center shadow-xl overflow-hidden">
-                        {company.logo ? (
-                          <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <Building2 className="size-10 text-slate-400" />
-                        )}
+                  {/* Company Header Image (20% of card) */}
+                  <div className="h-32 w-full relative bg-slate-900/40">
+                    {company.logo ? (
+                      <img 
+                        src={company.logo} 
+                        alt={company.name} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80" 
+                      />
+                    ) : (
+                      <div className={`w-full h-full bg-gradient-to-br ${getRandomGradient(company.name)} opacity-30 flex items-center justify-center`}>
+                        <Building2 className="size-12 text-slate-400" />
                       </div>
+                    )}
+                    
+                    {/* Unsave Button */}
+                    <div className="absolute top-4 right-4 z-20">
                       <button 
                         onClick={(e) => handleUnsave(company._id, e)}
-                        className="mt-12 p-2 rounded-full bg-[#4245f0]/10 border border-[#4245f0]/20 text-[#4245f0] hover:bg-[#4245f0] transition-all hover:text-white"
+                        className="p-2.5 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-white hover:text-rose-500 transition-all"
                         title="Remove from saved"
                       >
                         <Bookmark className="size-4 fill-current" />
                       </button>
                     </div>
+                    
+                    {/* Subtle Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent opacity-60"></div>
+                  </div>
+
+                  <div className="p-6 flex flex-col flex-1">
 
                     <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#4245f0] transition-colors">
                       {company.name}
