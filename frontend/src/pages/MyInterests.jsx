@@ -154,8 +154,8 @@ const MyInterests = () => {
           <div className="max-w-7xl mx-auto p-10 pb-20">
             <header className="mb-10">
               <div className="flex items-center gap-4 mb-2">
-                <div className="size-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
-                    <Star className="size-6 text-amber-500 fill-amber-500/30" />
+                <div className="size-10 bg-[#4245f0]/10 rounded-xl flex items-center justify-center">
+                    <Star className="size-6 text-[#4245f0] fill-[#4245f0]/30" />
                 </div>
                 <h2 className="text-4xl font-extrabold text-white tracking-tight">My Interests</h2>
               </div>
@@ -194,10 +194,10 @@ const MyInterests = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      whileHover={{ y: -4, borderColor: 'rgba(245, 158, 11, 0.5)' }}
+                      whileHover={{ y: -4, borderColor: 'rgba(66, 69, 240, 0.5)' }}
                       className="group p-6 rounded-2xl glass-effect flex flex-col transition-all cursor-pointer border border-white/5 relative overflow-hidden"
                     >
-                      <div className="absolute top-0 right-0 p-12 bg-amber-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                      <div className="absolute top-0 right-0 p-12 bg-[#4245f0]/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
                       
                       {/* Card Header */}
                       <div className="flex justify-between items-start mb-6 relative z-10">
@@ -214,29 +214,29 @@ const MyInterests = () => {
                             e.stopPropagation();
                             toggleSave(company._id);
                           }}
-                          className="p-2 rounded-lg text-slate-500 hover:text-amber-500 hover:bg-amber-500/10 transition-all"
+                          className="p-2 rounded-lg text-slate-500 hover:text-[#4245f0] hover:bg-[#4245f0]/10 transition-all"
                         >
                           {isSaved ? (
-                            <Bookmark className="size-5 fill-amber-500 text-amber-500" />
+                            <Bookmark className="size-5 fill-[#4245f0] text-[#4245f0]" />
                           ) : (
                             <BookmarkPlus className="size-5" />
                           )}
                         </button>
                       </div>
 
-                      {/* Content */}
-                      <div className="relative z-10">
-                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">{company.name}</h3>
+                      {/* Content wrapper with flex-grow to push buttons down */}
+                      <div className="relative z-10 flex flex-col flex-1">
+                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#4245f0] transition-colors">{company.name}</h3>
                         <p className="text-slate-400 text-sm italic mb-3 line-clamp-1">"{company.tagline}"</p>
                         
                         <div className="flex items-center gap-4 mb-4 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                            <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5">
-                              <Compass className="size-3 text-amber-500" />
+                              <Compass className="size-3 text-[#4245f0]" />
                               <span>{company.industry}</span>
                            </div>
                            {company.location && (
                              <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5">
-                                <MapPin className="size-3 text-amber-500" />
+                                <MapPin className="size-3 text-[#4245f0]" />
                                 <span>{company.location}</span>
                              </div>
                            )}
@@ -247,7 +247,7 @@ const MyInterests = () => {
                              <div key={i} className="flex flex-col gap-1 p-2 rounded-lg bg-white/5 border border-white/5 w-full">
                                 <div className="flex justify-between items-center">
                                     <span className="text-[11px] font-bold text-white tracking-tight">{op.role}</span>
-                                    <span className="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded">Match Found</span>
+                                    <span className="text-[9px] bg-[#4245f0]/20 text-[#6366f1] px-1.5 py-0.5 rounded">Match Found</span>
                                 </div>
                                 <div className="flex flex-wrap gap-1">
                                     {op.techStack?.slice(0, 3).map((tech, j) => (
@@ -258,14 +258,15 @@ const MyInterests = () => {
                           ))}
                         </div>
 
-                        <div className="flex gap-2">
+                        {/* Buttons pushed to bottom with mt-auto */}
+                        <div className="flex gap-2 mt-auto">
                            <Link 
                             to={`/company-detail?id=${company._id}`}
                             className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 border border-white/5"
                            >
                              View Details
                            </Link>
-                           <button className="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-black text-xs font-black rounded-xl transition-all shadow-lg shadow-amber-500/20">
+                           <button className="flex-1 py-3 bg-[#4245f0] hover:bg-[#6366f1] text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-[#4245f0]/20">
                              Apply Now
                            </button>
                         </div>

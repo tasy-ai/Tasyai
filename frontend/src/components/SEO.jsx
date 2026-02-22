@@ -12,6 +12,9 @@ const SEO = ({
   ogType = 'website' 
 }) => {
   const siteName = 'Tasyai';
+  const siteUrl = 'https://tasyai.com';
+  const currentUrl = canonical || (typeof window !== 'undefined' ? window.location.href : siteUrl);
+  
   const fullTitle = title ? `${title} | ${siteName}` : `${siteName} - Smart Job Searching & Talent Platform`;
   const defaultDescription = 'Tasyai is a cutting-edge job searching platform connecting talents with startups. Find your next career opportunity or the perfect team member.';
   const defaultKeywords = 'tasyai, job searching, career growth, startup hiring, talent platform, recruitment AI, job board';
@@ -22,9 +25,11 @@ const SEO = ({
       <title>{fullTitle}</title>
       <meta name="description" content={description || defaultDescription} />
       <meta name="keywords" content={keywords || defaultKeywords} />
+      <meta name="application-name" content={siteName} />
+      <meta name="apple-mobile-web-app-title" content={siteName} />
       
       {/* Canonical Link */}
-      {canonical && <link rel="canonical" href={canonical} />}
+      <link rel="canonical" href={currentUrl} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
@@ -38,6 +43,37 @@ const SEO = ({
       <meta name="twitter:title" content={ogTitle || fullTitle} />
       <meta name="twitter:description" content={ogDescription || description || defaultDescription} />
       {ogImage && <meta name="twitter:image" content={ogImage} /> }
+
+      {/* Structured Data (JSON-LD) - Boosting Brand Discovery */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": siteName,
+          "alternateName": "Tasyai Platform",
+          "url": siteUrl,
+          "logo": `${siteUrl}/logo.png`,
+          "description": defaultDescription,
+          "sameAs": [
+            "https://twitter.com/tasyai",
+            "https://github.com/tasyai"
+          ]
+        })}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": siteName,
+          "alternateName": ["Tasyai AI", "Tasy-ai"],
+          "url": siteUrl,
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": `${siteUrl}/search?q={search_term_string}`,
+            "query-input": "required name=search_term_string"
+          }
+        })}
+      </script>
     </Helmet>
   );
 };

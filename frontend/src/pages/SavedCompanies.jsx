@@ -91,8 +91,8 @@ const SavedCompanies = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-amber-500/10 rounded-lg">
-                  <Bookmark className="size-6 text-amber-500 fill-amber-500" />
+                <div className="p-2 bg-[#4245f0]/10 rounded-lg">
+                  <Bookmark className="size-6 text-[#4245f0] fill-[#4245f0]" />
                 </div>
                 <h1 className="text-3xl font-extrabold text-white tracking-tight">Saved Ecosystem</h1>
               </div>
@@ -137,7 +137,7 @@ const SavedCompanies = () => {
                       </div>
                       <button 
                         onClick={(e) => handleUnsave(company._id, e)}
-                        className="mt-12 p-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500 transition-all hover:text-white"
+                        className="mt-12 p-2 rounded-full bg-[#4245f0]/10 border border-[#4245f0]/20 text-[#4245f0] hover:bg-[#4245f0] transition-all hover:text-white"
                         title="Remove from saved"
                       >
                         <Bookmark className="size-4 fill-current" />
