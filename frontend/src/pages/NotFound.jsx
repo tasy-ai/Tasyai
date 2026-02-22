@@ -6,10 +6,15 @@ import {
   Compass,
   Bug
 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const NotFound = () => {
   return (
     <div className="min-h-screen bg-[#020617] font-sans overflow-x-hidden antialiased">
+      <SEO 
+        title="404 - Page Not Found"
+        description="The page you are looking for doesn't exist. Find your way back to Tasyai."
+      />
       {/* Global Styles */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');

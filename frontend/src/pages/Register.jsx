@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 import authService from '../services/authService';
 import { 
   Rocket, 
@@ -128,6 +129,10 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-[#020617] flex flex-col font-sans overflow-x-hidden relative">
+      <SEO 
+        title="Join Tasyai"
+        description="Register for Tasyai and start your journey as a founder or talent in the startup ecosystem."
+      />
       {/* Global Styles */}
 
 
