@@ -99,13 +99,11 @@ const userSchema = mongoose.Schema({
 // Encrypt password and security answer using bcrypt
 userSchema.pre('save', async function() {
     if (this.isModified('password')) {
-        console.log(`Hashing password for: ${this.email}`);
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
     }
 
     if (this.isModified('securityAnswer')) {
-        console.log(`Hashing security answer for: ${this.email}`);
         const salt = await bcrypt.genSalt(10);
         this.securityAnswer = await bcrypt.hash(this.securityAnswer.toLowerCase().trim(), salt);
     }

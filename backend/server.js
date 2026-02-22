@@ -37,12 +37,6 @@ app.use(cors({
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Request logger for debugging
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
-    next();
-});
-
 app.use('/api/auth', authRoutes);
 app.use('/api/companies', companyRoutes);
 
@@ -53,5 +47,4 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-    console.log('--- BACKEND DEBUG VERSION 2.0 ACTIVE ---');
 });

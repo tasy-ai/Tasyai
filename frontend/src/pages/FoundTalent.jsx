@@ -231,8 +231,6 @@ const FoundTalent = () => {
                   <Link 
                     to={`/profile-expansion?id=${candidate.id}`}
                     state={{ candidate }}
-
-                    onClick={(e) => console.log("View Profile Link Clicked for", candidate.name)}
                     style={{ zIndex: 100, position: 'relative' }}
                     className="flex-1 py-2.5 text-xs font-bold rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-center flex items-center justify-center text-white pointer-events-auto cursor-pointer"
                   >

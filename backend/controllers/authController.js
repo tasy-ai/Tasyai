@@ -15,22 +15,17 @@ const generateToken = (id) => {
 const registerUser = async (req, res) => {
     try {
         const { name, email, password, securityQuestion, securityAnswer } = req.body;
-        console.log('--- REGISTER REQUEST RECEIVED ---');
-        console.log('Body:', JSON.stringify(req.body));
 
         if (!name || !email || !password || !securityQuestion || !securityAnswer) {
-            console.log('Missing required fields');
             return res.status(400).json({ message: 'Please add all fields including security question and answer' });
         }
 
         const userExists = await User.findOne({ email: email.toLowerCase() });
 
         if (userExists) {
-            console.log(`User already exists: ${email}`);
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        console.log('Creating user in DB...');
         const user = await User.create({
             name,
             email: email.toLowerCase(),
@@ -40,7 +35,6 @@ const registerUser = async (req, res) => {
         });
 
         if (user) {
-            console.log(`User registered successfully: ${user.email} with ID: ${user._id}`);
             res.status(201).json({
                 _id: user._id,
                 name: user.name,
@@ -49,7 +43,6 @@ const registerUser = async (req, res) => {
                 isOnboarded: user.isOnboarded,
             });
         } else {
-            console.log('User creation returned null/undefined');
             res.status(400).json({ message: 'Invalid user data' });
         }
     } catch (error) {
@@ -62,25 +55,18 @@ const registerUser = async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 const authUser = async (req, res) => {
-    console.log('--- LOGIN REQUEST RECEIVED ---');
-    console.log('Body:', JSON.stringify(req.body));
     const { email, password } = req.body;
-    
-    console.log(`Login attempt for: ${email}`);
     
     // Find user and include password field
     const user = await User.findOne({ email: email ? email.toLowerCase() : '' }).select('+password');
 
     if (!user) {
-        console.log(`User not found in DB: ${email}`);
         return res.status(401).json({ message: 'Debug: User not found' });
     }
 
     const isMatch = await user.matchPassword(password);
-    console.log(`Password match result: ${isMatch} (Provided length: ${password ? password.length : 0})`);
     
     if (isMatch) {
-        console.log(`Login successful: ${email}`);
         res.json({
             _id: user._id,
             name: user.name,
@@ -90,7 +76,6 @@ const authUser = async (req, res) => {
             profilePicture: user.profilePicture
         });
     } else {
-        console.log(`Password mismatch for: ${email}`);
         res.status(401).json({ message: 'Debug: Password mismatch' });
     }
 };
@@ -131,15 +116,10 @@ const getUserProfile = async (req, res) => {
 // @access  Private
 const updateUserProfile = async (req, res) => {
     try {
-        console.log('--- UPDATE PROFILE REQUEST ---');
         // Check if req.user exists (set by protect middleware)
         if (!req.user || !req.user._id) {
-             console.log('Error: req.user is missing. Middleware might have failed.');
              return res.status(401).json({ message: 'Not authorized, user not found in request' });
         }
-
-        console.log('User ID from token:', req.user._id);
-        console.log('Update Data Body:', JSON.stringify(req.body));
 
         const user = await User.findById(req.user._id);
 
@@ -175,9 +155,7 @@ const updateUserProfile = async (req, res) => {
                  user.isOnboarded = req.body.isOnboarded;
             }
 
-            console.log('Saving user...');
             const updatedUser = await user.save();
-            console.log('User saved successfully');
 
             res.json({
                 _id: updatedUser._id,
@@ -200,7 +178,6 @@ const updateUserProfile = async (req, res) => {
                 token: generateToken(updatedUser._id),
             });
         } else {
-            console.log('User not found in DB by ID');
             res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
@@ -256,8 +233,6 @@ const getUserById = async (req, res) => {
 const googleLogin = async (req, res) => {
     try {
         const { email, name, profilePicture } = req.body;
-        console.log('--- GOOGLE LOGIN REQUEST RECEIVED ---');
-        console.log('Body:', JSON.stringify(req.body));
 
         if (!email) {
             return res.status(400).json({ message: 'Email is required' });
@@ -266,14 +241,12 @@ const googleLogin = async (req, res) => {
         let user = await User.findOne({ email: email.toLowerCase() });
 
         if (user) {
-            console.log(`User found: ${user.email}. Generating token...`);
             // Update profile picture if it's missing
             if (!user.profilePicture && profilePicture) {
                 user.profilePicture = profilePicture;
                 await user.save();
             }
         } else {
-            console.log(`User not found: ${email}. Creating new user...`);
             // Create user with a random password since it's required by the schema
             const randomPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
             user = await User.create({
@@ -283,7 +256,6 @@ const googleLogin = async (req, res) => {
                 profilePicture: profilePicture || '',
                 isOnboarded: false
             });
-            console.log(`New user created: ${user.email} with ID: ${user._id}`);
         }
 
         res.json({

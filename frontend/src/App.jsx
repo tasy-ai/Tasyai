@@ -34,7 +34,6 @@ const AuthSync = () => {
       // If signed in to Clerk but no local user OR not onboarded locally, sync with backend
       if (clerkLoaded && clerkSignedIn && (!localUser || !localUser.isOnboarded)) {
         try {
-          console.log('Global Sync: Syncing Clerk user to backend...', clerkUser.primaryEmailAddress?.emailAddress);
           const userData = {
             email: clerkUser.primaryEmailAddress?.emailAddress,
             name: clerkUser.fullName,
@@ -45,7 +44,6 @@ const AuthSync = () => {
           // Only reload if we didn't have a local user before (to initialize state)
           // or if the onboarding status changed.
           if (!localUser || localUser.isOnboarded !== res.isOnboarded) {
-             console.log('Global Sync: State changed, refreshing...');
              window.location.reload(); 
           }
         } catch (error) {
