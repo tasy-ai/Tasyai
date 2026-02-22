@@ -16,8 +16,8 @@ const registerUser = async (req, res) => {
     try {
         const { name, email, password, securityQuestion, securityAnswer } = req.body;
 
-        if (!name || !email || !password || !securityQuestion || !securityAnswer) {
-            return res.status(400).json({ message: 'Please add all fields including security question and answer' });
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'Please add all required fields' });
         }
 
         const userExists = await User.findOne({ email: email.toLowerCase() });
@@ -121,7 +121,7 @@ const updateUserProfile = async (req, res) => {
              return res.status(401).json({ message: 'Not authorized, user not found in request' });
         }
 
-        const user = await User.findById(req.user._id);
+        const user = await User.findById(req.user._id).select('+password +securityAnswer');
 
         if (user) {
             user.name = req.body.name || user.name;
@@ -182,9 +182,17 @@ const updateUserProfile = async (req, res) => {
         }
     } catch (error) {
         console.error('CRITICAL ERROR in updateUserProfile:', error);
-        const logError = require('../utils/logger');
-        logError(`Update Error: ${error.message}\nStack: ${error.stack}`);
-        res.status(500).json({ message: 'Server error updating profile', error: error.message, stack: error.stack });
+        try {
+            const logError = require('../utils/logger');
+            logError(`Update Error: ${error.message}\nStack: ${error.stack}`);
+        } catch (logErr) {
+            console.error('Failed to log to file:', logErr);
+        }
+        res.status(500).json({ 
+            message: 'Server error updating profile', 
+            error: error.message,
+            details: error.errors ? Object.keys(error.errors).map(k => error.errors[k].message) : null
+        });
     }
 };
 

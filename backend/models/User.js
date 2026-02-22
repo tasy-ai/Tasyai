@@ -27,12 +27,10 @@ const userSchema = mongoose.Schema({
     },
     experience: {
         type: String,
-        enum: ['0-2', '3-5', '6-10', '10+', ''],
         default: ''
     },
     role: {
         type: String,
-        enum: ['founder', 'co-founder', 'investor', 'talent', ''],
         default: ''
     },
     skills: {
@@ -85,11 +83,11 @@ const userSchema = mongoose.Schema({
     },
     securityQuestion: {
         type: String,
-        required: [true, 'Please add a security question']
+        default: ''
     },
     securityAnswer: {
         type: String,
-        required: [true, 'Please add a security answer'],
+        default: '',
         select: false
     }
 }, {
