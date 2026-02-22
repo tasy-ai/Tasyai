@@ -33,7 +33,7 @@ const seedCompanies = async () => {
                 description: 'Nebula is building the world\'s first decentralized GPU cloud, specifically optimized for large language model inference and training.',
                 industry: 'Artificial Intelligence',
                 fundingStage: 'Series A+',
-                logo: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=200&h=200&fit=crop',
+                logo: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=1200&h=400&fit=crop',
                 creator: adminUser._id,
                 benefits: ['High Equity', 'Async Culture', 'L&D Budget'],
                 openings: [
@@ -48,7 +48,7 @@ const seedCompanies = async () => {
                 description: 'Protecting the world\'s data from future quantum threats using post-quantum cryptography that runs on everything from servers to IoT devices.',
                 industry: 'Cybersecurity',
                 fundingStage: 'Seed',
-                logo: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=200&h=200&fit=crop',
+                logo: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&h=400&fit=crop',
                 creator: adminUser._id,
                 benefits: ['Premium Health', 'Annual Retreats', 'High Equity'],
                 openings: [
@@ -62,7 +62,7 @@ const seedCompanies = async () => {
                 description: 'BioHeal uses generative modeling to design novel molecules for rare diseases that have been neglected by big pharma.',
                 industry: 'Biotech',
                 fundingStage: 'Series A+',
-                logo: 'https://images.unsplash.com/photo-1532187875605-2fe358a3d46a?w=200&h=200&fit=crop',
+                logo: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=1200&h=400&fit=crop',
                 creator: adminUser._id,
                 benefits: ['L&D Budget', 'Flexible Hours'],
                 openings: [
@@ -76,7 +76,7 @@ const seedCompanies = async () => {
                 description: 'Optimizing renewable energy distribution using real-time demand forecasting and distributed ledger technology.',
                 industry: 'CleanTech',
                 fundingStage: 'Series A+',
-                logo: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=200&h=200&fit=crop',
+                logo: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&h=400&fit=crop',
                 creator: adminUser._id,
                 benefits: ['Remote First', 'Sustainable Travel Budget'],
                 openings: [
@@ -90,7 +90,7 @@ const seedCompanies = async () => {
                 description: 'Consolidating fragmented enterprise workflows into a single, AI-orchestrated dashboard.',
                 industry: 'Enterprise SaaS',
                 fundingStage: 'Seed',
-                logo: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=200&h=200&fit=crop',
+                logo: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=400&fit=crop',
                 creator: adminUser._id,
                 benefits: ['Unlimited PTO', 'Home Office Stipend'],
                 openings: [
@@ -104,7 +104,7 @@ const seedCompanies = async () => {
                 description: 'Aether builds collaborative robots that work alongside humans to 10x warehouse efficiency without changing infrastructure.',
                 industry: 'Robotics',
                 fundingStage: 'Series B',
-                logo: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=200&h=200&fit=crop',
+                logo: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=400&fit=crop',
                 creator: adminUser._id,
                 benefits: ['Equity', 'Gym Membership', 'Free Lunch'],
                 openings: [
@@ -118,7 +118,7 @@ const seedCompanies = async () => {
                 description: 'DeepCode uses specialized agents to monitor, debug, and patch production systems automatically.',
                 industry: 'DevOps',
                 fundingStage: 'Seed',
-                logo: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=200&h=200&fit=crop',
+                logo: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=1200&h=400&fit=crop',
                 creator: adminUser._id,
                 benefits: ['Async Culture', 'Mental Health Support'],
                 openings: [
@@ -132,7 +132,7 @@ const seedCompanies = async () => {
                 description: 'Unifying global payouts, treasury, and cards for startups operating across 50+ countries.',
                 industry: 'FinTech',
                 fundingStage: 'Series C',
-                logo: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=200&fit=crop',
+                logo: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=400&fit=crop',
                 creator: adminUser._id,
                 benefits: ['Parental Leave', 'Stock Options'],
                 openings: [
@@ -146,7 +146,7 @@ const seedCompanies = async () => {
                 description: 'Creating immersive AR/VR environments for medical and engineering simulations.',
                 industry: 'EdTech',
                 fundingStage: 'Series A+',
-                logo: 'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=200&h=200&fit=crop',
+                logo: 'https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?w=1200&h=400&fit=crop',
                 creator: adminUser._id,
                 benefits: ['VR Headset Allowance', 'L&D Budget'],
                 openings: [
@@ -160,7 +160,7 @@ const seedCompanies = async () => {
                 description: 'Orbit uses satellite data and AI to predict and route around supply chain disruptions before they happen.',
                 industry: 'Logistics',
                 fundingStage: 'Series B',
-                logo: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop',
+                logo: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&h=400&fit=crop',
                 creator: adminUser._id,
                 benefits: ['Flexible Working', 'Annual Retreats'],
                 openings: [

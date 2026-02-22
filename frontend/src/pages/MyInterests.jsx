@@ -195,34 +195,45 @@ const MyInterests = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                       whileHover={{ y: -4, borderColor: 'rgba(66, 69, 240, 0.5)' }}
-                      className="group p-6 rounded-2xl glass-effect flex flex-col transition-all cursor-pointer border border-white/5 relative overflow-hidden"
+                      className="group rounded-3xl glass-effect flex flex-col transition-all cursor-pointer border border-white/5 overflow-hidden relative"
                     >
-                      <div className="absolute top-0 right-0 p-12 bg-[#4245f0]/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-                      
-                      {/* Card Header */}
-                      <div className="flex justify-between items-start mb-6 relative z-10">
-                        <div className="size-14 rounded-xl overflow-hidden border border-white/10 bg-slate-900 flex items-center justify-center">
-                          {company.logo ? (
-                            <img src={company.logo} alt={company.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <Building2 className="text-slate-600 size-8" />
-                          )}
+                      {/* Company Header Image (20% of card) */}
+                      <div className="h-32 w-full relative bg-slate-900/40">
+                        {company.logo ? (
+                          <img 
+                            src={company.logo} 
+                            alt={company.name} 
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80" 
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#4245f0]/10 to-transparent">
+                            <Building2 className="text-slate-700 size-12" />
+                          </div>
+                        )}
+                        
+                        {/* Save Button relocated to banner */}
+                        <div className="absolute top-4 right-4 z-20">
+                          <button 
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleSave(company._id);
+                            }}
+                            className="p-2.5 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-white hover:text-[#4245f0] transition-all"
+                          >
+                            {isSaved ? (
+                              <Bookmark className="size-4 fill-[#4245f0] text-[#4245f0]" />
+                            ) : (
+                              <BookmarkPlus className="size-4" />
+                            )}
+                          </button>
                         </div>
-                        <button 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleSave(company._id);
-                          }}
-                          className="p-2 rounded-lg text-slate-500 hover:text-[#4245f0] hover:bg-[#4245f0]/10 transition-all"
-                        >
-                          {isSaved ? (
-                            <Bookmark className="size-5 fill-[#4245f0] text-[#4245f0]" />
-                          ) : (
-                            <BookmarkPlus className="size-5" />
-                          )}
-                        </button>
+                        
+                        {/* Subtle Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60"></div>
                       </div>
+
+                      <div className="p-6 flex flex-col flex-1 relative">
 
                       {/* Content wrapper with flex-grow to push buttons down */}
                       <div className="relative z-10 flex flex-col flex-1">
@@ -271,7 +282,8 @@ const MyInterests = () => {
                            </button>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
+                  </motion.div>
                   );
                 })}
               </div>
