@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 import authService from '../services/authService';
 import { 
   Mail, 
@@ -111,7 +112,10 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-[#020617] flex items-center justify-center overflow-hidden relative font-sans">
-
+      <SEO 
+        title="Login"
+        description="Login to Tasyai to access your startup dashboard and connect with top talent."
+      />
 
 
       <div className="fixed inset-0 z-0">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import SEO from '../components/SEO';
 import { 
   Rocket, 
   Zap, 
@@ -350,12 +351,17 @@ const Footer = () => {
   );
 };
 
+
 // --- Main Component ---
 
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-[#020617] text-white font-sans selection:bg-indigo-500/30">
-
+      <SEO 
+        title="Connecting Talent with Startups"
+        description="Tasyai is a smart job searching platform and startup collaboration hub. Build something that matters with the best founders and talent."
+        keywords="tasyai, job searching platform, startup hiring, tech jobs, founder matching, talent collaboration, build startups"
+      />
       
       <Navbar />
       <main>
