@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 import { 
   Code2,
   MapPin,
@@ -235,6 +236,10 @@ const Profile = () => {
 
   return (
     <div className="bg-[#020617] text-white font-sans min-h-screen">
+      <SEO 
+        title={`${user?.name || 'User'} Profile`}
+        description={user?.headline || "View professional profile on Tasyai."}
+      />
       <Toaster position="top-center" reverseOrder={false} />
       {/* Global Styles */}
 

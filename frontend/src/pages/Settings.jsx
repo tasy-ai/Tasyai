@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SEO from '../components/SEO';
 import Sidebar from '../components/layout/Sidebar';
 import { 
   User, 
@@ -124,6 +125,10 @@ const Settings = () => {
 
   return (
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
+      <SEO 
+        title="Settings"
+        description="Manage your account preferences and configurations on Tasyai."
+      />
       <Toaster position="top-center" reverseOrder={false} />
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 

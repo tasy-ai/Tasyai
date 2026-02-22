@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SEO from '../components/SEO';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import authService from '../services/authService';
@@ -197,6 +198,10 @@ const ProfileExpansion = () => {
 
   return (
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen overflow-hidden h-screen flex">
+      <SEO 
+        title={`${candidate?.name || 'Talent'} | Tasyai`}
+        description={candidate?.quote || "View professional profile on Tasyai."}
+      />
       <Toaster position="top-center" reverseOrder={false} />
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
       

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 import Sidebar from '../components/layout/Sidebar';
 import authService from '../services/authService';
 import { 
@@ -93,6 +94,10 @@ const FoundTalent = () => {
 
   return (
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen overflow-hidden h-screen">
+      <SEO 
+        title="Found Talent"
+        description="Connect with top-tier professionals ready to join your startup team."
+      />
       {/* Global Styles */}
 
 

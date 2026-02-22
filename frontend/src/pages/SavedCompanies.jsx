@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SEO from '../components/SEO';
 import { motion } from 'framer-motion';
 import { 
   Building2,
@@ -76,6 +77,10 @@ const SavedCompanies = () => {
 
   return (
     <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
+      <SEO 
+        title="Saved Ecosystem"
+        description="Track and manage the ventures that caught your eye on Tasyai."
+      />
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       <motion.main 
