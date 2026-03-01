@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '../components/layout/Sidebar';
 import { 
   Star,
@@ -143,75 +143,83 @@ const MyInterests = () => {
   });
 
   return (
-    <div className="bg-[#020617] text-white font-sans overflow-hidden h-screen">
-      <div className="flex h-screen w-full relative">
-        <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-
-        <motion.main 
-          layout
-          className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
-        >
-          <div className="max-w-7xl mx-auto p-10 pb-20">
-            <header className="mb-10">
-              <div className="flex items-center gap-4 mb-2">
-                <div className="size-10 bg-[#4245f0]/10 rounded-xl flex items-center justify-center">
-                    <Star className="size-6 text-[#4245f0] fill-[#4245f0]/30" />
-                </div>
-                <h2 className="text-4xl font-extrabold text-white tracking-tight">My Interests</h2>
+    <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex selection:bg-indigo-500/30">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+      
+      <motion.main 
+        layout
+        className={`flex-1 overflow-y-auto min-h-screen bg-[#020617] ${isSidebarOpen ? 'md:ml-[280px]' : 'md:ml-20'}`}
+      >
+        <div className="max-w-[1600px] mx-auto px-4 md:px-10 py-6 md:py-10 space-y-10 pt-20 md:pt-10">
+          {/* Header Section */}
+          <header className="flex flex-col xl:flex-row items-start xl:items-end justify-between gap-8">
+            <div className="space-y-4 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[10px] font-black uppercase tracking-[0.3em]">
+                <Star size={12} className="animate-pulse fill-amber-500/30" />
+                Intelligence Resonance
               </div>
-              <p className="text-slate-400 text-lg">Personalized opportunities curated based on your unique profile and skills.</p>
-            </header>
-
-            {/* Search */}
-            <div className="mb-12">
-              <div className="relative group max-w-2xl">
-                <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                  <Search className="size-5 text-slate-400 group-focus-within:text-[#6467f2] transition-colors" />
-                </div>
-                <input 
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-14 pl-14 pr-6 rounded-2xl glass-effect text-white placeholder-slate-500 focus:ring-2 focus:ring-[#6467f2] outline-none transition-all"
-                  placeholder="Filter your matches..."
-                />
-              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter uppercase leading-none">
+                My Interest.
+              </h1>
+              <p className="text-slate-400 text-sm md:text-base font-medium max-w-lg leading-relaxed">
+                Strategic alignments detected between your neural signature and elite startup protocols.
+              </p>
             </div>
-
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="h-80 rounded-2xl glass-effect animate-pulse bg-white/5"></div>
-                ))}
+            
+            <div className="relative group w-full xl:w-96">
+              <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                <Search className="size-4 text-slate-600 group-focus-within:text-indigo-500 transition-colors" />
               </div>
-            ) : filteredMatches.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <input 
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-14 pl-14 pr-6 rounded-2xl bg-white/[0.03] border border-white/10 text-white placeholder-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-xs font-black uppercase tracking-widest"
+                placeholder="Filter Alignment Matrix..."
+              />
+            </div>
+          </header>
+
+          <div className="h-px bg-white/5 w-full" />
+
+          {loading ? (
+             <div className="flex flex-col justify-center items-center py-32 gap-6">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-indigo-500 blur-2xl opacity-20 animate-pulse"></div>
+                  <Loader2 className="animate-spin size-12 text-indigo-500 relative z-10" />
+                </div>
+                <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Synchronizing Intelligence...</p>
+             </div>
+          ) : filteredMatches.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+              <AnimatePresence mode="popLayout">
                 {filteredMatches.map((company, index) => {
                   const isSaved = savedCompanyIds.includes(company._id);
                   return (
                     <motion.div
                       key={company._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      whileHover={{ y: -4, borderColor: 'rgba(66, 69, 240, 0.5)' }}
-                      className="group rounded-3xl glass-effect flex flex-col transition-all cursor-pointer border border-white/5 overflow-hidden relative"
+                      layout
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.4, delay: index * 0.05 }}
+                      onClick={() => navigate(`/company-detail?id=${company._id}`, { state: { company } })}
+                      className="bg-[#0f172a]/40 backdrop-blur-xl border border-white/10 rounded-[40px] overflow-hidden group hover:bg-white/[0.04] hover:border-white/20 transition-all cursor-pointer relative flex flex-col h-full shadow-2xl"
                     >
-                      {/* Company Header Image (20% of card) */}
-                      <div className="h-32 w-full relative bg-slate-900/40">
+                      {/* Banner Section */}
+                      <div className="h-32 w-full relative bg-slate-900/40 overflow-hidden">
                         {company.logo ? (
                           <img 
                             src={company.logo} 
                             alt={company.name} 
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80" 
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60 grayscale hover:grayscale-0" 
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#4245f0]/10 to-transparent">
-                            <Building2 className="text-slate-700 size-12" />
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-500/10 to-transparent">
+                            <Building2 className="text-slate-800 size-12" />
                           </div>
                         )}
                         
-                        {/* Save Button relocated to banner */}
                         <div className="absolute top-4 right-4 z-20">
                           <button 
                             onClick={(e) => {
@@ -219,84 +227,99 @@ const MyInterests = () => {
                               e.stopPropagation();
                               toggleSave(company._id);
                             }}
-                            className="p-2.5 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-white hover:text-[#4245f0] transition-all"
+                            className="p-3 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 text-white hover:text-amber-500 transition-all"
                           >
                             {isSaved ? (
-                              <Bookmark className="size-4 fill-[#4245f0] text-[#4245f0]" />
+                              <Bookmark className="size-4 fill-amber-500 text-amber-500" />
                             ) : (
                               <BookmarkPlus className="size-4" />
                             )}
                           </button>
                         </div>
-                        
-                        {/* Subtle Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-80"></div>
                       </div>
 
-                      <div className="p-6 flex flex-col flex-1 relative">
-
-                      {/* Content wrapper with flex-grow to push buttons down */}
-                      <div className="relative z-10 flex flex-col flex-1">
-                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#4245f0] transition-colors">{company.name}</h3>
-                        <p className="text-slate-400 text-sm italic mb-3 line-clamp-1">"{company.tagline}"</p>
+                      <div className="p-8 flex flex-col flex-1 gap-6">
+                        <div>
+                          <h3 className="text-xl font-black text-white group-hover:text-indigo-400 transition-colors tracking-tight uppercase leading-none">{company.name}</h3>
+                          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-3 line-clamp-1 italic">"{company.tagline}"</p>
+                        </div>
                         
-                        <div className="flex items-center gap-4 mb-4 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                           <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5">
-                              <Compass className="size-3 text-[#4245f0]" />
-                              <span>{company.industry}</span>
+                        <div className="flex flex-wrap gap-2">
+                           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/5 text-[9px] font-black uppercase tracking-widest text-indigo-400">
+                              <Compass className="size-3" />
+                              {company.industry}
                            </div>
                            {company.location && (
-                             <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5">
-                                <MapPin className="size-3 text-[#4245f0]" />
-                                <span>{company.location}</span>
+                             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/5 text-[9px] font-black uppercase tracking-widest text-slate-500">
+                                <MapPin className="size-3" />
+                                {company.location}
                              </div>
                            )}
                         </div>
 
-                        <div className="flex flex-wrap gap-2 mb-6 min-h-[50px]">
-                          {company.openings?.map((op, i) => (
-                             <div key={i} className="flex flex-col gap-1 p-2 rounded-lg bg-white/5 border border-white/5 w-full">
+                        <div className="space-y-3 flex-1">
+                          <h4 className="text-[8px] font-black text-slate-700 uppercase tracking-[0.4em]">Detected Resonance</h4>
+                          {company.openings?.slice(0, 1).map((op, i) => (
+                             <div key={i} className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2 group/match hover:border-indigo-500/20 transition-all">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[11px] font-bold text-white tracking-tight">{op.role}</span>
-                                    <span className="text-[9px] bg-[#4245f0]/20 text-[#6366f1] px-1.5 py-0.5 rounded">Match Found</span>
+                                    <span className="text-[10px] font-black text-white uppercase tracking-tight">{op.role}</span>
+                                    <span className="text-[8px] bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">Active</span>
                                 </div>
-                                <div className="flex flex-wrap gap-1">
-                                    {op.techStack?.slice(0, 3).map((tech, j) => (
-                                        <span key={j} className="text-[8px] text-slate-500">{tech}</span>
+                                <div className="flex flex-wrap gap-1.5 pt-1">
+                                    {op.techStack?.slice(0, 4).map((tech, j) => (
+                                        <span key={j} className="text-[8px] font-black text-slate-600 uppercase tracking-widest">{tech}</span>
                                     ))}
                                 </div>
                              </div>
                           ))}
                         </div>
 
-                        {/* Buttons pushed to bottom with mt-auto */}
-                        <div className="flex gap-2 mt-auto">
+                        <div className="flex gap-3 pt-2">
                            <Link 
                             to={`/company-detail?id=${company._id}`}
-                            className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 border border-white/5"
+                            className="flex-1 py-4 bg-white/[0.03] hover:bg-white/[0.06] text-white text-[9px] font-black uppercase tracking-widest rounded-2xl transition-all flex items-center justify-center gap-2 border border-white/5"
                            >
-                             View Details
+                             Archive
                            </Link>
-                           <button className="flex-1 py-3 bg-[#4245f0] hover:bg-[#6366f1] text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-[#4245f0]/20">
-                             Apply Now
+                           <button className="flex-1 py-4 bg-white text-[#020617] hover:bg-indigo-600 hover:text-white text-[9px] font-black uppercase tracking-widest rounded-2xl transition-all shadow-xl active:scale-95">
+                             Uplink
                            </button>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
+                    </motion.div>
                   );
                 })}
-              </div>
-            ) : (
-              <div className="text-center py-32 bg-white/5 rounded-3xl border border-dashed border-white/10">
-                 <Star className="size-16 text-slate-700 mx-auto mb-4" />
-                 <h3 className="text-xl font-bold text-slate-300">No interest matches yet</h3>
-                 <p className="text-slate-500 max-w-md mx-auto mt-2">Update your profile with more skills or experience to help our matching engine find the perfect startups for you.</p>
-              </div>
-            )}
-          </div>
-        </motion.main>
-      </div>
+              </AnimatePresence>
+            </div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-40 bg-[#0f172a]/20 backdrop-blur-xl rounded-[48px] border-2 border-dashed border-white/5"
+            >
+               <Star className="size-20 text-slate-800 mx-auto mb-8 animate-pulse" />
+               <h3 className="text-2xl font-black text-white uppercase tracking-tighter">No Resonance Found</h3>
+               <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] max-w-sm mx-auto mt-4 leading-loose">Initialize your capability profile with more technical metadata to trigger alignment protocols.</p>
+               <button 
+                  onClick={() => navigate('/settings')}
+                  className="mt-10 px-10 py-4 bg-white text-[#020617] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-2xl active:scale-95"
+               >
+                 Modify Signature
+               </button>
+            </motion.div>
+          )}
+
+          {/* System Footer */}
+          <footer className="pt-16 pb-16 border-t border-white/5 flex flex-col xl:flex-row justify-between items-center gap-8 text-[10px] font-black text-slate-600 uppercase tracking-widest">
+            <p>© 2024 Intelligence Match Engine. Operational.</p>
+            <div className="flex items-center gap-8">
+              <a href="#" className="hover:text-amber-500 transition-all">Support Nexus</a>
+              <a href="#" className="hover:text-amber-500 transition-all">Protocol Documentation</a>
+            </div>
+          </footer>
+        </div>
+      </motion.main>
     </div>
   );
 };

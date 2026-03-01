@@ -230,31 +230,31 @@ const Settings = () => {
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       <main 
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] transition-all duration-300 ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
+        className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-[280px]' : 'md:ml-20'}`}
       >
-        <div className="max-w-5xl mx-auto px-8 py-12 pb-32">
-          <div className="mb-10">
-            <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">Settings</h1>
-            <p className="text-slate-400 text-lg">Manage your account preferences and configurations.</p>
+        <div className="max-w-5xl mx-auto px-4 md:px-10 py-8 md:py-12 pb-32">
+          <div className="mb-8 md:mb-12 pt-12 md:pt-0">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-2">Settings</h1>
+            <p className="text-slate-400 text-sm md:text-lg">Manage your account preferences and configurations.</p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
             {/* Sidebar Navigation for Settings */}
             <div className="lg:w-64 flex-shrink-0">
-               <nav className="space-y-2 sticky top-8">
+               <nav className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0 sticky top-4 z-30 bg-[#020617]/50 backdrop-blur-sm lg:bg-transparent lg:static">
                  {tabs.map((tab) => {
                    const Icon = tab.icon;
                    return (
                      <button
                        key={tab.id}
                        onClick={() => setActiveTab(tab.id)}
-                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium ${
+                       className={`flex items-center gap-3 px-5 py-3 rounded-2xl transition-all text-xs md:text-sm font-bold whitespace-nowrap lg:w-full ${
                          activeTab === tab.id 
                            ? 'bg-[#4245f0] text-white shadow-lg shadow-[#4245f0]/20' 
-                           : 'text-slate-400 hover:text-white hover:bg-white/5'
+                           : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/5'
                        }`}
                      >
-                       <Icon className="size-5" />
+                       <Icon className="size-4 md:size-5" />
                        {tab.label}
                      </button>
                    )
@@ -271,94 +271,96 @@ const Settings = () => {
                  {activeTab === 'Account' && (
                    <div className="space-y-6">
                      {/* Section: Profile */}
-                     <section className="glass rounded-2xl p-8 border border-white/10">
-                       <h2 className="text-xl font-bold text-white mb-6">Profile Information</h2>
+                     <section className="glass rounded-[32px] p-6 md:p-8 border border-white/10">
+                       <h2 className="text-lg md:text-xl font-bold text-white mb-8">Profile Information</h2>
                        
-                       <div className="flex items-center gap-6 mb-8">
+                       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-10">
                          {profile.profilePicture ? (
-                           <div className="relative group">
+                           <div className="relative group shrink-0">
                              <img 
                               src={profile.profilePicture} 
                               alt="Avatar" 
-                              className="size-24 rounded-full object-cover border-2 border-[#4245f0]/30 shadow-xl shadow-indigo-500/10"
+                              className="size-24 md:size-28 rounded-3xl object-cover border-2 border-[#4245f0]/30 shadow-2xl shadow-indigo-500/20"
                              />
-                             <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                               <label htmlFor="imageUpload" className="cursor-pointer p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors">
+                             <div className="absolute inset-0 bg-black/40 rounded-3xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                               <label htmlFor="imageUpload" className="cursor-pointer p-3 bg-white/20 rounded-2xl hover:bg-white/30 transition-colors">
                                  <Plus className="size-5 text-white" />
                                </label>
                              </div>
                            </div>
                          ) : (
-                           <div className="size-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-xl shadow-indigo-500/20">
+                           <div className="size-24 md:size-28 rounded-3xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-2xl shadow-indigo-500/30 shrink-0">
                              {profile.name ? profile.name.charAt(0).toUpperCase() : 'U'}
                            </div>
                          )}
-                         <div className="flex-1 space-y-4">
+                         <div className="flex-1 space-y-5 w-full">
                            <div>
-                             <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Profile Picture</label>
-                             <div className="flex flex-col sm:flex-row gap-3">
+                             <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Profile Identity</label>
+                             <div className="flex flex-col gap-3">
                                <input 
                                  type="text" 
                                  name="profilePicture"
                                  placeholder="Paste image URL..."
                                  value={profile.profilePicture}
                                  onChange={handleProfileChange}
-                                 className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
+                                 className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
                                />
-                               <div className="flex items-center">
-                                 <span className="text-xs text-slate-600 px-2 uppercase font-bold">OR</span>
-                                 <input 
-                                   type="file" 
-                                   id="imageUpload"
-                                   accept="image/*"
-                                   className="hidden"
-                                   onChange={async (e) => {
-                                     const file = e.target.files[0];
-                                     if (file) {
-                                       if (file.size > 2 * 1024 * 1024) {
-                                         toast.error("Image size must be less than 2MB");
-                                         return;
-                                       }
-                                       const reader = new FileReader();
-                                       reader.onloadend = () => {
-                                         setProfile(prev => ({ ...prev, profilePicture: reader.result }));
-                                         toast.success("Image selected from device");
-                                       };
-                                       reader.readAsDataURL(file);
-                                     }
-                                   }}
-                                 />
-                                 <button 
-                                   type="button"
-                                   onClick={() => document.getElementById('imageUpload').click()}
-                                   className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap"
-                                 >
-                                   <Plus className="size-4" />
-                                   Upload Local Image
-                                 </button>
+                               <div className="flex items-center gap-3">
+                                 <div className="h-px flex-1 bg-white/5"></div>
+                                 <span className="text-[10px] text-slate-600 uppercase font-black">OR</span>
+                                 <div className="h-px flex-1 bg-white/5"></div>
                                </div>
+                               <input 
+                                 type="file" 
+                                 id="imageUpload"
+                                 accept="image/*"
+                                 className="hidden"
+                                 onChange={async (e) => {
+                                   const file = e.target.files[0];
+                                   if (file) {
+                                     if (file.size > 2 * 1024 * 1024) {
+                                       toast.error("Image size must be less than 2MB");
+                                       return;
+                                     }
+                                     const reader = new FileReader();
+                                     reader.onloadend = () => {
+                                       setProfile(prev => ({ ...prev, profilePicture: reader.result }));
+                                       toast.success("Image selected from device");
+                                     };
+                                     reader.readAsDataURL(file);
+                                   }
+                                 }}
+                               />
+                               <button 
+                                 type="button"
+                                 onClick={() => document.getElementById('imageUpload').click()}
+                                 className="w-full px-6 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2"
+                               >
+                                 <Plus className="size-4" />
+                                 Upload from Device
+                               </button>
                              </div>
                            </div>
-                           <p className="text-xs text-slate-500">Supported formats: JPG, PNG, GIF. Max size 2MB.</p>
+                           <p className="text-[10px] text-slate-500 font-medium">Supported: JPG, PNG, GIF. Max 2MB.</p>
                          </div>
                        </div>
 
                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                          <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <User className="size-3" /> Full Name
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                             Full Name
                            </label>
                            <input 
                              type="text" 
                              name="name"
                              value={profile.name}
                              onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
+                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all outline-none" 
                            />
                          </div>
                          <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Briefcase className="size-3" /> Professional Role
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                             Professional Role
                            </label>
                            <input 
                              type="text" 
@@ -366,12 +368,12 @@ const Settings = () => {
                              placeholder="e.g. Fullstack Developer"
                              value={profile.role}
                              onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
+                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all outline-none" 
                            />
                          </div>
                          <div className="space-y-2 md:col-span-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Zap className="size-3" /> Headline / Motto
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                             Professional Headline
                            </label>
                            <input 
                              type="text" 
@@ -379,13 +381,13 @@ const Settings = () => {
                              placeholder="Building the future of tech..."
                              value={profile.motto}
                              onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
+                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all outline-none" 
                            />
                          </div>
                          
                          <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Globe className="size-3" /> Location
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                             Primary Location
                            </label>
                            <input 
                              type="text" 
@@ -393,12 +395,12 @@ const Settings = () => {
                              placeholder="e.g. USA, Canada"
                              value={profile.country}
                              onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
+                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all outline-none" 
                            />
                          </div>
                          <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Clock className="size-3" /> Availability
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                             Availability Status
                            </label>
                            <input 
                              type="text" 
@@ -406,13 +408,13 @@ const Settings = () => {
                              placeholder="e.g. Full-time, Freelance"
                              value={profile.time}
                              onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
+                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all outline-none" 
                            />
                          </div>
 
                          <div className="space-y-2 md:col-span-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Award className="size-3" /> Key Achievements
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                             Career Highlights
                            </label>
                            <textarea 
                              rows="3" 
@@ -420,14 +422,14 @@ const Settings = () => {
                              placeholder="Briefly describe your highlights..."
                              value={profile.achievements}
                              onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none resize-none" 
+                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all outline-none resize-none" 
                            />
                          </div>
 
                          {/* Skills Section */}
                          <div className="space-y-4 md:col-span-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Zap className="size-3" /> Skills & Expertise
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                             Expertise & Core Skills
                            </label>
                            <div className="flex gap-2">
                              <input 
@@ -435,13 +437,13 @@ const Settings = () => {
                                value={newSkill}
                                onChange={(e) => setNewSkill(e.target.value)}
                                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
-                               placeholder="Add a skill (e.g. React)"
-                               className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none"
+                               placeholder="Add expertise (e.g. AI Strategy)"
+                               className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all outline-none"
                              />
                              <button 
                                type="button"
                                onClick={handleAddSkill}
-                               className="p-2.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+                               className="px-4 bg-[#4245f0]/10 hover:bg-[#4245f0] hover:text-white text-[#4245f0] rounded-xl transition-all"
                              >
                                <Plus className="size-5" />
                              </button>
@@ -450,24 +452,24 @@ const Settings = () => {
                              {profile.skills.map((skill, index) => (
                                <span 
                                  key={index} 
-                                 className="flex items-center gap-2 px-3 py-1.5 bg-[#4245f0]/10 border border-[#4245f0]/20 rounded-lg text-sm font-medium text-[#4245f0]"
+                                 className="flex items-center gap-2 px-4 py-2 bg-[#4245f0]/5 border border-[#4245f0]/20 rounded-xl text-xs font-bold text-[#4245f0] uppercase tracking-tight"
                                >
                                  {skill}
-                                 <button onClick={() => handleRemoveSkill(skill)}>
-                                   <X className="size-3 hover:text-white" />
+                                 <button onClick={() => handleRemoveSkill(skill)} className="hover:scale-110 transition-transform">
+                                   <X className="size-3.5" />
                                  </button>
                                </span>
                              ))}
                              {profile.skills.length === 0 && (
-                               <p className="text-xs text-slate-600 italic">No skills added yet.</p>
+                               <p className="text-xs text-slate-600 italic px-1">No expertise listed yet.</p>
                              )}
                            </div>
                          </div>
 
                          {/* Social Links */}
                          <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Linkedin className="size-3" /> LinkedIn URL
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                             LinkedIn
                            </label>
                            <input 
                              type="text" 
@@ -475,12 +477,12 @@ const Settings = () => {
                              placeholder="linkedin.com/in/username"
                              value={profile.linkedin}
                              onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
+                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all outline-none" 
                            />
                          </div>
                          <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Github className="size-3" /> GitHub URL
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                             GitHub
                            </label>
                            <input 
                              type="text" 
@@ -488,12 +490,12 @@ const Settings = () => {
                              placeholder="github.com/username"
                              value={profile.github}
                              onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
+                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all outline-none" 
                            />
                          </div>
                          <div className="space-y-2 md:col-span-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Globe className="size-3" /> Portfolio URL
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                             Portfolio / Website
                            </label>
                            <input 
                              type="text" 
@@ -501,59 +503,59 @@ const Settings = () => {
                              placeholder="yourportfolio.com"
                              value={profile.portfolio}
                              onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
+                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all outline-none" 
                            />
                          </div>
                        </div>
                        
-                       <div className="mt-8 flex justify-end">
+                       <div className="mt-10 flex justify-end">
                          <button 
                            onClick={handleSaveProfile}
                            disabled={isSaving}
-                           className="px-8 py-3 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-xl shadow-lg shadow-[#4245f0]/20 transition-all flex items-center gap-2 disabled:opacity-50"
+                           className="w-full md:w-auto px-10 py-4 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-[#4245f0]/20 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                          >
                            {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
-                           {isSaving ? 'Saving...' : 'Save Profile Changes'}
+                           {isSaving ? 'Synchronizing...' : 'Update Explorer Profile'}
                          </button>
                        </div>
                      </section>
 
                      {/* Section: Email */}
-                     <section className="glass rounded-2xl p-8 border border-white/10">
-                        <h2 className="text-xl font-bold text-white mb-6">Email Address</h2>
-                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
+                     <section className="glass rounded-[32px] p-6 md:p-8 border border-white/10">
+                        <h2 className="text-lg md:text-xl font-bold text-white mb-6">Security Baseline</h2>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 bg-white/[0.03] rounded-2xl border border-white/5 gap-4">
                           <div className="flex items-center gap-4">
-                            <div className="p-3 bg-white/5 rounded-lg">
-                              <Mail className="size-5 text-slate-300" />
+                            <div className="p-3 bg-white/5 rounded-xl">
+                              <Mail className="size-5 text-[#4245f0]" />
                             </div>
                             <div>
-                              <p className="text-white font-medium">{profile.email}</p>
-                              <p className="text-xs text-green-400 flex items-center gap-1 mt-0.5">
-                                <Check className="size-3" /> Verified Account
+                              <p className="text-white font-bold text-sm">{profile.email}</p>
+                              <p className="text-[10px] text-green-400 font-black uppercase tracking-widest flex items-center gap-1.5 mt-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span> Verified Identity
                               </p>
                             </div>
                           </div>
-                          <span className="text-xs text-slate-500 italic">Primary Contact</span>
+                          <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-lg">Primary Address</span>
                         </div>
                      </section>
                    </div>
                  )}
 
                  {activeTab === 'Notifications' && (
-                    <section className="glass rounded-2xl p-8 border border-white/10">
-                       <h2 className="text-xl font-bold text-white mb-6">Notification Preferences</h2>
-                       <div className="space-y-6">
+                    <section className="glass rounded-[32px] p-6 md:p-8 border border-white/10">
+                       <h2 className="text-lg md:text-xl font-bold text-white mb-8">Pulse Configurations</h2>
+                       <div className="space-y-4">
                          {Object.entries(notifications).map(([key, value]) => (
-                           <div key={key} className="flex items-center justify-between py-4 border-b border-white/5 last:border-0">
+                           <div key={key} className="flex items-center justify-between p-5 bg-white/[0.02] hover:bg-white/[0.04] rounded-2xl border border-white/5 transition-all">
                              <div>
-                               <p className="text-white font-medium capitalize">{key} Notifications</p>
-                               <p className="text-sm text-slate-400">Receive updates about {key} events.</p>
+                               <p className="text-white font-bold text-sm capitalize mb-0.5">{key} Notifications</p>
+                               <p className="text-xs text-slate-500">Enable real-time updates for {key} events.</p>
                              </div>
                              <button 
                                onClick={() => handleNotificationToggle(key)}
-                               className={`relative w-12 h-6 rounded-full transition-colors ${value ? 'bg-[#4245f0]' : 'bg-slate-700'}`}
+                               className={`relative w-12 h-6 rounded-full transition-all duration-300 ${value ? 'bg-[#4245f0] shadow-lg shadow-[#4245f0]/30' : 'bg-slate-800'}`}
                              >
-                               <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${value ? 'translate-x-6' : 'translate-x-0'}`} />
+                               <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-300 ${value ? 'translate-x-6' : 'translate-x-0'}`} />
                              </button>
                            </div>
                          ))}
@@ -562,138 +564,139 @@ const Settings = () => {
                  )}
 
                  {activeTab === 'Privacy' && (
-                    <section className="glass rounded-2xl p-8 border border-white/10">
-                       <h2 className="text-xl font-bold text-white mb-6">Privacy & Security</h2>
-                       <div className="space-y-6">
-                         <button className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors group">
+                    <section className="glass rounded-[32px] p-6 md:p-8 border border-white/10">
+                       <h2 className="text-lg md:text-xl font-bold text-white mb-8">Encryption & Access</h2>
+                       <div className="space-y-4">
+                         <button className="w-full flex items-center justify-between p-5 bg-white/[0.02] hover:bg-white/[0.06] rounded-2xl border border-white/5 transition-all group">
                            <div className="flex items-center gap-4">
-                             <div className="p-3 bg-white/5 rounded-lg">
-                               <Lock className="size-5 text-slate-300" />
+                             <div className="p-3 bg-white/5 rounded-xl group-hover:bg-[#4245f0]/10 transition-colors">
+                               <Lock className="size-5 text-[#4245f0]" />
                              </div>
                              <div className="text-left">
-                               <p className="text-white font-medium">Change Password</p>
-                               <p className="text-xs text-slate-400">Update your security credentials</p>
+                               <p className="text-white font-bold text-sm">Update Password</p>
+                               <p className="text-xs text-slate-500">Strengthen your security perimeter</p>
                              </div>
                            </div>
-                           <ChevronRight className="size-5 text-slate-500 group-hover:text-white transition-colors" />
+                           <ChevronRight className="size-5 text-slate-600 group-hover:text-white transition-all transform group-hover:translate-x-1" />
                          </button>
                          
-                         <button className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors group">
+                         <button className="w-full flex items-center justify-between p-5 bg-white/[0.02] hover:bg-white/[0.06] rounded-2xl border border-white/5 transition-all group">
                            <div className="flex items-center gap-4">
-                             <div className="p-3 bg-white/5 rounded-lg">
-                               <Globe className="size-5 text-slate-300" />
+                             <div className="p-3 bg-white/5 rounded-xl group-hover:bg-[#4245f0]/10 transition-colors">
+                               <Globe className="size-5 text-emerald-400" />
                              </div>
                              <div className="text-left">
-                               <p className="text-white font-medium">Active Sessions</p>
-                               <p className="text-xs text-slate-400">Manage your logged-in interactions</p>
+                               <p className="text-white font-bold text-sm">Active Command Centers</p>
+                               <p className="text-xs text-slate-500">Audit your current login sessions</p>
                              </div>
                            </div>
-                           <ChevronRight className="size-5 text-slate-500 group-hover:text-white transition-colors" />
+                           <ChevronRight className="size-5 text-slate-600 group-hover:text-white transition-all transform group-hover:translate-x-1" />
                          </button>
                        </div>
                     </section>
                  )}
 
                  {activeTab === 'Billing' && (
-                    <section className="glass rounded-2xl p-8 border border-white/10 text-center py-20">
-                       <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                         <CreditCard className="size-10 text-slate-500" />
+                    <section className="glass rounded-[32px] p-10 md:p-16 border border-white/10 text-center relative overflow-hidden">
+                       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-[#4245f0] to-transparent"></div>
+                       <div className="w-24 h-24 bg-white/[0.03] rounded-full flex items-center justify-center mx-auto mb-8 border border-white/5">
+                         <CreditCard className="size-10 text-slate-600" />
                        </div>
-                       <h2 className="text-xl font-bold text-white mb-2">No Active Subscription</h2>
-                       <p className="text-slate-400 max-w-md mx-auto mb-8">You are currently on the free plan. Upgrade to unlock premium features and higher limits.</p>
-                       <button className="px-8 py-3 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-xl shadow-lg shadow-[#4245f0]/20 transition-all">
-                         View Plans
+                       <h2 className="text-xl md:text-2xl font-black text-white mb-3">Enterprise Access: Free</h2>
+                       <p className="text-slate-500 text-sm md:text-base max-w-sm mx-auto mb-10 leading-relaxed font-medium">You are currently utilizing the public license. Escalate your limits with a premium workspace.</p>
+                       <button className="w-full sm:w-auto px-12 py-4 bg-white text-[#020617] font-black text-xs uppercase tracking-[0.2em] rounded-2xl hover:bg-[#4245f0] hover:text-white transition-all shadow-2xl">
+                         Escalate Workspace
                        </button>
                     </section>
                  )}
 
                  {activeTab === 'Feedback' && (
-                    <section className="glass rounded-2xl p-8 border border-white/10 relative overflow-hidden">
-                       <div className="absolute top-0 right-0 p-32 bg-[#4245f0]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-                       <h2 className="text-xl font-bold text-white mb-6 relative z-10">Share Your Feedback</h2>
+                    <section className="glass rounded-[32px] p-6 md:p-10 border border-white/10 relative overflow-hidden">
+                       <div className="absolute top-0 right-0 p-40 bg-[#4245f0]/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+                       <h2 className="text-lg md:text-xl font-bold text-white mb-8 relative z-10">Neural Feedback Loop</h2>
                        
-                       <form onSubmit={handleFeedbackSubmit} className="space-y-4 relative z-10 max-w-2xl">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">First Name</label>
+                       <form onSubmit={handleFeedbackSubmit} className="space-y-5 relative z-10">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div className="space-y-1.5">
+                              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">First Name</label>
                               <input 
                                 required
                                 type="text" 
                                 value={formData.firstName}
                                 onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                placeholder="Jordan"
+                                className="w-full rounded-2xl bg-white/[0.03] border border-white/10 px-5 py-3.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-700"
+                                placeholder="Pioneer Name"
                               />
                             </div>
-                            <div>
-                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Last Name</label>
+                            <div className="space-y-1.5">
+                              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Last Name</label>
                               <input 
                                 required
                                 type="text" 
                                 value={formData.lastName}
                                 onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                placeholder="Smith"
+                                className="w-full rounded-2xl bg-white/[0.03] border border-white/10 px-5 py-3.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-700"
+                                placeholder="Surname"
                               />
                             </div>
                           </div>
 
-                          <div>
-                            <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Email</label>
+                          <div className="space-y-1.5">
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Digital Signal (Email)</label>
                             <input 
                               required
                               type="email" 
                               value={formData.email}
                               onChange={(e) => setFormData({...formData, email: e.target.value})}
-                              className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                              placeholder="jordan@example.com"
+                              className="w-full rounded-2xl bg-white/[0.03] border border-white/10 px-5 py-3.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-700"
+                              placeholder="signal@tasyai.dev"
                             />
                           </div>
 
                           <div className="grid grid-cols-4 gap-4">
-                            <div className="col-span-1">
-                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Code</label>
+                            <div className="col-span-1 space-y-1.5">
+                              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Code</label>
                               <input 
                                 required
                                 type="text" 
                                 value={formData.phoneCode}
                                 onChange={(e) => setFormData({...formData, phoneCode: e.target.value})}
-                                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
+                                className="w-full rounded-2xl bg-white/[0.03] border border-white/10 px-4 py-3.5 text-sm text-white text-center focus:ring-2 focus:ring-[#4245f0] transition-all placeholder:text-slate-700"
                                 placeholder="+1"
                               />
                             </div>
-                            <div className="col-span-3">
-                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Phone Number</label>
+                            <div className="col-span-3 space-y-1.5">
+                              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Comms Number</label>
                               <input 
                                 required
                                 type="tel" 
                                 value={formData.phoneNumber}
                                 onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
-                                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                placeholder="555-0123"
+                                className="w-full rounded-2xl bg-white/[0.03] border border-white/10 px-5 py-3.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] transition-all placeholder:text-slate-700"
+                                placeholder="System ID"
                               />
                             </div>
                           </div>
 
-                          <div>
-                            <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Message</label>
+                          <div className="space-y-1.5">
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Neural Message</label>
                             <textarea 
                               required
-                              rows="4"
+                              rows="5"
                               value={formData.message}
                               onChange={(e) => setFormData({...formData, message: e.target.value})}
-                              className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all resize-none placeholder:text-slate-600"
-                              placeholder="Tell us what you think..."
+                              className="w-full rounded-2xl bg-white/[0.03] border border-white/10 px-5 py-3.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all resize-none placeholder:text-slate-700"
+                              placeholder="Transmit your observations..."
                             ></textarea>
                           </div>
                           
                           <button 
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-3 rounded-xl bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#4245f0]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
+                            className="w-full py-4 rounded-2xl bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-2xl shadow-[#4245f0]/30 transition-all disabled:opacity-50 hover:scale-[1.01] active:scale-[0.99]"
                           >
-                            {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-                            {isSubmitting ? 'Sending...' : 'Send Feedback'}
+                            {isSubmitting ? <Loader2 className="size-5 animate-spin" /> : <Send className="size-4" />}
+                            {isSubmitting ? 'Transmitting...' : 'Initiate Transmission'}
                           </button>
                        </form>
                     </section>

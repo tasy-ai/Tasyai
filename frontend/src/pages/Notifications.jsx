@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SEO from '../components/SEO';
+import {motion} from 'framer-motion';
 import { 
   Building2, 
   User, 
@@ -123,36 +124,36 @@ const Notifications = () => {
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       <main 
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] transition-all duration-300 ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
+        className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-[280px]' : 'md:ml-20'}`}
       >
-        <div className="max-w-4xl mx-auto px-6 py-8 pb-32">
+        <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-10 pb-32">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 md:mb-12 pt-12 md:pt-0">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
                 <Bell className="size-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Notifications</h1>
-                <p className="text-slate-400 text-sm">Stay updated with your latest activity</p>
+                <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Notifications</h1>
+                <p className="text-slate-400 text-sm md:text-base">Stay updated with your latest activity</p>
               </div>
             </div>
 
             <button 
               onClick={handleMarkAllRead}
-              className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs font-bold text-slate-300 transition-all"
+              className="w-full md:w-auto px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl text-xs font-bold text-slate-300 transition-all flex items-center justify-center"
             >
               Mark all as read
             </button>
           </div>
 
           {/* Filters */}
-          <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 no-scrollbar">
+          <div className="flex items-center gap-2 mb-8 md:mb-10 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
             {filters.map((filter) => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all relative ${
+                className={`px-5 py-2.5 rounded-2xl text-xs md:text-sm font-bold transition-all relative whitespace-nowrap ${
                   activeFilter === filter
                     ? 'bg-[#4245f0] text-white shadow-lg shadow-[#4245f0]/20'
                     : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/5'
@@ -173,23 +174,26 @@ const Notifications = () => {
           <div className="space-y-4">
             {filteredNotifications.length > 0 ? (
               filteredNotifications.map((notif, index) => (
-                <div
+                <motion.div
                   key={notif.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
                   onClick={() => handleToggleRead(notif.id)}
-                  className={`relative p-5 rounded-2xl border transition-all duration-300 group cursor-pointer ${
+                  className={`relative p-5 md:p-6 rounded-[28px] border transition-all duration-300 group cursor-pointer ${
                     notif.read ? 'bg-white/5 border-white/5 opacity-70' : 'bg-white/[0.08] border-[#4245f0]/30 shadow-lg shadow-indigo-500/5'
                   } hover:bg-white/10`}
                 >
-                  <div className="flex gap-4">
-                    <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center border ${notif.color}`}>
+                  <div className="flex gap-4 md:gap-5">
+                    <div className={`shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center border ${notif.color}`}>
                       {getIcon(notif.iconName)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-4 mb-1">
-                        <h3 className={`font-bold text-base truncate ${notif.read ? 'text-slate-200' : 'text-white'}`}>
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1 sm:gap-4 mb-2">
+                        <h3 className={`font-bold text-base md:text-lg truncate ${notif.read ? 'text-slate-300' : 'text-white'}`}>
                           {notif.title}
                         </h3>
-                        <span className="text-xs font-medium text-slate-500 whitespace-nowrap flex items-center gap-1">
+                        <span className="text-[10px] md:text-xs font-bold text-slate-500 whitespace-nowrap flex items-center gap-1.5 uppercase tracking-wider">
                           <Clock className="size-3" />
                           {notif.time}
                         </span>
@@ -201,17 +205,17 @@ const Notifications = () => {
                   </div>
                   
                   {!notif.read && (
-                    <div className="absolute top-5 right-5 w-2 h-2 rounded-full bg-[#4245f0] shadow-[0_0_8px_rgba(66,69,240,0.8)]"></div>
+                    <div className="absolute top-6 right-6 w-2.5 h-2.5 rounded-full bg-[#4245f0] shadow-[0_0_12px_rgba(66,69,240,0.8)]"></div>
                   )}
-                </div>
+                </motion.div>
               ))
             ) : (
-              <div className="text-center py-20">
-                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
-                  <Bell className="size-8 text-slate-600" />
+              <div className="text-center py-24 md:py-32 glass rounded-[40px] border border-dashed border-white/10">
+                <div className="w-20 h-20 rounded-[32px] bg-white/5 flex items-center justify-center mx-auto mb-6">
+                  <Bell className="size-10 text-slate-700" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-1">No notifications found</h3>
-                <p className="text-slate-500 text-sm">You're all caught up! Check back later.</p>
+                <h3 className="text-xl font-bold text-white mb-2">No notifications found</h3>
+                <p className="text-slate-500 text-sm md:text-base max-w-xs mx-auto">You're all caught up! We'll notify you when something important happens.</p>
               </div>
             )}
           </div>

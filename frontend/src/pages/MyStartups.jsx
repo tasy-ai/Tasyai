@@ -60,20 +60,20 @@ const MyStartups = () => {
 
       <motion.main 
         layout
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
+        className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-[280px]' : 'md:ml-20'}`}
       >
-        <div className="max-w-7xl mx-auto px-8 py-8 pb-32">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 pb-32">
           {/* Header */}
-          <div className="flex items-center justify-between mb-12">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 md:mb-12 pt-12 md:pt-0">
             <div>
-              <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">My Startups</h1>
-              <p className="text-slate-400 text-lg">Manage your ventures, track progress, and find talent.</p>
+              <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-2">My Startups</h1>
+              <p className="text-slate-400 text-base md:text-lg">Manage your ventures, track progress, and find talent.</p>
             </div>
             <motion.button 
               onClick={() => navigate('/add-company')}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-6 py-3 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-xl transition-all shadow-lg shadow-[#4245f0]/20 flex items-center gap-2"
+              className="w-full md:w-auto px-6 py-3 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-xl transition-all shadow-lg shadow-[#4245f0]/20 flex items-center justify-center gap-2"
             >
               <Plus className="size-5" />
               Launch New Venture
@@ -86,7 +86,7 @@ const MyStartups = () => {
               <Loader2 className="animate-spin size-10 text-[#4245f0]" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {startups.map((startup, index) => {
                 const gradientClass = getRandomGradient(index);
                 return (
@@ -95,18 +95,19 @@ const MyStartups = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="glass rounded-2xl overflow-hidden hover:bg-white/5 transition-colors group relative border-white/10 flex flex-col"
+                    onClick={() => navigate(`/company-detail?id=${startup._id}`, { state: { company: startup } })}
+                    className="glass rounded-[32px] overflow-hidden hover:bg-white/5 transition-all group relative border border-white/5 flex flex-col cursor-pointer"
                   >
                     {/* Card Header with Gradient Banner */}
-                    <div className={`h-24 bg-gradient-to-r ${gradientClass} relative`}>
-                        <div className="absolute top-4 right-4 bg-black/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white border border-white/10">
+                    <div className={`h-24 bg-gradient-to-r ${gradientClass} relative opacity-80 group-hover:opacity-100 transition-opacity`}>
+                        <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white border border-white/10 uppercase tracking-wider">
                             {startup.fundingStage}
                         </div>
                     </div>
 
                     <div className="p-6 relative flex flex-col flex-1">
                         {/* Logo */}
-                        <div className={`w-16 h-16 rounded-xl -mt-14 mb-4 border-4 border-[#020617] bg-slate-900 flex items-center justify-center shadow-lg overflow-hidden`}>
+                        <div className={`w-16 h-16 rounded-2xl -mt-14 mb-4 border-4 border-[#020617] bg-slate-900 flex items-center justify-center shadow-xl overflow-hidden`}>
                             {startup.logo ? (
                                 <img src={startup.logo} alt={startup.name} className="w-full h-full object-cover" />
                             ) : (
@@ -121,29 +122,29 @@ const MyStartups = () => {
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3 className="text-xl font-bold text-white mb-1 group-hover:text-[#4245f0] transition-colors">{startup.name}</h3>
-                                <p className="text-sm text-slate-400 line-clamp-1 italic">"{startup.tagline}"</p>
+                                <p className="text-xs text-slate-400 line-clamp-1 italic">"{startup.tagline}"</p>
                             </div>
-                            <button className="text-slate-500 hover:text-white transition-colors">
+                            <button className="text-slate-500 hover:text-white transition-colors p-1">
                                 <MoreHorizontal className="size-5" />
                             </button>
                         </div>
 
-                        <p className="text-slate-500 text-xs mb-6 line-clamp-2 leading-relaxed">
+                        <p className="text-slate-500 text-xs mb-6 line-clamp-2 leading-relaxed h-8">
                            {startup.description}
                         </p>
 
-                        {/* Stats - Using placeholder numbers as they are not in schema yet */}
-                        <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/5 mb-4">
+                        {/* Stats */}
+                        <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/5 mb-6">
                             <div className="text-center">
                                 <div className="text-[10px] text-slate-500 uppercase font-bold mb-1 tracking-wider">Hiring</div>
-                                <div className="font-bold text-white flex items-center justify-center gap-1">
+                                <div className="font-bold text-white text-xs flex items-center justify-center gap-1">
                                     <Users className="size-3 text-[#4245f0]" />
                                     {startup.openings?.length || 0} Roles
                                 </div>
                             </div>
                             <div className="text-center border-l border-white/5">
                                 <div className="text-[10px] text-slate-500 uppercase font-bold mb-1 tracking-wider">Industry</div>
-                                <div className="font-bold text-white text-xs flex items-center justify-center gap-1">
+                                <div className="font-bold text-white text-[10px] flex items-center justify-center gap-1 uppercase truncate px-2">
                                     {startup.industry}
                                 </div>
                             </div>
@@ -151,13 +152,16 @@ const MyStartups = () => {
 
                         {/* Footer / Action */}
                         <div className="mt-auto flex items-center justify-between text-sm">
-                            <div className="flex items-center gap-2 text-slate-400">
-                                <Clock className="size-4" />
+                            <div className="flex items-center gap-2 text-slate-500">
+                                <Clock className="size-3.5" />
                                 <span className="text-[10px] uppercase font-bold tracking-tight">Active Venture</span>
                             </div>
                             <button 
-                                onClick={() => navigate(`/company-detail?id=${startup._id}`, { state: { company: startup } })}
-                                className="flex items-center gap-1 text-[#4245f0] font-bold hover:gap-2 transition-all text-xs"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/company-detail?id=${startup._id}`, { state: { company: startup } });
+                                }}
+                                className="flex items-center gap-1.5 text-[#4245f0] font-bold hover:gap-2 transition-all text-xs"
                             >
                                 Manage <ArrowRight className="size-4" />
                             </button>
@@ -169,17 +173,17 @@ const MyStartups = () => {
 
               {/* Empty State / Add New Card */}
               <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.02 }}
                   onClick={() => navigate('/add-company')}
-                  className="glass rounded-2xl border-dashed border-2 border-white/10 hover:border-[#4245f0]/50 hover:bg-[#4245f0]/5 transition-all cursor-pointer flex flex-col items-center justify-center p-8 min-h-[350px] group"
+                  className="glass rounded-[32px] border-dashed border-2 border-white/10 hover:border-[#4245f0]/50 hover:bg-[#4245f0]/5 transition-all cursor-pointer flex flex-col items-center justify-center p-8 min-h-[350px] group"
               >
-                  <div className="w-16 h-16 rounded-full bg-white/5 group-hover:bg-[#4245f0]/20 flex items-center justify-center mb-6 transition-colors">
+                  <div className="w-16 h-16 rounded-2xl bg-white/5 group-hover:bg-[#4245f0]/20 flex items-center justify-center mb-6 transition-colors shadow-inner">
                       <Plus className="size-8 text-slate-500 group-hover:text-[#4245f0]" />
                   </div>
                   <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#4245f0] transition-colors">Start New Venture</h3>
-                  <p className="text-slate-400 text-center text-sm px-8">Ready to disrupt the market? Create a new company profile today.</p>
+                  <p className="text-slate-500 text-center text-sm px-4 leading-relaxed">Ready to disrupt the market? Create a new company profile today.</p>
               </motion.div>
             </div>
           )}

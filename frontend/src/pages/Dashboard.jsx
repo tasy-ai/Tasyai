@@ -207,22 +207,22 @@ const Dashboard = () => {
 
         <motion.main 
           layout
-          className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
+          className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-[280px]' : 'md:ml-20'}`}
         >
-          <div className="max-w-7xl mx-auto p-10 pb-20">
+          <div className="max-w-7xl mx-auto p-4 md:p-10 pb-20">
 
-            <header className="mb-10 flex items-start justify-between gap-6">
+            <header className="mb-8 md:mb-10 flex flex-col md:flex-row items-start justify-between gap-6 pt-12 md:pt-0">
               <div className="flex items-center gap-4">
                 <div>
-                  <h2 className="text-4xl font-extrabold text-white tracking-tight mb-2">Discover Companies</h2>
-                  <p className="text-slate-400 text-lg">Collaborate with high-growth startups looking for world-class talent.</p>
+                  <h2 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight mb-2">Discover Companies</h2>
+                  <p className="text-slate-400 text-base md:text-lg">Collaborate with high-growth startups looking for world-class talent.</p>
                 </div>
               </div>
               <motion.button 
                 onClick={() => navigate('/add-company')}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="shrink-0 py-3 px-6 bg-gradient-to-r from-[#6467f2] to-indigo-500 hover:from-indigo-500 hover:to-[#6467f2] text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all indigo-glow"
+                className="w-full md:w-auto shrink-0 py-3 px-6 bg-gradient-to-r from-[#6467f2] to-indigo-500 hover:from-indigo-500 hover:to-[#6467f2] text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all indigo-glow"
               >
                 <PlusCircle className="size-4" />
                 <span>Add Company</span>
@@ -230,7 +230,7 @@ const Dashboard = () => {
             </header>
 
             {/* Search and Filters */}
-            <div className="mb-12 space-y-6">
+            <div className="mb-10 md:mb-12 space-y-4 md:space-y-6">
               {/* Search Bar */}
               <div className="relative group">
                 <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
@@ -240,13 +240,13 @@ const Dashboard = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-16 pl-14 pr-6 rounded-2xl glass-effect text-white placeholder-slate-500 focus:ring-2 focus:ring-[#6467f2] focus:border-transparent transition-all outline-none text-lg"
+                  className="w-full h-14 md:h-16 pl-14 pr-6 rounded-2xl glass-effect text-white placeholder-slate-500 focus:ring-2 focus:ring-[#6467f2] focus:border-transparent transition-all outline-none text-base md:text-lg"
                   placeholder="Search by startup name, role, or technology stack..."
                 />
               </div>
 
               {/* Filter Buttons */}
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2 md:gap-3">
                 {filters.map((filter) => {
                   const Icon = filter.icon;
                   const isActive = activeFilter === filter.name;
@@ -257,13 +257,13 @@ const Dashboard = () => {
                       onClick={() => setActiveFilter(filter.name)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all ${
+                      className={`flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full font-medium text-xs md:text-sm transition-all ${
                         isActive 
-                          ? 'bg-[#6467f2] text-white' 
+                          ? 'bg-[#6467f2] text-white shadow-lg shadow-[#6467f2]/20' 
                           : 'glass-effect text-slate-300 hover:text-white hover:bg-white/10'
                       }`}
                     >
-                      {Icon && <Icon className="size-4" />}
+                      {Icon && <Icon className="size-3.5 md:size-4" />}
                       {filter.name}
                     </motion.button>
                   );
@@ -273,13 +273,13 @@ const Dashboard = () => {
 
             {/* Company Cards Grid */}
             {loadingCompanies ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
                 {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="h-80 rounded-2xl glass-effect animate-pulse bg-white/5"></div>
+                  <div key={i} className="h-80 rounded-3xl glass-effect animate-pulse bg-white/5"></div>
                 ))}
               </div>
             ) : filteredCompanies.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
                 {filteredCompanies.map((company, index) => {
                   const isSaved = savedCompanyIds.includes(company._id);
                   
@@ -289,24 +289,25 @@ const Dashboard = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      whileHover={{ y: -4, borderColor: 'rgba(100, 103, 242, 0.5)' }}
-                      className="group rounded-3xl glass-effect flex flex-col transition-all cursor-pointer border border-white/5 overflow-hidden"
+                      whileHover={{ y: -4, borderColor: 'rgba(100, 103, 242, 0.4)' }}
+                      onClick={() => navigate(`/company-detail?id=${company._id}`, { state: { company } })}
+                      className="group rounded-[32px] glass-effect flex flex-col transition-all cursor-pointer border border-white/5 overflow-hidden h-full"
                     >
-                      {/* Company Header Image (20% of card) */}
-                      <div className="h-32 w-full relative bg-slate-900/40">
+                      {/* Company Header Image */}
+                      <div className="h-40 w-full relative bg-slate-900/40">
                         {company.logo ? (
                           <img 
                             src={company.logo} 
                             alt={company.name} 
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90" 
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-500/10 to-transparent">
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#6467f2]/10 to-transparent">
                             <Building2 className="text-slate-700 size-12" />
                           </div>
                         )}
                         
-                        {/* Save Button relocated to top right of header image */}
+                        {/* Save Button */}
                         <div className="absolute top-4 right-4 z-20">
                           <button 
                             onClick={(e) => {
@@ -314,79 +315,79 @@ const Dashboard = () => {
                               e.stopPropagation();
                               toggleSave(company._id);
                             }}
-                            className="p-2.5 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-white hover:text-[#6467f2] transition-all"
+                            className="p-2.5 rounded-xl bg-[#020617]/60 backdrop-blur-md border border-white/10 text-white hover:text-[#6467f2] transition-all group/save"
                           >
                             {isSaved ? (
                               <Bookmark className="size-4 fill-[#6467f2] text-[#6467f2]" />
                             ) : (
-                              <BookmarkPlus className="size-4" />
+                              <BookmarkPlus className="size-4 group-hover/save:scale-110 transition-transform" />
                             )}
                           </button>
                         </div>
                         
-                        {/* Subtle Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60"></div>
+                        {/* Gradient Overlays */}
+                        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#020617] to-transparent"></div>
                       </div>
 
-                      <div className="p-6 flex flex-col flex-1">
+                      <div className="px-6 pb-6 pt-2 flex flex-col flex-1">
+                        <div className="mb-4">
+                          <h3 className="text-xl font-bold text-white mb-1 group-hover:text-[#6467f2] transition-colors">{company.name}</h3>
+                          <p className="text-[#6467f2] text-xs font-semibold tracking-wide uppercase">{company.industry}</p>
+                        </div>
+                        
+                        <p className="text-slate-400 text-sm leading-relaxed mb-6 line-clamp-2 min-h-[40px]">
+                          {company.tagline || company.description}
+                        </p>
+                        
+                        <div className="flex items-center gap-3 mb-6">
+                           {company.location && (
+                             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[11px] text-slate-400">
+                                <MapPin className="size-3 text-[#6467f2]" />
+                                <span>{company.location}</span>
+                             </div>
+                           )}
+                        </div>
 
-                      {/* Content */}
-                      <h3 className="text-xl font-bold text-white mb-2">{company.name}</h3>
-                      <p className="text-slate-400 text-sm italic mb-3">"{company.tagline}"</p>
-                      <p className="text-slate-500 text-xs leading-relaxed mb-6 line-clamp-2">{company.description}</p>
-                      
-                      <div className="flex items-center gap-4 mb-6 text-xs text-slate-400">
-                         <div className="flex items-center gap-1">
-                            <Compass className="size-3 text-[#6467f2]" />
-                            <span>{company.industry}</span>
-                         </div>
-                         {company.location && (
-                           <div className="flex items-center gap-1">
-                              <MapPin className="size-3 text-[#6467f2]" />
-                              <span>{company.location}</span>
-                           </div>
-                         )}
-                      </div>
+                        {/* Roles */}
+                        <div className="flex flex-wrap gap-2 mb-8 mt-auto">
+                          {company.openings?.slice(0, 2).map((op, i) => (
+                            <span 
+                              key={i} 
+                              className="px-2.5 py-1 rounded-lg bg-[#6467f2]/10 border border-[#6467f2]/20 text-[10px] font-bold text-[#6467f2] uppercase tracking-wide"
+                            >
+                              {op.role}
+                            </span>
+                          ))}
+                          {company.openings?.length > 2 && (
+                             <span className="text-[10px] text-slate-500 font-bold self-center ml-1">+{company.openings.length - 2} more</span>
+                          )}
+                        </div>
 
-                      {/* Roles */}
-                      <div className="flex flex-wrap gap-2 mb-8">
-                        {company.openings?.slice(0, 2).map((op, i) => (
-                          <span 
-                            key={i} 
-                            className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] font-bold text-slate-300 uppercase tracking-tight"
+                        {/* Actions */}
+                        <div className="flex gap-3 pt-4 border-t border-white/5">
+                          <motion.button 
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="flex-1 py-3 px-4 bg-[#6467f2] hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-all shadow-lg shadow-[#6467f2]/10"
                           >
-                            {op.role}
-                          </span>
-                        ))}
-                        {company.openings?.length > 2 && (
-                           <span className="text-[10px] text-slate-500 font-bold self-center">+{company.openings.length - 2} more</span>
-                        )}
+                            Explore
+                          </motion.button>
+                          <Link 
+                            to={`/company-detail?id=${company._id}`}
+                            state={{ company }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex-1 py-3 px-4 glass-effect text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center hover:bg-white/10"
+                          >
+                            Details
+                          </Link>
+                        </div>
                       </div>
-
-                      {/* Actions */}
-                      <div className="mt-auto flex gap-3">
-                        <motion.button 
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="flex-1 py-3 px-4 bg-[#6467f2] hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-all"
-                        >
-                          Show Interest
-                        </motion.button>
-                        <Link 
-                          to={`/company-detail?id=${company._id}`}
-                          state={{ company }}
-                          className="flex-1 py-3 px-4 glass-effect text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center hover:bg-white/10"
-                        >
-                          View Details
-                        </Link>
-                      </div>
-                    </div>
-                  </motion.div>
+                    </motion.div>
                   );
                 })}
               </div>
             ) : (
-              <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
+              <div className="text-center py-20 bg-white/5 rounded-[32px] border border-dashed border-white/10">
                  <Building2 className="size-16 text-slate-700 mx-auto mb-4" />
                  <h3 className="text-xl font-bold text-slate-300">No companies found</h3>
                  <p className="text-slate-500">Try adjusting your search or filters.</p>
@@ -394,14 +395,14 @@ const Dashboard = () => {
             )}
 
             {/* Load More */}
-            <div className="mt-16 flex justify-center">
+            <div className="mt-16 flex justify-center pb-10">
               <motion.button 
                 whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.05)' }}
                 whileTap={{ scale: 0.98 }}
-                className="px-8 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white font-semibold transition-all flex items-center gap-2"
+                className="px-8 py-3.5 rounded-2xl border border-white/10 hover:bg-white/5 text-slate-300 hover:text-white font-semibold transition-all flex items-center gap-2"
               >
-                Explore More Ecosystems
-                <ChevronDown className="size-5" />
+                Load More Ecosystems
+                <ChevronDown className="size-4" />
               </motion.button>
             </div>
           </div>
