@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import authService from '../../services/authService';
 import { 
   Rocket,
@@ -11,9 +12,9 @@ import {
   Menu,
   LogOut,
   Bell,
-  CheckCircle2
+  X,
+  Plus
 } from 'lucide-react';
-import companyService from '../../services/companyService';
 import notificationService from '../../services/notificationService';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -35,8 +36,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     // Listen for new notifications
     window.addEventListener('new_notification', checkNotifications);
     return () => window.removeEventListener('new_notification', checkNotifications);
-  }, [location.pathname]); // Also re-check on navigation
+  }, [location.pathname]);
 
+  // Close sidebar on navigation on mobile
+  useEffect(() => {
+    if (window.innerWidth < 768 && isOpen) {
+      toggleSidebar();
+    }
+  }, [location.pathname]);
 
   const handleLogout = () => {
     authService.logout();
@@ -45,225 +52,252 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   return (
     <>
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={toggleSidebar}
-        />
-      )}
+      {/* Mobile Toggle Button (Fixed Top-Left) */}
+      <motion.button 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        onClick={toggleSidebar}
+        className={`fixed top-4 left-4 z-[100] p-3 rounded-xl bg-[#6467f2] text-white md:hidden shadow-lg shadow-[#6467f2]/20 hover:bg-[#6467f2]/90 transition-all flex items-center justify-center ${
+          isOpen ? 'rotate-90' : 'rotate-0'
+        }`}
+      >
+        <AnimatePresence mode="wait">
+          {isOpen ? (
+            <motion.div key="close" initial={{ opacity: 0, rotate: -90 }} animate={{ opacity: 1, rotate: 0 }} exit={{ opacity: 0, rotate: 90 }}>
+              <X size={24} />
+            </motion.div>
+          ) : (
+            <motion.div key="open" initial={{ opacity: 0, rotate: 90 }} animate={{ opacity: 1, rotate: 0 }} exit={{ opacity: 0, rotate: -90 }}>
+              <Menu size={24} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.button>
 
-      {/* Sidebar */}
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] md:hidden"
+            onClick={toggleSidebar}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar Container */}
       <aside 
-        className={`fixed left-0 top-0 h-full z-40 flex flex-col sidebar-glass border-r border-white/5 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-          isOpen ? 'translate-x-0 w-72' : '-translate-x-full md:translate-x-0 w-20'
+        className={`fixed left-0 top-0 h-screen z-[90] flex flex-col bg-[#020617] border-r border-white/5 transition-all duration-500 ease-in-out ${
+          isOpen 
+            ? 'translate-x-0 w-72' 
+            : '-translate-x-full md:translate-x-0 md:w-20'
         }`}
       >
         <div className={`flex flex-col h-full ${isOpen ? 'p-6' : 'p-4 items-center'} transition-all`}>
           
-          {/* Header */}
-          <div className={`flex items-center mb-8 ${isOpen ? 'justify-between' : 'justify-center'}`}>
-            <div className={`flex items-center gap-3 overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-              <div className="whitespace-nowrap">
-                <h1 className="text-lg font-bold tracking-tight text-white">Tasyai</h1>
-                <p className="text-[10px] text-slate-400">Discovery Engine</p>
+          {/* Logo Section */}
+          <div className={`flex items-center mb-10 ${isOpen ? 'justify-between' : 'justify-center'}`}>
+            <div 
+              className="flex items-center gap-3 cursor-pointer group"
+              onClick={() => navigate('/dashboard')}
+            >
+              <div className="size-10 bg-[#6467f2] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                <Rocket className="size-6 text-white" />
               </div>
+              <span className={`text-xl font-bold text-white transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
+                Tasyai
+              </span>
             </div>
-
+            {/* Desktop Toggle Button */}
             <button 
               onClick={toggleSidebar}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors absolute right-0 top-6 mr-[-12px] md:static md:mr-0 z-50 bg-[#020617] md:bg-transparent border md:border-none border-white/10"
+              className={`p-2 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 transition-all md:flex hidden ${!isOpen && 'hidden'}`}
             >
-               <Menu className="size-6" />
+              <X size={20} />
             </button>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 space-y-2 w-full">
-            <Link 
+          {/* Navigation Items */}
+          <nav className="flex-1 space-y-2 w-full overflow-y-auto no-scrollbar">
+            <NavItem 
               to="/dashboard" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
-                isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/dashboard')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <Compass className={`size-[22px] shrink-0 ${isActive('/dashboard') ? 'fill-current' : ''}`} />
-              <span className={`text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                Discover Companies
-              </span>
-            </Link>
+              icon={<Compass />} 
+              label="Discover Companies" 
+              isOpen={isOpen} 
+              isActive={isActive('/dashboard')}
+            />
             
-            <Link 
+            <NavItem 
               to="/my-interests" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
-                isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/my-interests')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <div className={`p-1.5 rounded-lg transition-colors ${isActive('/my-interests') ? 'bg-amber-500/20 text-amber-500' : 'bg-white/5 text-slate-400 group-hover:text-amber-500 group-hover:bg-amber-500/10'}`}>
-                <Star className={`size-4 ${isActive('/my-interests') ? 'fill-current' : ''}`} />
-              </div>
-              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                My Interest
-              </span>
-            </Link>
+              icon={<Star />} 
+              label="My Interests" 
+              isOpen={isOpen} 
+              isActive={isActive('/my-interests')}
+            />
             
-            <Link 
+            <NavItem 
               to="/saved-companies" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
-                isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/saved-companies')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <Book className={`size-[22px] shrink-0 ${isActive('/saved-companies') ? 'fill-current' : ''}`} />
-              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                Saved Companies
-              </span>
-            </Link>
-            <Link 
-              to="/my-startups" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
-                isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/my-startups')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <Rocket className={`size-[22px] shrink-0 ${isActive('/my-startups') ? 'fill-current' : ''}`} />
-              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                My Startups
-              </span>
-            </Link>
-            <Link 
-              to="/notifications" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
-                isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/notifications')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <div className="relative">
-                <Bell className={`size-[22px] shrink-0 ${isActive('/notifications') ? 'fill-current' : ''}`} />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 size-2 bg-red-500 rounded-full border border-[#020617] animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
-                )}
-              </div>
-              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                Notifications
-              </span>
-            </Link>
+              icon={<Book />} 
+              label="Saved Companies" 
+              isOpen={isOpen} 
+              isActive={isActive('/saved-companies')}
+            />
 
-            <Link 
+            <NavItem 
+              to="/my-startups" 
+              icon={<Rocket />} 
+              label="My Startups" 
+              isOpen={isOpen} 
+              isActive={isActive('/my-startups')}
+            />
+
+            <NavItem 
+              to="/notifications" 
+              icon={<Bell />} 
+              label="Notifications" 
+              isOpen={isOpen} 
+              isActive={isActive('/notifications')}
+              count={unreadCount}
+            />
+
+            <NavItem 
               to="/found-talent" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
-                isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/found-talent')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <User className={`size-[22px] shrink-0 ${isActive('/found-talent') ? 'fill-current' : ''}`} />
-              <span className={`text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                Peoples
-              </span>
-            </Link>
+              icon={<User />} 
+              label="Peoples" 
+              isOpen={isOpen} 
+              isActive={isActive('/found-talent')}
+            />
+
+            <div className={`mt-6 pt-6 border-t border-white/5 ${!isOpen && 'hidden'}`}>
+               <Link 
+                to="/add-company"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-[#6467f2] text-white hover:bg-[#6467f2]/90 transition-all font-semibold text-sm shadow-lg shadow-[#6467f2]/10"
+              >
+                <Plus className="size-4" />
+                <span>Add Company</span>
+              </Link>
+            </div>
           </nav>
 
-          {/* Bottom Section */}
-          <div className={`mt-auto pt-6 border-t border-white/10 w-full ${!isOpen && 'flex flex-col items-center'}`}>
-            <Link 
+          {/* Bottom Controls */}
+          <div className={`mt-auto pt-6 border-t border-white/5 w-full space-y-2 ${!isOpen && 'flex flex-col items-center'}`}>
+            <NavItem 
               to="/settings" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
-                isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/settings')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
-            >
-              <Settings className={`size-[22px] shrink-0 ${isActive('/settings') ? 'fill-current' : ''}`} />
-              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                Settings
-              </span>
-            </Link>
+              icon={<Settings />} 
+              label="Settings" 
+              isOpen={isOpen} 
+              isActive={isActive('/settings')}
+            />
             
-            {/* Profile */}
-            {/* Profile Menu Trigger */}
+            {/* User Profile */}
             <div className="relative">
               {(() => {
                 const user = authService.getCurrentUser() || {};
-                const name = user.name || 'Guest User';
+                const name = user.name || 'User';
                 const role = user.role || 'Member';
                 const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
                 
                 return (
                   <button 
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  className={`mt-4 w-full flex items-center gap-3 rounded-xl transition-colors hover:bg-white/5 ${
-                    isOpen ? 'px-2 py-2 text-left' : 'p-2 justify-center'
+                  className={`w-full flex items-center gap-3 rounded-2xl transition-all hover:bg-white/5 ${
+                    isOpen ? 'px-3 py-2' : 'p-2 justify-center'
                   }`}
                 >
-                  <div className="size-10 rounded-full border border-white/10 overflow-hidden bg-gradient-to-br from-indigo-500/30 to-purple-500/30 shrink-0">
+                  <div className="size-10 rounded-xl bg-slate-800 flex items-center justify-center overflow-hidden border border-white/5">
                     {user.profilePicture ? (
-                         <img src={user.profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                      <img src={user.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white font-bold text-sm">
-                        {initials}
-                        </div>
+                      <span className="text-sm font-bold text-slate-400">{initials}</span>
                     )}
                   </div>
-                  <div className={`overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                    <p className="text-sm font-semibold text-white truncate">{name}</p>
-                    <p className="text-xs text-slate-500 truncate">{role}</p>
+                  
+                  <div className={`text-left overflow-hidden transition-all duration-300 ${isOpen ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0'}`}>
+                    <p className="text-sm font-bold text-white truncate">{name}</p>
+                    <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{role}</p>
                   </div>
                 </button>
                 );
               })()}
 
-
-              {/* Popup Menu */}
-              {showProfileMenu && (
-                <div
-                  className={`absolute bottom-full mb-2 bg-[#0f172a] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50 ${
-                    isOpen ? 'left-0 w-full' : 'left-full ml-2 w-48'
-                  }`}
-                >
-                  <div className="p-1">
+              <AnimatePresence>
+                {showProfileMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className={`absolute bottom-full mb-4 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[100] p-1 min-w-[200px] ${
+                      isOpen ? 'left-0 right-0' : 'left-full ml-4'
+                    }`}
+                  >
                     <Link 
                       to="/profile"
                       onClick={() => setShowProfileMenu(false)}
-                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                      className="flex items-center gap-3 w-full px-4 py-3 text-sm font-semibold text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
                     >
                       <User className="size-4" />
-                      <span>View Profile</span>
+                      Profile
                     </Link>
                     <button 
                       onClick={handleLogout}
-                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors text-left"
+                      className="flex items-center gap-3 w-full px-4 py-3 text-sm font-semibold text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-xl transition-all"
                     >
                       <LogOut className="size-4" />
-                      <span>Log Out</span>
+                      Logout
                     </button>
-                  </div>
-                </div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
       </aside>
     </>
+  );
+};
+
+// NavItem sub-component for cleaner code
+const NavItem = ({ to, icon, label, isOpen, isActive, count }) => {
+  return (
+    <Link 
+      to={to} 
+      className={`flex items-center gap-3 rounded-2xl transition-all group relative ${
+        isOpen ? 'px-4 py-3' : 'p-3 justify-center'
+      } ${
+        isActive
+          ? 'bg-[#6467f2] text-white shadow-lg shadow-[#6467f2]/20'
+          : 'text-slate-400 hover:bg-white/5 hover:text-white'
+      }`}
+    >
+      <div className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}>
+        {React.cloneElement(icon, { size: 20 })}
+      </div>
+      
+      <span className={`text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-300 ${
+          isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0 pointer-events-none'
+        }`}
+      >
+        {label}
+      </span>
+
+      {/* Count Badge */}
+      {count > 0 && (
+        <span className={`bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#020617] transition-all duration-300 ${
+          isOpen ? 'px-1.5 min-w-[20px] h-5' : 'absolute top-1 right-1 size-4 border-none text-[8px]'
+        }`}>
+          {count}
+        </span>
+      )}
+
+      {/* Tooltip for collapsed state */}
+      {!isOpen && (
+        <div className="absolute left-full ml-4 px-3 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[100] border border-white/5 shadow-xl">
+          {label}
+        </div>
+      )}
+    </Link>
   );
 };
 
