@@ -24,7 +24,6 @@ import {
   Link2
 } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
-import Sidebar from '../components/layout/Sidebar';
 import { candidates } from '../data/foundTalentData';
 
 const ProfileExpansion = () => {
@@ -35,7 +34,6 @@ const ProfileExpansion = () => {
 
   const [candidate, setCandidate] = useState(location.state?.candidate || null);
   const [loading, setLoading] = useState(!location.state?.candidate && !!candidateId);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
     const fetchCandidate = async () => {
@@ -197,19 +195,14 @@ const ProfileExpansion = () => {
   };
 
   return (
-    <div className="bg-[#020617] text-slate-100 font-sans min-h-screen overflow-hidden h-screen flex">
+    <>
       <SEO 
         title={`${candidate?.name || 'Talent'} | Tasyai`}
         description={candidate?.quote || "View professional profile on Tasyai."}
       />
       <Toaster position="top-center" reverseOrder={false} />
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-      
-      <motion.main 
-        layout
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
-      >
-        <div className="max-w-[1600px] mx-auto px-6 py-8 space-y-8">
+
+      <div className="p-5 md:p-10 pb-20">
             <button 
                 onClick={() => navigate(-1)}
                 className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4"
@@ -367,7 +360,7 @@ const ProfileExpansion = () => {
                         </h3>
                         
                         <form onSubmit={handleContactSubmit} className="space-y-4 relative z-10">
-                            <div className="grid grid-cols-2 gap-4">
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1">First Name</label>
                                     <input 
@@ -404,8 +397,8 @@ const ProfileExpansion = () => {
                                 />
                             </div>
 
-                            <div className="grid grid-cols-4 gap-4">
-                                <div className="col-span-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                                <div className="sm:col-span-1">
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Code</label>
                                     <input 
                                         required
@@ -416,7 +409,7 @@ const ProfileExpansion = () => {
                                         placeholder="+1"
                                     />
                                 </div>
-                                <div className="col-span-3">
+                                <div className="sm:col-span-3">
                                     <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Phone Number</label>
                                     <input 
                                         required
@@ -456,8 +449,7 @@ const ProfileExpansion = () => {
                 </div>
             </motion.div>
         </div>
-      </motion.main>
-    </div>
+    </>
   );
 };
 

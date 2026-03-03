@@ -9,17 +9,16 @@ import {
   Bookmark,
   Loader2,
   Rocket,
-  ArrowRight
+  ArrowRight,
+  ExternalLink
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/layout/Sidebar';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import notificationService from '../services/notificationService';
 import authService from '../services/authService';
 
 const SavedCompanies = () => {
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [savedCompanies, setSavedCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,101 +75,89 @@ const SavedCompanies = () => {
   };
 
   return (
-    <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
+    <>
       <SEO 
         title="Saved Ecosystem"
         description="Track and manage the ventures that caught your eye on Tasyai."
       />
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-
-      <motion.main 
-        layout
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
-      >
-        <div className="max-w-7xl mx-auto px-8 py-10 pb-32">
+      <div className="p-5 md:p-10 pb-20">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 bg-[#4245f0]/10 rounded-lg">
+                <div className="p-2 bg-[#4245f0]/10 rounded-lg shrink-0">
                   <Bookmark className="size-6 text-[#4245f0] fill-[#4245f0]" />
                 </div>
-                <h1 className="text-3xl font-extrabold text-white tracking-tight">Saved Ecosystem</h1>
+                <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Saved Ecosystem</h1>
               </div>
-              <p className="text-slate-400">Track and manage the ventures that caught your eye.</p>
+              <p className="text-slate-400 text-sm md:text-base">Track and manage the ventures that caught your eye.</p>
             </div>
-            
-            <button 
-              onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-2 px-6 py-2.5 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl transition-all font-semibold"
+            <Link 
+              to="/dashboard"
+              className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-white font-bold hover:bg-white/10 transition-all text-sm group"
             >
               Explore More
-              <ArrowRight className="size-4" />
-            </button>
+              <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
 
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-24">
-              <Loader2 className="size-12 text-[#4245f0] animate-spin mb-4" />
-              <p className="text-slate-500 font-medium">Scanning your vault...</p>
+            <div className="flex items-center justify-center py-40">
+              <Loader2 className="size-10 text-[#4245f0] animate-spin" />
             </div>
           ) : savedCompanies.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {savedCompanies.map((company) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {savedCompanies.map((company, index) => (
                 <motion.div
                   key={company._id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -5 }}
-                  onClick={() => navigate(`/company-detail?id=${company._id}`)}
-                  className="group relative bg-[#0f172a] border border-white/5 rounded-3xl overflow-hidden hover:border-[#4245f0]/30 transition-all cursor-pointer"
+                  transition={{ delay: index * 0.1 }}
+                  className="group relative bg-[#0a0f1d] border border-white/5 rounded-3xl overflow-hidden hover:border-[#4245f0]/30 transition-all duration-500 flex flex-col h-full"
                 >
-                  {/* Company Header Image (20% of card) */}
-                  <div className="h-32 w-full relative bg-slate-900/40">
-                    {company.logo ? (
-                      <img 
-                        src={company.logo} 
-                        alt={company.name} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80" 
-                      />
-                    ) : (
-                      <div className={`w-full h-full bg-gradient-to-br ${getRandomGradient(company.name)} opacity-30 flex items-center justify-center`}>
-                        <Building2 className="size-12 text-slate-400" />
-                      </div>
-                    )}
-                    
-                    {/* Unsave Button */}
-                    <div className="absolute top-4 right-4 z-20">
+                  <div className={`relative h-40 bg-gradient-to-br ${getRandomGradient(company.name)} p-6 flex flex-col justify-end`}>
+                    <div className="absolute top-4 right-4">
                       <button 
                         onClick={(e) => handleUnsave(company._id, e)}
-                        className="p-2.5 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-white hover:text-rose-500 transition-all"
-                        title="Remove from saved"
+                        className="p-2.5 rounded-xl bg-black/20 backdrop-blur-md border border-white/10 text-white hover:bg-white hover:text-red-500 transition-all"
                       >
                         <Bookmark className="size-4 fill-current" />
                       </button>
                     </div>
-                    
-                    {/* Subtle Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent opacity-60"></div>
+                    <div className="absolute bottom-4 left-6">
+                       <h3 className="text-xl font-black text-white group-hover:scale-105 transition-transform origin-left">{company.name}</h3>
+                    </div>
                   </div>
 
                   <div className="p-6 flex flex-col flex-1">
-
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#4245f0] transition-colors">
-                      {company.name}
-                    </h3>
-                    <p className="text-sm text-slate-400 mb-4 line-clamp-2 min-h-[40px]">
-                      {company.tagline}
+                    <p className="text-slate-400 text-sm line-clamp-3 mb-8 leading-relaxed">
+                      {company.tagline || company.description || "Building future-proof solutions for the modern world."}
                     </p>
 
-                    <div className="pt-4 border-t border-white/5 flex flex-wrap gap-3">
-                      <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5">
-                        <TrendingUp className="size-3 text-[#4245f0]" />
-                        {company.industry}
+                    <div className="flex items-center gap-6 mb-8 text-xs text-slate-500 font-bold uppercase tracking-wider">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="size-4 text-[#4245f0]" />
+                        {company.location || 'Remote'}
                       </div>
-                      <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 px-2.5 py-1 rounded-lg bg-white/5 border border-white/5">
-                        <div className="size-2 rounded-full bg-emerald-500"></div>
-                        {company.fundingStage}
+                      <div className="flex items-center gap-2">
+                        <Globe className="size-4 text-[#4245f0]" />
+                        {company.industry || 'Tech'}
                       </div>
+                    </div>
+
+                    <div className="mt-auto flex gap-3 pt-6 border-t border-white/5">
+                      <button 
+                        onClick={() => navigate(`/company-detail?id=${company._id}`)}
+                        className="flex-1 py-3 px-4 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#4245f0]/10"
+                      >
+                        Launch Overview
+                        <ArrowRight className="size-3" />
+                      </button>
+                      <button 
+                        onClick={() => company.website && window.open(company.website, '_blank')}
+                        className="p-3 bg-white/5 border border-white/5 text-slate-400 hover:text-white rounded-xl transition-all"
+                      >
+                        <ExternalLink className="size-4" />
+                      </button>
                     </div>
                   </div>
                 </motion.div>
@@ -178,29 +165,25 @@ const SavedCompanies = () => {
             </div>
           ) : (
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="glass p-20 rounded-[40px] border border-dashed border-white/10 text-center flex flex-col items-center max-w-2xl mx-auto"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-40 glass rounded-[2.5rem] border border-dashed border-white/10"
             >
-              <div className="w-20 h-20 bg-slate-800/50 rounded-3xl flex items-center justify-center mb-6">
-                <Bookmark className="size-10 text-slate-600" />
+              <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Rocket className="size-10 text-slate-700" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-3">Your Vault is Empty</h2>
-              <p className="text-slate-400 mb-8 leading-relaxed text-lg">
-                Start exploring the discovery engine to find revolutionary ventures and save them here for quick access.
-              </p>
+              <h3 className="text-2xl font-bold text-slate-300 mb-2">Startup Vault Empty</h3>
+              <p className="text-slate-500 max-w-sm mx-auto mb-8">You haven't added any ventures to your ecosystem yet. Explore the network to find your next match.</p>
               <button 
                 onClick={() => navigate('/dashboard')}
-                className="px-10 py-4 bg-[#4245f0] hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all shadow-xl shadow-[#4245f0]/20 flex items-center gap-3"
+                className="px-8 py-3 bg-white text-black font-black rounded-xl hover:bg-slate-200 transition-all uppercase text-xs tracking-widest"
               >
-                Launch Discovery Engine
-                <Rocket className="size-5" />
+                Scan Ecosystem
               </button>
             </motion.div>
           )}
-        </div>
-      </motion.main>
-    </div>
+      </div>
+    </>
   );
 };
 

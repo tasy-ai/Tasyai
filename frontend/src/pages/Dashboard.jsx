@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
-import Sidebar from '../components/layout/Sidebar';
 import { 
   Rocket,
   Compass,
@@ -30,7 +29,6 @@ const Dashboard = () => {
   const [activeFilter, setActiveFilter] = useState('All Roles');
   const [searchQuery, setSearchQuery] = useState('');
   const [savedCompanyIds, setSavedCompanyIds] = useState([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { user: clerkUser, isLoaded: clerkLoaded, isSignedIn: clerkSignedIn } = useUser();
   const [isSyncing, setIsSyncing] = useState(false);
   
@@ -196,33 +194,25 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="bg-[#020617] text-white font-sans min-h-screen">
+    <>
       <SEO 
         title="Dashboard"
         description="Discover high-growth startups and collaborative opportunities on Tasyai."
       />
-      <div className="flex h-screen w-full relative">
-        <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+      <div className="p-5 md:p-10 pb-20">
 
-
-        <motion.main 
-          layout
-          className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
-        >
-          <div className="max-w-7xl mx-auto p-10 pb-20">
-
-            <header className="mb-10 flex items-start justify-between gap-6">
+            <header className="mb-8 md:mb-10 flex flex-col md:flex-row items-start justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div>
-                  <h2 className="text-4xl font-extrabold text-white tracking-tight mb-2">Discover Companies</h2>
-                  <p className="text-slate-400 text-lg">Collaborate with high-growth startups looking for world-class talent.</p>
+                  <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2">Discover Companies</h2>
+                  <p className="text-slate-400 text-base md:text-lg">Collaborate with high-growth startups looking for world-class talent.</p>
                 </div>
               </div>
               <motion.button 
                 onClick={() => navigate('/add-company')}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="shrink-0 py-3 px-6 bg-gradient-to-r from-[#6467f2] to-indigo-500 hover:from-indigo-500 hover:to-[#6467f2] text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all indigo-glow"
+                className="w-full md:w-auto py-3 px-6 bg-gradient-to-r from-[#6467f2] to-indigo-500 hover:from-indigo-500 hover:to-[#6467f2] text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all indigo-glow"
               >
                 <PlusCircle className="size-4" />
                 <span>Add Company</span>
@@ -240,7 +230,7 @@ const Dashboard = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-16 pl-14 pr-6 rounded-2xl glass-effect text-white placeholder-slate-500 focus:ring-2 focus:ring-[#6467f2] focus:border-transparent transition-all outline-none text-lg"
+                  className="w-full h-14 md:h-16 pl-14 pr-6 rounded-2xl glass-effect text-white placeholder-slate-500 focus:ring-2 focus:ring-[#6467f2] focus:border-transparent transition-all outline-none text-base md:text-lg"
                   placeholder="Search by startup name, role, or technology stack..."
                 />
               </div>
@@ -289,7 +279,7 @@ const Dashboard = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      whileHover={{ y: -4, borderColor: 'rgba(100, 103, 242, 0.5)' }}
+                      whileHover={{ borderColor: 'rgba(100, 103, 242, 0.5)' }}
                       className="group rounded-3xl glass-effect flex flex-col transition-all cursor-pointer border border-white/5 overflow-hidden"
                     >
                       {/* Company Header Image (20% of card) */}
@@ -298,7 +288,7 @@ const Dashboard = () => {
                           <img 
                             src={company.logo} 
                             alt={company.name} 
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-80" 
+                            className="w-full h-full object-cover transition-transform duration-500 opacity-80" 
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-500/10 to-transparent">
@@ -365,17 +355,10 @@ const Dashboard = () => {
 
                       {/* Actions */}
                       <div className="mt-auto flex gap-3">
-                        <motion.button 
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="flex-1 py-3 px-4 bg-[#6467f2] hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition-all"
-                        >
-                          Show Interest
-                        </motion.button>
                         <Link 
                           to={`/company-detail?id=${company._id}`}
                           state={{ company }}
-                          className="flex-1 py-3 px-4 glass-effect text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center hover:bg-white/10"
+                          className="flex-1 py-3 px-4 bg-white/5 border border-white/10 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center hover:bg-white/10"
                         >
                           View Details
                         </Link>
@@ -405,9 +388,7 @@ const Dashboard = () => {
               </motion.button>
             </div>
           </div>
-        </motion.main>
-      </div>
-    </div>
+    </>
   );
 };
 

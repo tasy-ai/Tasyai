@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
+import MainLayout from './components/layout/MainLayout'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import ResetPassword from './pages/ResetPassword'
@@ -68,18 +69,23 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/sso-callback" element={<SsoCallback />} />  
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/found-talent" element={<FoundTalent />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/add-company" element={<CreateCompanyProfile />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/my-startups" element={<MyStartups />} />
-        <Route path="/company-detail" element={<CompanyDetail />} />
-        <Route path="/profile-expansion" element={<ProfileExpansion />} />
-        <Route path="/settings" element={<Settings />} />
+        
+        {/* Protected Routes within Main Layout */}
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/found-talent" element={<FoundTalent />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/add-company" element={<CreateCompanyProfile />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/my-startups" element={<MyStartups />} />
+          <Route path="/company-detail" element={<CompanyDetail />} />
+          <Route path="/profile-expansion" element={<ProfileExpansion />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/saved-companies" element={<SavedCompanies />} />
+          <Route path="/my-interests" element={<MyInterests />} />
+        </Route>
+
         <Route path="/OnboardingChatbot" element={<OnboardingChatbot />} />
-        <Route path="/saved-companies" element={<SavedCompanies />} />
-        <Route path="/my-interests" element={<MyInterests />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

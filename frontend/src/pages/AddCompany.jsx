@@ -21,12 +21,10 @@ import {
 } from 'lucide-react';
 
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/layout/Sidebar';
 import companyService from '../services/companyService';
 
 const CreateCompanyProfile = () => {
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
@@ -38,11 +36,14 @@ const CreateCompanyProfile = () => {
     mission: '',
     logo: '',
     location: '',
-    website: ''
+    website: '',
+    customBenefits: []
   });
 
+  const [newBenefit, setNewBenefit] = useState('');
+
   const [openings, setOpenings] = useState([
-    { role: '', experience: 'Mid-Level (3-5 years)', techStack: [], workModel: 'Remote', collaboration: 'Stipend + Equity' }
+    { role: '', experience: '', techStack: '', workModel: 'Remote', collaboration: '' }
   ]);
 
   const [selectedBenefits, setSelectedBenefits] = useState([]);
@@ -85,7 +86,7 @@ const CreateCompanyProfile = () => {
   };
 
   const addOpening = () => {
-    setOpenings([...openings, { role: '', experience: 'Mid-Level (3-5 years)', techStack: [], workModel: 'Remote', collaboration: 'Stipend + Equity' }]);
+    setOpenings([...openings, { role: '', experience: '', techStack: '', workModel: 'Remote', collaboration: '' }]);
   };
 
   const removeOpening = (index) => {
@@ -93,15 +94,21 @@ const CreateCompanyProfile = () => {
     setOpenings(openings.filter((_, i) => i !== index));
   };
 
-  const toggleTechInOpening = (openingIndex, techName) => {
-    const updatedOpenings = [...openings];
-    const techStack = updatedOpenings[openingIndex].techStack;
-    if (techStack.includes(techName)) {
-      updatedOpenings[openingIndex].techStack = techStack.filter(t => t !== techName);
-    } else {
-      updatedOpenings[openingIndex].techStack = [...techStack, techName];
+  const addCustomBenefit = () => {
+    if (newBenefit.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        customBenefits: [...prev.customBenefits, newBenefit.trim()]
+      }));
+      setNewBenefit('');
     }
-    setOpenings(updatedOpenings);
+  };
+
+  const removeCustomBenefit = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      customBenefits: prev.customBenefits.filter((_, i) => i !== index)
+    }));
   };
 
   const handleLogoUpload = (e) => {
@@ -134,10 +141,11 @@ const CreateCompanyProfile = () => {
         industry: formData.industry,
         fundingStage: formData.fundingStage,
         logo: formData.logo,
-        benefits: selectedBenefits,
+        benefits: [...selectedBenefits, ...formData.customBenefits],
         openings: openings.map(o => ({
             ...o,
-            workModel: o.workModel // Ensuring it matches enum if needed
+            techStack: typeof o.techStack === 'string' ? o.techStack.split(',').map(s => s.trim()).filter(s => s) : o.techStack,
+            workModel: o.workModel
         })),
         location: formData.location,
         website: formData.website
@@ -155,34 +163,28 @@ const CreateCompanyProfile = () => {
   };
 
   return (
-    <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
+    <>
       <SEO 
         title="Launch Venture"
         description="Craft a detailed profile to showcase your vision and team."
       />
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-
-      <motion.main 
-        layout
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
-      >
-        <div className="max-w-7xl mx-auto px-8 py-8 pb-32">
+      <div className="p-5 md:p-10 pb-32">
           {/* Header Actions */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#4245f0] rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-[#4245f0] rounded-lg flex items-center justify-center shrink-0">
                   <Rocket className="text-white size-5" />
                 </div>
-                <h1 className="text-white text-2xl font-bold tracking-tight">Launch Venture</h1>
+                <h1 className="text-white text-xl md:text-2xl font-bold tracking-tight">Launch Venture</h1>
              </div>
-             <div className="flex items-center gap-4">
-                <button onClick={() => navigate('/dashboard')} className="text-slate-400 hover:text-white transition-colors font-medium">Cancel</button>
+             <div className="flex items-center gap-4 w-full sm:w-auto">
+                <button onClick={() => navigate('/dashboard')} className="flex-1 sm:flex-none text-slate-400 hover:text-white transition-colors font-medium">Cancel</button>
                 <motion.button 
                   onClick={handleSubmit}
                   disabled={loading}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`px-6 py-2.5 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-lg transition-all shadow-lg shadow-[#4245f0]/20 flex items-center gap-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`flex-[2] sm:flex-none px-6 py-2.5 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-lg transition-all shadow-lg shadow-[#4245f0]/20 flex items-center justify-center gap-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {loading ? 'Publishing...' : 'Publish Profile'}
                   <Rocket className="size-4" />
@@ -195,15 +197,15 @@ const CreateCompanyProfile = () => {
             <div className="flex-1 space-y-12">
               {/* Header */}
               <header className="max-w-3xl">
-                <h2 className="text-4xl font-extrabold tracking-tight text-white mb-4">Launch Your Venture</h2>
-                <p className="text-slate-400 text-lg leading-relaxed">Craft a detailed profile to showcase your vision, team, and current opportunities to the world's best collaborators.</p>
+                <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">Launch Your Venture</h2>
+                <p className="text-slate-400 text-base md:text-lg leading-relaxed">Craft a detailed profile to showcase your vision, team, and current opportunities to the world's best collaborators.</p>
               </header>
 
             {/* Company Identity */}
             <motion.section 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass rounded-2xl p-8 space-y-8"
+              className="glass rounded-2xl p-5 md:p-8 space-y-8"
             >
               <div className="flex items-center gap-3 border-b border-white/10 pb-6">
                 <Building2 className="text-[#4245f0] size-8" />
@@ -311,7 +313,7 @@ const CreateCompanyProfile = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="glass rounded-2xl p-8 space-y-8"
+              className="glass rounded-2xl p-5 md:p-8 space-y-8"
             >
               <div className="flex items-center justify-between border-b border-white/10 pb-6">
                 <div className="flex items-center gap-3">
@@ -328,7 +330,7 @@ const CreateCompanyProfile = () => {
 
               <div className="space-y-6">
                 {openings.map((opening, idx) => (
-                  <div key={idx} className="p-8 bg-white/5 rounded-2xl border border-white/10 space-y-8 relative group">
+                  <div key={idx} className="p-5 md:p-8 bg-white/5 rounded-2xl border border-white/10 space-y-8 relative group">
                     <button 
                       onClick={() => removeOpening(idx)}
                       className="absolute top-6 right-6 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
@@ -336,66 +338,55 @@ const CreateCompanyProfile = () => {
                       <Trash2 className="size-5" />
                     </button>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="col-span-2 md:col-span-1">
                         <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Role Title</label>
                         <input 
                           type="text"
                           value={opening.role}
                           onChange={(e) => handleOpeningChange(idx, 'role', e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
                           placeholder="e.g. Senior Backend Engineer"
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
-                        <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Experience Level</label>
-                        <select 
+                        <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Experience Expectations</label>
+                        <input 
+                          type="text"
                           value={opening.experience}
                           onChange={(e) => handleOpeningChange(idx, 'experience', e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all appearance-none"
-                        >
-                          <option className="bg-slate-900">Junior (1-2 years)</option>
-                          <option className="bg-slate-900">Mid-Level (3-5 years)</option>
-                          <option className="bg-slate-900">Senior (5-8 years)</option>
-                          <option className="bg-slate-900">Principal / Lead (8+ years)</option>
-                        </select>
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
+                          placeholder="e.g. 3+ years, Mid-Level..."
+                        />
                       </div>
                     </div>
 
                     {/* Tech Stack */}
                     <div>
-                      <label className="block text-sm font-semibold text-slate-400 mb-3 uppercase tracking-tight">Primary Tech Stack</label>
-                      <div className="flex flex-wrap gap-4">
-                        {techOptions.map((tech) => (
-                          <button
-                            key={tech.name}
-                            onClick={() => toggleTechInOpening(idx, tech.name)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all group ${
-                              opening.techStack.includes(tech.name)
-                                ? 'bg-[#4245f0]/20 border-[#4245f0]/40'
-                                : 'bg-white/5 border-white/10 hover:border-[#4245f0]/50'
-                            }`}
-                          >
-                            <span className="text-lg">{tech.icon}</span>
-                            <span className="text-sm font-medium">{tech.name}</span>
-                          </button>
-                        ))}
-                      </div>
+                      <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Tech Stack (Comma separated)</label>
+                      <input 
+                        type="text"
+                        value={opening.techStack}
+                        onChange={(e) => handleOpeningChange(idx, 'techStack', e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
+                        placeholder="e.g. React, Node.js, Python..."
+                      />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Work Model */}
                       <div>
                         <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Work Model</label>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="flex flex-wrap gap-2">
                           {['Remote', 'Hybrid', 'Onsite'].map(m => (
                             <button 
                               key={m}
+                              type="button"
                               onClick={() => handleOpeningChange(idx, 'workModel', m)}
-                              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                              className={`flex-1 min-w-[80px] px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
                                 opening.workModel === m
-                                  ? 'bg-[#4245f0]/20 border border-[#4245f0]/40 text-[#4245f0]'
-                                  : 'bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10'
+                                  ? 'bg-[#4245f0]/20 border-[#4245f0]/40 text-[#4245f0]'
+                                  : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20'
                               }`}
                             >
                               {m}
@@ -406,16 +397,14 @@ const CreateCompanyProfile = () => {
 
                       {/* Collaboration */}
                       <div>
-                        <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Collaboration</label>
-                        <select 
+                        <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Collaboration / Perks</label>
+                        <input 
+                          type="text"
                           value={opening.collaboration}
                           onChange={(e) => handleOpeningChange(idx, 'collaboration', e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all appearance-none"
-                        >
-                          <option className="bg-slate-900">Equity Only (Co-founder)</option>
-                          <option className="bg-slate-900">Stipend + Equity</option>
-                          <option className="bg-slate-900">Project Based</option>
-                        </select>
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
+                          placeholder="e.g. Stipend + Equity, 2% Equity..."
+                        />
                       </div>
                     </div>
                   </div>
@@ -428,7 +417,7 @@ const CreateCompanyProfile = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="glass rounded-2xl p-8 space-y-8"
+              className="glass rounded-2xl p-5 md:p-8 space-y-8"
             >
               <div className="flex items-center gap-3 border-b border-white/10 pb-6">
                 <HeartHandshake className="text-[#4245f0] size-8" />
@@ -470,13 +459,41 @@ const CreateCompanyProfile = () => {
                   );
                 })}
                 
-                {/* Custom Perk */}
-                <label className="group relative flex flex-col p-5 rounded-2xl bg-white/5 border border-white/10 border-dashed border-[#4245f0]/20 cursor-pointer hover:bg-white/10 transition-all">
-                  <div className="flex flex-col items-center justify-center h-full gap-2">
-                    <PlusCircle className="size-6 text-slate-500" />
-                    <span className="text-xs font-bold text-slate-500">Custom Perk</span>
+                {/* Custom Benefit Adder */}
+                <div className="sm:col-span-2 lg:col-span-3 mt-4">
+                  <label className="block text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Add Custom Benefit / Perk</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text"
+                      value={newBenefit}
+                      onChange={(e) => setNewBenefit(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && addCustomBenefit()}
+                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all"
+                      placeholder="e.g. Flexible Travel Stipend..."
+                    />
+                    <button 
+                      onClick={addCustomBenefit}
+                      className="px-6 py-2.5 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-lg transition-all"
+                    >
+                      Add
+                    </button>
                   </div>
-                </label>
+                  
+                  {/* Custom Benefits Display */}
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {formData.customBenefits.map((benefit, i) => (
+                      <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-[#4245f0]/20 border border-[#4245f0]/30 rounded-full text-sm text-white">
+                        <span>{benefit}</span>
+                        <button 
+                          onClick={() => removeCustomBenefit(i)}
+                          className="text-[#4245f0] hover:text-white"
+                        >
+                          <X className="size-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </motion.section>
           </div>
@@ -536,10 +553,15 @@ const CreateCompanyProfile = () => {
                         <div className="flex justify-between items-start">
                           <div>
                             <p className="text-sm font-extrabold text-white">{openings[0].role}</p>
-                            <div className="flex gap-2 mt-2">
-                              {openings[0].techStack.slice(0, 3).map(tech => (
-                                <span key={tech} className="text-[9px] bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-mono uppercase">{tech}</span>
-                              ))}
+                            <div className="flex gap-2 mt-2 flex-wrap">
+                              {typeof openings[0].techStack === 'string' 
+                                ? openings[0].techStack.split(',').slice(0, 3).map(tech => (
+                                    <span key={tech} className="text-[9px] bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-mono uppercase">{tech.trim()}</span>
+                                  ))
+                                : openings[0].techStack.slice(0, 3).map(tech => (
+                                    <span key={tech} className="text-[9px] bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-mono uppercase">{tech}</span>
+                                  ))
+                              }
                             </div>
                           </div>
                           <span className="text-[10px] bg-[#4245f0]/10 text-[#4245f0] px-2 py-1 rounded-full font-bold">{openings[0].workModel}</span>
@@ -569,9 +591,8 @@ const CreateCompanyProfile = () => {
             </div>
           </aside>
         </div>
-        </div>
-      </motion.main>
-    </div>
+      </div>
+    </>
   );
 };
 

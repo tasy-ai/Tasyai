@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import SEO from '../components/SEO';
 import { 
   Code2,
@@ -24,10 +24,11 @@ import {
   Loader2,
   ArrowRight,
   Linkedin,
-  Github
+  Github,
+  CheckCircle2,
+  ExternalLink
 } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
-import Sidebar from '../components/layout/Sidebar';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 import companyService from '../services/companyService';
@@ -36,79 +37,11 @@ import Moto from '../components/profile/Moto';
 import Availability from '../components/profile/Availability';
 
 const Profile = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('My Ventures');
-  
-  // Default User Data (Fallback)
-  const defaultUser = {
-    name: 'Alex Rivera',
-    role: 'Founder',
-    headline: 'Building decentralized futures | UX Engineer',
-    location: 'San Francisco, CA',
-    email: 'alex.rivera@tasyai.dev',
-    year: '2024',
-    about: [
-      'A detailed personal introduction focusing on building decentralized systems and scaling startup teams. Dedicated to bridging the gap between high-level product strategy and technical execution in the Web3 space.',
-      'Currently focused on developing open-source tooling for DAO governance and peer-to-peer collaboration protocols. Looking for passionate designers and frontend architects to join the core team for Project Nexus.'
-    ],
-    achievements: "Built a layer-2 scaling solution for 50k+ daily users and led design for 5 Fortune 500 startups.",
-    motto: "Building decentralized futures | UX Engineer",
-    availability: "Available for full-time roles and strategic consulting",
-    skills: [
-      { name: 'React.js', level: 'high' },
-      { name: 'Product Strategy', level: 'high' },
-      { name: 'Solidity', level: 'high' },
-      { name: 'UI/UX Design', level: 'medium' },
-      { name: 'Rust', level: 'medium' },
-      { name: 'AI/ML Implementation', level: 'medium' },
-      { name: 'Project Management', level: 'low' },
-      { name: 'Go Language', level: 'low' }
-    ],
-    ventures: [
-      {
-        id: 1,
-        name: 'Project Nexus',
-        role: 'Founder',
-        description: 'Decentralized ERP Systems',
-        icon: Code2,
-        color: 'from-indigo-500 to-purple-600'
-      },
-      {
-        id: 2,
-        name: 'SafeGuard AI',
-        role: 'Founder',
-        description: 'Governance Security Tools',
-        icon: Shield,
-        color: 'from-orange-400 to-red-500'
-      }
-    ],
-    experienceList: [
-      {
-        period: '2021 — Present',
-        title: 'Principal Architect',
-        company: 'BlockTech',
-        description: 'Led the development of a layer-2 scaling solution used by 50k+ daily users.',
-        active: true
-      },
-      {
-        period: '2018 — 2021',
-        title: 'Lead Designer',
-        company: 'CreativeX',
-        description: 'Designed enterprise design systems for Fortune 500 startups.',
-        active: false
-      }
-    ],
-    links: [
-      { name: 'GitHub', url: 'github.com/arivera-dev', icon: Code, color: 'bg-slate-800' },
-      { name: 'LinkedIn', url: 'linkedin.com/in/alexrivera', icon: User, color: 'bg-[#0077b5]' },
-      { name: 'Personal Website', url: 'alexrivera.io', icon: Globe, color: 'bg-primary/40' },
-      { name: 'Whitepapers', url: 'Medium / Substack', icon: FileText, color: 'bg-slate-800' }
-    ]
-  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -119,509 +52,276 @@ const Profile = () => {
             return;
         }
 
-        if (!currentUser.isOnboarded) {
-            navigate('/OnboardingChatbot');
-            return;
-        }
+        const data = await authService.getProfile();
+        const myCompanies = await companyService.getMyCompanies();
 
-        if (location.state?.profileData) {
-             setUser(location.state.profileData);
-             setLoading(false);
-             return;
-        }
-
-        // Fetch from backend
-        try {
-            const [backendUser, myCompanies] = await Promise.all([
-                authService.getProfile(),
-                companyService.getMyCompanies()
-            ]);
-
-            // Map backendUser to frontend user format
-            const mappedUser = {
-                id: backendUser._id,
-                name: backendUser.name || "User",
-                role: backendUser.role || "Role not set",
-                headline: backendUser.motto || "No headline yet",
-                location: backendUser.country || "Location not set",
-                email: backendUser.email || "",
-                image: backendUser.profilePicture, 
-                achievements: backendUser.achievements,
-                motto: backendUser.motto,
-                availability: backendUser.time,
-                about: [], // Clear about since we use distinct components now
-                skills: (backendUser.skills && backendUser.skills.length > 0) 
-                    ? backendUser.skills.map(s => ({ name: s, level: 'high' })) 
-                    : [],
-                ventures: myCompanies.map(company => ({
-                    id: company._id,
-                    name: company.name,
-                    role: 'Founder',
-                    description: company.tagline,
-                    icon: Building2,
-                    color: 'from-slate-700 to-slate-600',
-                    fullData: company
-                })),
-                experienceList: [], // Backend stores experience as a string range, not a list
-                links: [
-                    backendUser.linkedin ? { name: 'LinkedIn', url: backendUser.linkedin, icon: Linkedin, color: 'bg-[#0077b5]' } : null,
-                    backendUser.github ? { name: 'GitHub', url: backendUser.github, icon: Github, color: 'bg-slate-800' } : null,
-                    backendUser.portfolio ? { name: 'Portfolio', url: backendUser.portfolio, icon: Globe, color: 'bg-primary/40' } : null
-                ].filter(Boolean)
-            };
-            setUser(mappedUser);
-        } catch (err) {
-            console.error("Failed to fetch profile", err);
-            toast.error("Failed to load profile");
-            setUser(defaultUser);
-        }
+        const mappedUser = {
+            id: data._id,
+            name: data.name || "User",
+            role: data.role || "Role not set",
+            headline: data.motto || "No headline yet",
+            location: data.country || "Location not set",
+            email: data.email || "",
+            image: data.profilePicture, 
+            achievements: data.achievements,
+            motto: data.motto,
+            availability: data.time,
+            skills: data.skills ? data.skills.map(s => ({ name: s, level: 'high' })) : [],
+            ventures: myCompanies.map(c => ({
+                id: c._id,
+                name: c.name,
+                role: 'Founder',
+                description: c.tagline,
+                icon: Building2,
+                color: 'from-indigo-500 to-purple-600'
+            })),
+            links: [
+                { name: 'LinkedIn', url: data.linkedin, icon: Linkedin, color: 'bg-[#0077b5]' },
+                { name: 'GitHub', url: data.github, icon: Github, color: 'bg-slate-800' },
+                { name: 'Portfolio', url: data.portfolio, icon: Globe, color: 'bg-primary/40' }
+            ].filter(l => l.url)
+        };
+        setUser(mappedUser);
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+        toast.error("Failed to load profile");
       } finally {
         setLoading(false);
       }
     };
-    
-    fetchProfile();
-  }, [navigate, location]);
 
-  const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/profile-expansion?id=${user.id}`;
-    
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: `${user.name} | Tasyai Profile`,
-          text: `Check out ${user.name}'s professional profile on Tasyai!`,
-          url: shareUrl,
-        });
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success('Profile link copied to clipboard!');
-      }
-    } catch (error) {
-      if (error.name !== 'AbortError') {
-        toast.error('Could not share profile');
-      }
-    }
-  };
+    fetchProfile();
+  }, [navigate]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#020617] text-white">
-        <Loader2 className="animate-spin size-10 text-[#4245f0]" />
+      <div className="flex bg-[#020617] min-h-screen items-center justify-center">
+          <Loader2 className="size-10 text-[#4245f0] animate-spin" />
       </div>
     );
   }
 
-  // Fallback if user is null for some reason (shouldn't happen due to defaultUser fallback on error, but good for safety)
-  if (!user) return null;
-
+  if (!user) {
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-[#020617] text-white">
+            <div className="text-center">
+                <h3 className="text-2xl font-bold mb-4">Profile Not Found</h3>
+                <button 
+                    onClick={() => navigate('/dashboard')}
+                    className="px-8 py-3 bg-[#4245f0] rounded-xl font-bold hover:bg-[#4245f0]/90 transition-all"
+                >
+                    Return to Ecosystem
+                </button>
+            </div>
+        </div>
+    );
+  }
 
   const getSkillClasses = (level) => {
-    const classes = {
-      high: 'bg-[#4245f0]/20 text-white border-[#4245f0]/30 hover:bg-[#4245f0]/30',
-      medium: 'bg-white/10 text-slate-200 border-white/10 hover:opacity-100',
-      low: 'bg-white/5 text-slate-400 border-white/5 hover:opacity-100'
+    const levels = {
+      high: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+      medium: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
+      low: 'bg-slate-500/10 border-slate-500/20 text-slate-400'
     };
-    return classes[level] || classes.medium;
-  };
-
-  const getSkillOpacity = (level) => {
-    const opacities = {
-      high: 'opacity-100',
-      medium: 'opacity-80',
-      low: 'opacity-60'
-    };
-    return opacities[level] || 'opacity-80';
+    return levels[level] || levels.medium;
   };
 
   return (
-    <div className="bg-[#020617] text-white font-sans min-h-screen">
+    <>
       <SEO 
-        title={`${user?.name || 'User'} Profile`}
-        description={user?.headline || "View professional profile on Tasyai."}
+        title={user?.name || "Professional Profile"}
+        description={user?.headline || "Connect with world-class talent and projects on Tasyai."}
       />
       <Toaster position="top-center" reverseOrder={false} />
-      {/* Global Styles */}
 
-
-      <div className="flex bg-[#020617] min-h-screen overflow-hidden">
-        <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-        
-        <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}>
+      <div className="p-5 md:p-10 pb-20">
           {/* Header */}
-          <header className="sticky top-0 z-40 w-full px-6 lg:px-20 py-4 glass-card border-t-0 border-x-0 border-b border-white/10 bg-[#020617]/80 backdrop-blur-md">
-          <div className="mx-auto flex max-w-7xl items-center justify-between">
-            <div className="flex items-center gap-8">
-              {/* Logo */}
-              <div className="flex items-center gap-3">
-                <div className="text-[#4245f0]">
-                  <Code2 className="size-8 text-[#4245f0]" />
-                </div>
-                <h1 className="text-xl font-bold tracking-tight">Tasyai</h1>
+          <div className="flex flex-col lg:flex-row items-start gap-10 mb-12">
+            <div className="relative group shrink-0">
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#4245f0] to-purple-600 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              <div className="relative w-32 h-32 md:w-44 md:h-44 rounded-3xl overflow-hidden border-4 border-slate-950 shadow-2xl bg-slate-900">
+                {user.image ? (
+                  <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
+                    <User className="size-16 md:size-24 text-slate-700" />
+                  </div>
+                )}
               </div>
-              
-       
             </div>
 
-            {/* Right Section */}
-            <div className="flex items-center gap-6">
-              {user.image ? (
-                <img src={user.image} className="h-10 w-10 rounded-full border-2 border-[#4245f0]/30 object-cover" alt="Avatar" />
-              ) : (
-                <div className="h-10 w-10 rounded-full border-2 border-[#4245f0]/30 bg-gradient-to-br from-[#4245f0]/30 to-purple-500/30 flex items-center justify-center text-white font-bold text-sm">
-                  {user.name ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '?'}
+            <div className="flex-1 pt-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+                <div>
+                  <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2">{user.name}</h1>
+                  <p className="text-lg md:text-xl text-slate-400 font-medium">{user.role}</p>
                 </div>
-              )}
+                <div className="flex items-center gap-3">
+                  <button className="p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                    <Share2 className="size-5 text-slate-400" />
+                  </button>
+                  <Link 
+                    to="/settings"
+                    className="px-6 py-3 bg-[#4245f0] hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-[#4245f0]/20 flex items-center gap-2"
+                  >
+                    <Edit3 className="size-5" />
+                    Edit Profile
+                  </Link>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                <div className="flex items-center gap-3 text-slate-400 bg-white/5 px-4 py-3 rounded-2xl border border-white/5">
+                  <MapPin className="size-5 text-[#4245f0]" />
+                  <span className="text-sm font-medium">{user.location}</span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-400 bg-white/5 px-4 py-3 rounded-2xl border border-white/5">
+                  <Mail className="size-5 text-[#4245f0]" />
+                  <span className="text-sm font-medium">{user.email}</span>
+                </div>
+              </div>
             </div>
           </div>
-        </header>
 
-        {/* Main Content */}
-        <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 py-12 lg:px-20">
-          {/* Profile Header */}
-          <section className="mb-12 flex flex-col items-center text-center">
-            <div className="relative mb-6">
-              <div className="avatar-glow h-32 w-32 rounded-full border-4 border-[#4245f0] p-1">
-                <div className="h-full w-full rounded-full overflow-hidden border-4 border-[#020617]">
-                  {user.image ? (
-                    <img src={user.image} alt={user.name} className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="h-full w-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-3xl font-bold">
-                      {user.name.split(' ').map(n => n[0]).join('')}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            {/* Left Column */}
+            <div className="lg:col-span-12 xl:col-span-7 space-y-10">
+              {/* Motto Card */}
+              <Moto user={user} />
+
+              {/* Achievements Card */}
+              <Achievements user={user} />
+
+              {/* Ventures/Tabs Section */}
+              <div className="space-y-6">
+                <div className="flex border-b border-white/10">
+                  {['My Ventures', 'Collaborations'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`px-8 py-4 text-sm font-bold tracking-wider uppercase transition-all relative ${
+                        activeTab === tab 
+                        ? 'text-[#4245f0]' 
+                        : 'text-slate-500 hover:text-white'
+                      }`}
+                    >
+                      {tab}
+                      {activeTab === tab && (
+                        <motion.div 
+                          layoutId="activeTab"
+                          className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#4245f0]"
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {activeTab === 'My Ventures' && (
+                    <>
+                      {user.ventures && user.ventures.length > 0 ? (
+                        user.ventures.map((venture) => (
+                          <motion.div 
+                            key={venture.id}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="glass p-6 rounded-2xl border border-white/10 hover:border-[#4245f0]/30 transition-all cursor-pointer group"
+                            onClick={() => navigate(`/company-detail?id=${venture.id}`)}
+                          >
+                            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${venture.color} flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform`}>
+                              <venture.icon className="size-6 text-white" />
+                            </div>
+                            <h4 className="text-lg font-bold text-white mb-1">{venture.name}</h4>
+                            <p className="text-sm text-slate-500 font-medium">{venture.role}</p>
+                            <div className="mt-4 flex items-center text-[#4245f0] text-xs font-bold gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              MANAGE VENTURE <ArrowRight className="size-3" />
+                            </div>
+                          </motion.div>
+                        ))
+                      ) : (
+                        <div className="col-span-2 glass p-10 rounded-2xl border border-dashed border-white/10 text-center space-y-4">
+                          <Rocket className="size-12 text-slate-800 mx-auto" />
+                          <p className="text-slate-500">No active ventures yet.</p>
+                          <Link to="/add-company" className="inline-block text-[#4245f0] font-bold text-sm">LAUNCH YOUR FIRST VENTURE</Link>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {activeTab === 'Collaborations' && (
+                    <div className="col-span-2 glass p-10 rounded-2xl border border-dashed border-white/10 text-center">
+                      <p className="text-slate-500">Coming soon: Track your contributions to other projects.</p>
                     </div>
                   )}
                 </div>
               </div>
-              <div className="absolute bottom-0 right-1 h-6 w-6 rounded-full border-4 border-[#020617] bg-green-500"></div>
             </div>
-            
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center gap-3">
-                <h2 className="text-4xl font-bold text-white">{user.name}</h2>
-                <span className="inline-flex items-center rounded-full bg-[#4245f0]/20 px-3 py-1 text-xs font-semibold text-[#4245f0] ring-1 ring-inset ring-[#4245f0]/30 uppercase tracking-wider">{user.badge || user.role}</span>
-              </div>
-              <p className="text-lg text-slate-400 max-w-xl">{user.headline || user.role}</p>
-              <div className="flex items-center gap-1 text-sm text-slate-500 mt-1">
-                <MapPin className="size-4" />
-                <span>{user.location}</span>
-              </div>
-            </div>
-            
-            <div className="mt-8 flex gap-4">
-              <motion.button 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => navigate('/settings')}
-                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#4245f0] to-[#6366f1] px-8 py-3 text-sm font-bold text-white transition-all hover:opacity-90 shadow-lg shadow-[#4245f0]/20"
-              >
-                <Edit3 className="size-4" />
-                <span>Edit Profile</span>
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleShare}
-                className="flex items-center gap-2 rounded-xl border border-white/10 glass-card px-8 py-3 text-sm font-bold text-white transition-all hover:bg-white/10"
-              >
-                <Share2 className="size-4" />
-                <span>Share</span>
-              </motion.button>
-            </div>
-          </section>
 
-          {/* Content Grid */}
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-            {/* Left Column */}
-            <div className="space-y-8 lg:col-span-7">
-              {/* Insights & About */}
-              <div className="space-y-6">
-                {(user.achievements || user.motto || user.availability) && (
-                  <div className="flex flex-col gap-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <Achievements content={user.achievements} />
-                      <Moto content={user.motto} />
-                    </div>
-                    <Availability content={user.availability} />
-                  </div>
-                )}
-                
-                {user.about && user.about.length > 0 && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="glass-card rounded-xl p-8"
-                  >
-                    <h3 className="mb-6 flex items-center gap-2 text-xl font-bold">
-                      <User className="size-5 text-[#4245f0]" />
-                      About
-                    </h3>
-                    <div className="space-y-4 text-slate-300 leading-relaxed">
-                      {user.about.map((paragraph, idx) => (
-                        <p key={idx}>{paragraph}</p>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
+            {/* Right Column */}
+            <div className="lg:col-span-12 xl:col-span-5 space-y-10">
+              {/* Availability Card */}
+              <Availability user={user} />
 
-                {(!user.achievements && !user.motto && !user.availability && (!user.about || user.about.length === 0)) && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="glass-card rounded-xl p-8 text-center"
-                  >
-                    <p className="text-slate-500 italic">No additional profile details provided yet.</p>
-                  </motion.div>
-                )}
-              </div>
-
-              {/* Skills */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="glass-card rounded-xl p-8"
-              >
-                <div className="mb-6 flex items-center justify-between">
-                  <h3 className="flex items-center gap-2 text-xl font-bold">
-                    <Zap className="size-5 text-[#4245f0]" />
-                    Skills
+              {/* Skills Card */}
+              <section className="glass rounded-3xl p-8 border border-white/10">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-xl font-bold flex items-center gap-3">
+                    <Zap className="size-6 text-[#4245f0]" />
+                    Expertise
                   </h3>
-                  <span className="text-xs text-slate-500 italic">Opacity indicates proficiency</span>
                 </div>
-                <div className="flex flex-wrap gap-3">
-                  {user.skills && user.skills.map((skill) => (
-                    <span 
-                      key={skill.name}
-                      className={`rounded-lg px-4 py-2 text-sm font-medium border cursor-default transition-all ${getSkillClasses(skill.level)} ${getSkillOpacity(skill.level)} hover:opacity-100`}
-                    >
-                      {skill.name}
-                    </span>
-                  ))}
+                <div className="flex flex-wrap gap-2">
+                  {user.skills && user.skills.length > 0 ? (
+                    user.skills.map((skill) => (
+                      <span 
+                        key={skill.name}
+                        className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all ${getSkillClasses(skill.level)}`}
+                      >
+                        {skill.name}
+                      </span>
+                    ))
+                  ) : (
+                    <p className="text-slate-600 italic">No skills added yet.</p>
+                  )}
                 </div>
-              </motion.div>
+              </section>
 
-              {/* Portfolio Links */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="glass-card rounded-xl p-8"
-              >
-                <h3 className="mb-6 flex items-center gap-2 text-xl font-bold">
-                  <Link2 className="size-5 text-[#4245f0]" />
-                  Portfolio & Links
+              {/* Social Links */}
+              <section className="glass rounded-3xl p-8 border border-white/10">
+                <h3 className="text-xl font-bold flex items-center gap-3 mb-8">
+                  <Link2 className="size-6 text-[#4245f0]" />
+                  Connect
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-3">
                   {user.links && user.links.length > 0 ? (
                     user.links.map((link) => {
                       const IconComponent = link.icon;
                       return (
-                        <motion.a 
+                        <a 
                           key={link.name}
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          whileHover={{ x: 4 }}
-                          className="flex items-center gap-4 rounded-xl bg-white/5 p-4 transition-all hover:bg-white/10"
+                          className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all group"
                         >
-                          <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${link.color || 'bg-slate-700'}`}>
-                            {IconComponent && <IconComponent className="size-5 text-white" />}
+                          <div className="flex items-center gap-4">
+                            <div className={`p-2 rounded-lg ${link.color} shadow-lg`}>
+                              <IconComponent className="size-5 text-white" />
+                            </div>
+                            <span className="font-bold text-white capitalize">{link.name}</span>
                           </div>
-                          <div>
-                            <p className="text-sm font-semibold">{link.name}</p>
-                            <p className="text-xs text-slate-500 truncate max-w-[150px]">{link.url.replace(/^https?:\/\//, '')}</p>
-                          </div>
-                        </motion.a>
+                          <ExternalLink className="size-4 text-slate-500 group-hover:text-white transition-colors" />
+                        </a>
                       );
                     })
                   ) : (
-                    <p className="text-slate-500 text-sm col-span-2 text-center py-4">No portfolio links added yet.</p>
+                    <p className="text-slate-600 italic">No social links added.</p>
                   )}
                 </div>
-              </motion.div>
-
-              {/* Contact Form - Removed */}
-            </div>
-
-            {/* Right Column */}
-            <div className="space-y-8 lg:col-span-5">
-              {/* Company Activity */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="glass-card rounded-xl p-8"
-              >
-                <div className="mb-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="flex items-center gap-2 text-xl font-bold">
-                      <Building2 className="size-5 text-[#4245f0]" />
-                      Company Activity
-                    </h3>
-                    <button className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                      <Plus className="size-4" />
-                    </button>
-                  </div>
-                  
-                  <div className="flex p-1 bg-white/5 rounded-xl border border-white/10">
-                    <button 
-                      onClick={() => setActiveTab('My Ventures')}
-                      className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'My Ventures' ? 'bg-[#4245f0] text-white shadow-lg shadow-[#4245f0]/20' : 'text-slate-400 hover:text-white'}`}
-                    >
-                      My Ventures
-                    </button>
-                    <button 
-                      onClick={() => setActiveTab('Applied To')}
-                      className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'Applied To' ? 'bg-[#4245f0] text-white shadow-lg shadow-[#4245f0]/20' : 'text-slate-400 hover:text-white'}`}
-                    >
-                      Applied To
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  {activeTab === 'My Ventures' ? (
-                    user.ventures && user.ventures.length > 0 ? (
-                      user.ventures.map((venture) => {
-                        const IconComponent = venture.icon;
-                        return (
-                          <div key={venture.id} className="flex items-center justify-between gap-4 group">
-                            <div className="flex items-center gap-4">
-                              <div className={`h-14 w-14 rounded-xl bg-gradient-to-br ${venture.color || 'from-slate-700 to-slate-600'} p-3 flex items-center justify-center shrink-0`}>
-                                {IconComponent ? <IconComponent className="size-7 text-white" /> : <Code2 className="size-7 text-white" />}
-                              </div>
-                              <div className="overflow-hidden">
-                                <div className="flex items-center gap-2 mb-0.5">
-                                  <h4 className="font-bold truncate">{venture.name}</h4>
-                                  <span className="inline-flex items-center rounded-full bg-[#4245f0]/10 px-2 py-0.5 text-[10px] font-bold text-[#4245f0] ring-1 ring-inset ring-[#4245f0]/30 uppercase tracking-tighter">{venture.role}</span>
-                                </div>
-                                <p className="text-xs text-slate-400">{venture.description}</p>
-                              </div>
-                            </div>
-                            <button className="rounded-lg bg-white/5 px-4 py-2 text-xs font-bold transition-all hover:bg-white/10 hover:text-[#4245f0]">Manage</button>
-                          </div>
-                        );
-                      })
-                    ) : ( 
-                      <div className="text-slate-500 text-center py-4">No public ventures listed.</div>
-                    )
-                  ) : (
-                    <div className="text-slate-500 text-center py-4">No pending applications.</div>
-                  )}
-
-                  {activeTab === 'My Ventures' && (
-                    <div className="pt-4 mt-6 border-t border-white/5">
-                      <p className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-4 flex items-center gap-2">
-                        <span className="w-1 h-1 rounded-full bg-slate-500"></span>
-                        Preview: Applied Companies
-                      </p>
-                      <div 
-                        onClick={() => setActiveTab('Applied To')}
-                        className="flex items-center justify-between gap-4 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition-all cursor-pointer"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="h-14 w-14 rounded-xl bg-slate-800 p-3 flex items-center justify-center shrink-0">
-                            <Rocket className="size-7 text-indigo-400" />
-                          </div>
-                          <div className="overflow-hidden">
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <h4 className="font-bold truncate">Nova Protocol</h4>
-                              <span className="inline-flex items-center rounded-full bg-amber-400/10 px-2 py-0.5 text-[10px] font-bold text-amber-400 ring-1 ring-inset ring-amber-400/30 uppercase tracking-tighter">Applied - Pending</span>
-                            </div>
-                            <p className="text-xs text-slate-400">Cross-chain Liquidity</p>
-                          </div>
-                        </div>
-                        <button className="rounded-lg bg-white/5 px-4 py-2 text-xs font-bold transition-all hover:bg-white/10">View Info</button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-
-              {/* Status */}
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="glass-card rounded-xl p-8"
-              >
-                <h3 className="mb-6 flex items-center gap-2 text-xl font-bold">
-                  <Clock className="size-5 text-[#4245f0]" />
-                  Status & Interest Discovery
-                </h3>
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between rounded-xl bg-white/5 p-4 border border-white/5">
-                    <span className="text-sm font-medium text-slate-300">Availability</span>
-                    <span className="flex items-center gap-2 text-sm font-bold text-green-400">
-                      <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse"></span>
-                      Open to Collaborate
-                    </span>
-                  </div>
-                  <div className="space-y-4 px-1">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Profile Discovery Match</p>
-                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/10 italic text-sm text-slate-400 leading-relaxed">
-                        "Your profile is currently matching with <span className="text-white font-bold">{user.role}</span> specific roles. 
-                        We've identified several opportunities that align with your <span className="text-[#4245f0]">{(user.skills && user.skills.length > 0) ? user.skills[0].name : 'expertise'}</span>."
-                    </div>
-                    <Link 
-                      to="/my-interests"
-                      className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-amber-500 hover:bg-amber-500/10 transition-all group"
-                    >
-                       View All Matches <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-
-
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 gap-4">
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="glass-card rounded-xl p-6 flex flex-col items-center text-center"
-                >
-                  <Users className="text-[#4245f0] size-8 mb-2" />
-                  <span className="text-2xl font-bold">42</span>
-                  <span className="text-xs text-slate-500 uppercase font-semibold">Collaborations</span>
-                </motion.div>
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="glass-card rounded-xl p-6 flex flex-col items-center text-center"
-                >
-                  <Eye className="text-[#4245f0] size-8 mb-2" />
-                  <span className="text-2xl font-bold">1.2k</span>
-                  <span className="text-xs text-slate-500 uppercase font-semibold">Profile Views</span>
-                </motion.div>
-              </div>
-
-              {/* Experience */}
-             
+              </section>
             </div>
           </div>
-        </main>
-
-        {/* Footer */}
-        <footer className="mt-auto border-t border-white/10 bg-black/40 py-12 px-6 lg:px-20 backdrop-blur-md">
-          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 md:flex-row">
-            <div className="flex items-center gap-3 opacity-60">
-              <Code2 className="size-6 text-white" />
-              <span className="text-sm font-bold tracking-tight text-white">Tasyai © 2024</span>
-            </div>
-            <div className="flex gap-8 text-sm text-slate-500">
-              {['Privacy Policy', 'Terms of Service', 'Contact Support'].map((item) => (
-                <a key={item} href="#" className="hover:text-white transition-colors">{item}</a>
-              ))}
-            </div>
-          </div>
-        </footer>
-        </div>
       </div>
-    </div>
+    </>
   );
 };
 

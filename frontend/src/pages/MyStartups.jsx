@@ -15,12 +15,10 @@ import {
   Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/layout/Sidebar';
 import companyService from '../services/companyService';
 
 const MyStartups = () => {
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [startups, setStartups] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,29 +49,23 @@ const MyStartups = () => {
   };
 
   return (
-    <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
+    <>
       <SEO 
         title="My Startups"
         description="Manage your ventures and track progress on Tasyai."
       />
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-
-      <motion.main 
-        layout
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
-      >
-        <div className="max-w-7xl mx-auto px-8 py-8 pb-32">
+      <div className="p-5 md:p-10 pb-20">
           {/* Header */}
-          <div className="flex items-center justify-between mb-12">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div>
-              <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">My Startups</h1>
-              <p className="text-slate-400 text-lg">Manage your ventures, track progress, and find talent.</p>
+              <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-2">My Startups</h1>
+              <p className="text-slate-400 text-base md:text-lg">Manage your ventures, track progress, and find talent.</p>
             </div>
             <motion.button 
               onClick={() => navigate('/add-company')}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-6 py-3 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-xl transition-all shadow-lg shadow-[#4245f0]/20 flex items-center gap-2"
+              className="w-full md:w-auto px-6 py-3 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-xl transition-all shadow-lg shadow-[#4245f0]/20 flex items-center justify-center gap-2"
             >
               <Plus className="size-5" />
               Launch New Venture
@@ -184,8 +176,7 @@ const MyStartups = () => {
             </div>
           )}
         </div>
-      </motion.main>
-    </div>
+    </>
   );
 };
 

@@ -16,13 +16,11 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/layout/Sidebar';
 import notificationService from '../services/notificationService';
 
 const Notifications = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('All');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const [notifications, setNotifications] = useState([]);
 
@@ -115,32 +113,28 @@ const Notifications = () => {
   const filters = ['All', 'Unread', 'Read', 'Company', 'People', 'System'];
 
   return (
-    <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
+    <>
       <SEO 
         title="Notifications"
-        description="Stay updated with your latest activity and matches on Tasyai."
+        description="Stay updated on the latest startup opportunities and team interest on Tasyai."
       />
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-
-      <main 
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] transition-all duration-300 ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
-      >
-        <div className="max-w-4xl mx-auto px-6 py-8 pb-32">
+      <div className="p-5 md:p-10 pb-20">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 pb-32">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
                 <Bell className="size-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Notifications</h1>
+                <h1 className="text-xl md:text-2xl font-bold text-white">Notifications</h1>
                 <p className="text-slate-400 text-sm">Stay updated with your latest activity</p>
               </div>
             </div>
 
             <button 
               onClick={handleMarkAllRead}
-              className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs font-bold text-slate-300 transition-all"
+              className="w-full md:w-auto px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs font-bold text-slate-300 transition-all"
             >
               Mark all as read
             </button>
@@ -216,8 +210,8 @@ const Notifications = () => {
             )}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 };
 

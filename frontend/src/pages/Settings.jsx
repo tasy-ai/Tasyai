@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import SEO from '../components/SEO';
-import Sidebar from '../components/layout/Sidebar';
 import { 
   User, 
   Bell, 
@@ -29,7 +28,6 @@ import { toast, Toaster } from 'react-hot-toast';
 import authService from '../services/authService';
 
 const Settings = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('Account');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -221,40 +219,35 @@ const Settings = () => {
   }
 
   return (
-    <div className="bg-[#020617] text-slate-100 font-sans min-h-screen flex overflow-hidden">
+    <>
       <SEO 
         title="Settings"
-        description="Manage your account preferences and configurations on Tasyai."
+        description="Manage your account settings, privacy preferences, and notification on Tasyai."
       />
       <Toaster position="top-center" reverseOrder={false} />
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-
-      <main 
-        className={`flex-1 overflow-y-auto h-full bg-[#020617] transition-all duration-300 ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
-      >
-        <div className="max-w-5xl mx-auto px-8 py-12 pb-32">
-          <div className="mb-10">
-            <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">Settings</h1>
-            <p className="text-slate-400 text-lg">Manage your account preferences and configurations.</p>
+      <div className="p-5 md:p-10 pb-32">
+        <div className="mb-8 md:mb-10">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-2">Settings</h1>
+            <p className="text-slate-400 text-base md:text-lg">Manage your account preferences and configurations.</p>
           </div>
 
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Sidebar Navigation for Settings */}
-            <div className="lg:w-64 flex-shrink-0">
-               <nav className="space-y-2 sticky top-8">
+            <div className="lg:w-64 flex-shrink-0 overflow-x-auto no-scrollbar">
+               <nav className="flex lg:flex-col gap-2 sticky top-8 min-w-max lg:min-w-0">
                  {tabs.map((tab) => {
                    const Icon = tab.icon;
                    return (
                      <button
                        key={tab.id}
                        onClick={() => setActiveTab(tab.id)}
-                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium ${
+                       className={`flex-1 lg:w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium whitespace-nowrap ${
                          activeTab === tab.id 
                            ? 'bg-[#4245f0] text-white shadow-lg shadow-[#4245f0]/20' 
                            : 'text-slate-400 hover:text-white hover:bg-white/5'
                        }`}
                      >
-                       <Icon className="size-5" />
+                       <Icon className="size-5 shrink-0" />
                        {tab.label}
                      </button>
                    )
@@ -271,12 +264,11 @@ const Settings = () => {
                  {activeTab === 'Account' && (
                    <div className="space-y-6">
                      {/* Section: Profile */}
-                     <section className="glass rounded-2xl p-8 border border-white/10">
+                     <section className="glass rounded-2xl p-5 md:p-8 border border-white/10">
                        <h2 className="text-xl font-bold text-white mb-6">Profile Information</h2>
-                       
-                       <div className="flex items-center gap-6 mb-8">
+                                             <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
                          {profile.profilePicture ? (
-                           <div className="relative group">
+                           <div className="relative group shrink-0">
                              <img 
                               src={profile.profilePicture} 
                               alt="Avatar" 
@@ -289,11 +281,11 @@ const Settings = () => {
                              </div>
                            </div>
                          ) : (
-                           <div className="size-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-xl shadow-indigo-500/20">
+                           <div className="size-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-xl shadow-indigo-500/20 shrink-0">
                              {profile.name ? profile.name.charAt(0).toUpperCase() : 'U'}
                            </div>
                          )}
-                         <div className="flex-1 space-y-4">
+                         <div className="flex-1 w-full space-y-4 text-center md:text-left">
                            <div>
                              <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Profile Picture</label>
                              <div className="flex flex-col sm:flex-row gap-3">
@@ -613,30 +605,30 @@ const Settings = () => {
                        <h2 className="text-xl font-bold text-white mb-6 relative z-10">Share Your Feedback</h2>
                        
                        <form onSubmit={handleFeedbackSubmit} className="space-y-4 relative z-10 max-w-2xl">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">First Name</label>
-                              <input 
-                                required
-                                type="text" 
-                                value={formData.firstName}
-                                onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                placeholder="Jordan"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Last Name</label>
-                              <input 
-                                required
-                                type="text" 
-                                value={formData.lastName}
-                                onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                placeholder="Smith"
-                              />
-                            </div>
-                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             <div>
+                               <label className="block text-xs font-bold text-slate-400 uppercase mb-1">First Name</label>
+                               <input 
+                                 required
+                                 type="text" 
+                                 value={formData.firstName}
+                                 onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                                 className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
+                                 placeholder="Jordan"
+                               />
+                             </div>
+                             <div>
+                               <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Last Name</label>
+                               <input 
+                                 required
+                                 type="text" 
+                                 value={formData.lastName}
+                                 onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                                 className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
+                                 placeholder="Smith"
+                               />
+                             </div>
+                           </div>
 
                           <div>
                             <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Email</label>
@@ -650,30 +642,30 @@ const Settings = () => {
                             />
                           </div>
 
-                          <div className="grid grid-cols-4 gap-4">
-                            <div className="col-span-1">
-                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Code</label>
-                              <input 
-                                required
-                                type="text" 
-                                value={formData.phoneCode}
-                                onChange={(e) => setFormData({...formData, phoneCode: e.target.value})}
-                                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                placeholder="+1"
-                              />
-                            </div>
-                            <div className="col-span-3">
-                              <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Phone Number</label>
-                              <input 
-                                required
-                                type="tel" 
-                                value={formData.phoneNumber}
-                                onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
-                                className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                placeholder="555-0123"
-                              />
-                            </div>
-                          </div>
+                           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                             <div className="sm:col-span-1">
+                               <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Code</label>
+                               <input 
+                                 required
+                                 type="text" 
+                                 value={formData.phoneCode}
+                                 onChange={(e) => setFormData({...formData, phoneCode: e.target.value})}
+                                 className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
+                                 placeholder="+1"
+                               />
+                             </div>
+                             <div className="sm:col-span-3">
+                               <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Phone Number</label>
+                               <input 
+                                 required
+                                 type="tel" 
+                                 value={formData.phoneNumber}
+                                 onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+                                 className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
+                                 placeholder="555-0123"
+                               />
+                             </div>
+                           </div>
 
                           <div>
                             <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Message</label>
@@ -698,12 +690,11 @@ const Settings = () => {
                        </form>
                     </section>
                  )}
-               </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+    </>
   );
 };
 

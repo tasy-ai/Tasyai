@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
-import Sidebar from '../components/layout/Sidebar';
 import authService from '../services/authService';
 import { 
   Filter,
@@ -17,7 +16,6 @@ const FoundTalent = () => {
   const navigate = useNavigate();
 
   const [activeRole, setActiveRole] = useState('All Roles');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -93,37 +91,25 @@ const FoundTalent = () => {
   };
 
   return (
-    <div className="bg-[#020617] text-slate-100 font-sans min-h-screen overflow-hidden h-screen">
+    <>
       <SEO 
         title="Found Talent"
         description="Connect with top-tier professionals ready to join your startup team."
       />
-      {/* Global Styles */}
-
-
-      <div className="flex h-screen w-full relative">
-        <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-
-        <motion.main 
-          layout
-          className={`flex-1 overflow-y-auto h-full bg-[#020617] ${isSidebarOpen ? 'md:ml-72' : 'md:ml-20'}`}
-        >
-
-
-      <div className="max-w-[1600px] mx-auto px-6 py-8 space-y-8">
+      <div className="p-5 md:p-10 pb-20 space-y-8">
         {/* Header */}
-        <header className="mb-10 flex items-start justify-between gap-6">
+        <header className="mb-10 flex flex-col md:flex-row items-start justify-between gap-6">
           <div className="flex items-center gap-4">
             <div>
-              <h2 className="text-4xl font-extrabold text-white tracking-tight mb-2">Found Talent</h2>
-              <p className="text-slate-400 text-lg">Connect with top-tier professionals ready to join your team.</p>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2">Found Talent</h2>
+              <p className="text-slate-400 text-base md:text-lg">Connect with top-tier professionals ready to join your team.</p>
             </div>
           </div>
           <motion.button 
             onClick={() => navigate('/add-company')}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="shrink-0 py-3 px-6 bg-gradient-to-r from-[#6467f2] to-indigo-500 hover:from-indigo-500 hover:to-[#6467f2] text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all indigo-glow"
+            className="w-full md:w-auto py-3 px-6 bg-gradient-to-r from-[#6467f2] to-indigo-500 hover:from-indigo-500 hover:to-[#6467f2] text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all indigo-glow"
           >
             <UserPlus className="size-4" />
             <span>Add New Role</span>
@@ -185,7 +171,7 @@ const FoundTalent = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="glass p-6 rounded-xl space-y-6 glass-hover group relative"
+                className="glass p-6 rounded-xl flex flex-col gap-6 glass-hover group relative h-full"
               >
                 {/* Card Header */}
                 <div className="flex justify-between items-start">
@@ -227,7 +213,7 @@ const FoundTalent = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-3 pt-2">
+                <div className="flex gap-3 pt-2 mt-auto">
                   <Link 
                     to={`/profile-expansion?id=${candidate.id}`}
                     state={{ candidate }}
@@ -269,9 +255,7 @@ const FoundTalent = () => {
           </div>
         </footer>
       </div>
-    </motion.main>
-  </div>
-</div>
+    </>
   );
 };
 

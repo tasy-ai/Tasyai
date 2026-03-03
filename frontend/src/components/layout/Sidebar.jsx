@@ -52,10 +52,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         />
       )}
 
+      {/* Mobile Menu Button - Fixed when sidebar is closed */}
+      {!isOpen && (
+        <button 
+          onClick={toggleSidebar}
+          className="fixed top-4 right-4 z-50 p-3 rounded-xl bg-[#0f172a] border border-white/10 text-slate-400 hover:text-white md:hidden shadow-lg"
+        >
+          <Menu className="size-6" />
+        </button>
+      )}
+
       {/* Sidebar */}
       <aside 
-        className={`fixed left-0 top-0 h-full z-40 flex flex-col sidebar-glass border-r border-white/5 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-          isOpen ? 'translate-x-0 w-72' : '-translate-x-full md:translate-x-0 w-20'
+        className={`fixed left-0 top-0 h-full z-50 flex flex-col sidebar-glass border-r border-white/5 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          isOpen ? 'translate-x-0 w-72' : '-translate-x-full md:translate-x-0 md:w-20'
         }`}
       >
         <div className={`flex flex-col h-full ${isOpen ? 'p-6' : 'p-4 items-center'} transition-all`}>
@@ -71,7 +81,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
             <button 
               onClick={toggleSidebar}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors absolute right-0 top-6 mr-[-12px] md:static md:mr-0 z-50 bg-[#020617] md:bg-transparent border md:border-none border-white/10"
+              className={`p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors absolute right-[-12px] top-6 z-50 bg-[#020617] border border-white/10 md:static md:mr-0 md:bg-transparent md:border-none ${!isOpen && 'hidden md:block'}`}
             >
                <Menu className="size-6" />
             </button>
