@@ -235,21 +235,21 @@ const OnboardingChatbot = ({ onComplete }) => {
       </div>
 
       <div className="relative z-10 w-full max-w-3xl h-[100dvh] md:h-[85vh] flex flex-col bg-[#0B1120]/80 backdrop-blur-xl md:border md:border-white/10 md:rounded-2xl shadow-2xl overflow-hidden">
-        <header className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-[#0B1120]/50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+        <header className="flex items-center justify-between px-4 md:px-6 py-4 md:py-5 border-b border-white/5 bg-[#0B1120]/50 shrink-0">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
               <Bot className="text-white size-5" />
             </div>
-            <div>
-              <h1 className="text-sm font-bold text-white tracking-tight">Onboarding Assistant</h1>
+            <div className="min-w-0">
+              <h1 className="text-xs md:text-sm font-bold text-white tracking-tight truncate">Onboarding Assistant</h1>
               <div className="flex items-center gap-1.5">
                 <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <p className="text-[10px] text-slate-400 font-medium">Online</p>
+                <p className="text-[10px] text-slate-400 font-medium whitespace-nowrap">Online</p>
               </div>
             </div>
           </div>
           
-          <div className="flex flex-col items-end gap-1 w-1/3">
+          <div className="flex flex-col items-end gap-1 w-2/5 md:w-1/3">
             <div className="flex justify-between w-full text-[10px] text-slate-400 font-medium uppercase tracking-wider">
               <span>Progress</span>
               <span>{Math.round(progress)}%</span>
@@ -265,7 +265,7 @@ const OnboardingChatbot = ({ onComplete }) => {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6 scroll-smooth">
           <AnimatePresence initial={false}>
             {messages.map((msg, index) => (
               <motion.div
@@ -276,16 +276,16 @@ const OnboardingChatbot = ({ onComplete }) => {
                 className={`flex items-end gap-3 ${msg.type === 'user' ? 'flex-row-reverse' : ''}`}
               >
                 {msg.type === 'bot' && (
-                  <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 border border-white/10">
-                    <Bot className="text-indigo-400 size-4" />
+                  <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-slate-800 flex items-center justify-center shrink-0 border border-white/10">
+                    <Bot className="text-indigo-400 size-3.5 md:size-4" />
                   </div>
                 )}
                 
-                <div className={`max-w-[85%] md:max-w-[75%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                <div className={`max-w-[90%] md:max-w-[75%] p-3.5 md:p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${
                   msg.type === 'user' 
                     ? 'bg-indigo-600 text-white rounded-br-none' 
                     : msg.type === 'sub' 
-                      ? 'bg-transparent text-slate-400 p-0 shadow-none ml-11 italic'
+                      ? 'bg-transparent text-slate-400 p-0 shadow-none ml-9 md:ml-11 italic'
                       : 'bg-slate-800/80 text-slate-200 border border-white/5 rounded-bl-none'
                 }`}>
                   {msg.content}
@@ -299,7 +299,7 @@ const OnboardingChatbot = ({ onComplete }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="ml-11 mt-2"
+              className="ml-9 md:ml-11 mt-2"
             >
               {currentStepData.options && (
                 <div className={`grid gap-3 ${currentStepData.options.length > 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
@@ -529,7 +529,7 @@ const OnboardingChatbot = ({ onComplete }) => {
           <div ref={messagesEndRef} className="h-4" />
         </main>
 
-        <footer className="p-4 md:p-6 bg-[#0B1120]/80 border-t border-white/5 backdrop-blur-md">
+        <footer className="p-3.5 md:p-6 bg-[#0B1120]/80 border-t border-white/5 backdrop-blur-md shrink-0">
           {!currentStepData?.options && !currentStepData?.file && !currentStepData?.isSkillInput && !currentStepData?.summary && (
             <form onSubmit={handleInputSubmit} className="relative flex items-center gap-2">
               <input
