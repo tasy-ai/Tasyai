@@ -11,13 +11,13 @@ import {
   ShieldCheck,
   ArrowRight
 } from 'lucide-react';
-import { useSignIn } from "@clerk/clerk-react";
-import { useUser } from "@clerk/clerk-react";
+import { useSignIn, useUser, useClerk } from "@clerk/clerk-react";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { signIn, isLoaded: signInLoaded, signOut } = useSignIn();
-  const { isSignedIn, isLoaded: userLoaded, user } = useUser();
+  const { signIn, isLoaded: signInLoaded } = useSignIn();
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
 
   const handleGoogleLogin = async () => {
     try {

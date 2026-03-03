@@ -28,7 +28,7 @@ const AuthSync = ({ children }) => {
   const { user: clerkUser, isLoaded: clerkLoaded, isSignedIn: clerkSignedIn } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isSyncing, setIsSyncing] = React.useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     const sync = async () => {

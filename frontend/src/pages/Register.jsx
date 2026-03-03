@@ -11,13 +11,13 @@ import {
   Globe,
   ArrowRight
 } from 'lucide-react';
-import { useSignUp } from "@clerk/clerk-react";
-import { useUser } from "@clerk/clerk-react";
+import { useSignUp, useUser, useClerk } from "@clerk/clerk-react";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { signUp, isLoaded: signUpLoaded, signOut } = useSignUp();
-  const { isSignedIn, isLoaded: userLoaded, user } = useUser();
+  const { signUp, isLoaded: signUpLoaded } = useSignUp();
+  const { isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
 
   const handleGoogleSignup = async () => {
     try {

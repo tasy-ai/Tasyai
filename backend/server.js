@@ -16,6 +16,7 @@ const allowedOrigins = [
     'https://www.tasyai.com',
     'https://tasyai.com',
     'https://tasyai-theta.vercel.app',
+    'https://tasyai-630ycd6to-tasyais-projects.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000'
 ];
