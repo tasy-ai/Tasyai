@@ -13,10 +13,12 @@ import {
   Bell,
   CheckCircle2
 } from 'lucide-react';
+import { useClerk } from "@clerk/clerk-react";
 import companyService from '../../services/companyService';
 import notificationService from '../../services/notificationService';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
+  const { signOut } = useClerk();
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (path) => location.pathname === path;
@@ -38,9 +40,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   }, [location.pathname]); // Also re-check on navigation
 
 
-  const handleLogout = () => {
-    authService.logout();
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await signOut(); // Signs out from Clerk
+      authService.logout(); // Clears local storage
+      navigate('/login');
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (

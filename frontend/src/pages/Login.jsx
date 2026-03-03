@@ -16,49 +16,30 @@ import { useUser } from "@clerk/clerk-react";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { signIn, isLoaded: signInLoaded } = useSignIn();
+  const { signIn, isLoaded: signInLoaded, signOut } = useSignIn();
   const { isSignedIn, isLoaded: userLoaded, user } = useUser();
 
   const handleGoogleLogin = async () => {
     try {
       if (!signInLoaded) return;
-      if (isSignedIn) return;
+      
+      // Force account selection: Sign out if already signed in
+      if (isSignedIn) {
+        await signOut();
+      }
 
       await signIn.authenticateWithRedirect({
         strategy: "oauth_google",
         redirectUrl: "/sso-callback",
-        redirectUrlComplete: "/dashboard"
+        redirectUrlComplete: "/dashboard",
+        prompt: 'select_account' // This forces the account picker
       });
     } catch (err) {
       console.error("Google login error:", err);
     }
   };
 
-  useEffect(() => {
-    const syncClerkUser = async () => {
-      if (!userLoaded || !isSignedIn || !user) return;
-
-      try {
-        const res = await authService.googleLogin({
-          name: user.fullName,
-          email: user.primaryEmailAddress?.emailAddress,
-          profilePicture: user.imageUrl
-        });
-
-        if (res && res.isOnboarded) {
-          navigate("/dashboard");
-        } else {
-          navigate("/OnboardingChatbot");
-        }
-      } catch (err) {
-        console.error("Backend sync failed:", err);
-      }
-    };
-
-    if (isSignedIn && userLoaded) {
-      syncClerkUser();
-    }
-  }, [isSignedIn, userLoaded, user, navigate]);
+  // Authentication synchronization is now handled globally by AuthSync in App.jsx
 
   const features = [
     { icon: <Zap className="size-5" />, title: "Instant Access", desc: "Collaborate with high-growth startups immediately." },

@@ -58,14 +58,8 @@ const OnboardingChatbot = ({ onComplete }) => {
   const progress = ((currentStep) / (totalSteps - 1)) * 100;
 
   useEffect(() => {
-    const user = authService.getCurrentUser();
-    if (!user) {
-      navigate('/login');
-    } else if (user.isOnboarded) {
-      navigate('/dashboard');
-    }
     scrollToBottom();
-  }, [messages, isTyping, userData.profile_picture_preview, navigate]);
+  }, [messages, isTyping, userData.profile_picture_preview]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });

@@ -48,37 +48,7 @@ const Dashboard = () => {
     if (clerkSignedIn) fetchSavedStatus();
   }, [clerkSignedIn]);
 
-  // Auth sync logic
-  useEffect(() => {
-    const handleAuth = async () => {
-      const localUser = authService.getCurrentUser();
-      if (!clerkLoaded) return;
-      if (clerkSignedIn) {
-        if (!localUser || !localUser.isOnboarded) {
-          setIsSyncing(true);
-          try {
-            const userData = {
-              email: clerkUser.primaryEmailAddress?.emailAddress,
-              name: clerkUser.fullName,
-              profilePicture: clerkUser.imageUrl,
-            };
-            const syncedUser = await authService.googleLogin(userData);
-            if (!syncedUser.isOnboarded) {
-              navigate('/OnboardingChatbot');
-            }
-          } catch (error) {
-            console.error('Failed to sync Clerk user:', error);
-            if (!localUser || !localUser.onboarded) navigate('/login');
-          } finally {
-            setIsSyncing(false);
-          }
-        }
-      } else if (!localUser) {
-        navigate('/login');
-      }
-    };
-    handleAuth();
-  }, [navigate, clerkLoaded, clerkSignedIn, clerkUser]);
+  // Dashboard now relies on global AuthSync for protection and backend synchronization
 
   // Fetch companies
   useEffect(() => {

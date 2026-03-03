@@ -16,50 +16,30 @@ import { useUser } from "@clerk/clerk-react";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { signUp, isLoaded: signUpLoaded } = useSignUp();
+  const { signUp, isLoaded: signUpLoaded, signOut } = useSignUp();
   const { isSignedIn, isLoaded: userLoaded, user } = useUser();
 
   const handleGoogleSignup = async () => {
     try {
       if (!signUpLoaded) return;
+      
+      // Force account selection: Sign out if already signed in
       if (isSignedIn) {
-        navigate("/OnboardingChatbot");
-        return;
+        await signOut();
       }
 
       await signUp.authenticateWithRedirect({
         strategy: "oauth_google",
         redirectUrl: "/sso-callback",
-        redirectUrlComplete: "/OnboardingChatbot"
+        redirectUrlComplete: "/OnboardingChatbot",
+        prompt: 'select_account' // This forces the account picker
       });
     } catch (err) {
       console.error("Google signup error:", err);
     }
   };
 
-  useEffect(() => {
-    const syncClerkUser = async () => {
-      if (!userLoaded) return;
-      if (isSignedIn && user) {
-        try {
-          const res = await authService.googleLogin({
-            name: user.fullName,
-            email: user.primaryEmailAddress.emailAddress,
-            profilePicture: user.imageUrl
-          });
-
-          if (res.isOnboarded) {
-            navigate("/dashboard");
-          } else {
-            navigate("/OnboardingChatbot");
-          }
-        } catch (err) {
-          console.error("Backend sync failed:", err);
-        }
-      }
-    };
-    syncClerkUser();
-  }, [isSignedIn, userLoaded, navigate, user]);
+  // Authentication synchronization is now handled globally by AuthSync in App.jsx
 
   const valueProps = [
     { icon: <Rocket className="size-5" />, title: "Launch Fast", desc: "Build MVP ready projects with vetted teams." },
