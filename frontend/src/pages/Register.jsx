@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
@@ -19,9 +19,12 @@ const Register = () => {
   const { isSignedIn, user } = useUser();
   const { signOut } = useClerk();
 
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   const handleGoogleSignup = async () => {
     try {
       if (!signUpLoaded) return;
+      setIsRedirecting(true);
       
       // Force account selection: Sign out if already signed in
       if (isSignedIn) {
@@ -36,6 +39,7 @@ const Register = () => {
       });
     } catch (err) {
       console.error("Google signup error:", err);
+      setIsRedirecting(false);
     }
   };
 
@@ -53,6 +57,20 @@ const Register = () => {
         title="Join Tasyai"
         description="Register for Tasyai and start your journey as a founder or talent in the startup ecosystem."
       />
+
+      {isRedirecting && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-[100] bg-[#020617] flex items-center justify-center flex-col gap-6"
+        >
+          <div className="size-16 border-4 border-[#6467f2] border-t-transparent rounded-full animate-spin shadow-[0_0_30px_rgba(100,103,242,0.3)]"></div>
+          <div className="flex flex-col items-center text-center px-6">
+            <h3 className="text-xl font-bold text-white mb-2">Preparing your Builder Profile</h3>
+            <p className="text-slate-400 animate-pulse text-sm">Setting up your collaborative ecosystem...</p>
+          </div>
+        </motion.div>
+      )}
 
       {/* Decorative Orbs */}
       <div className="fixed inset-0 z-0">

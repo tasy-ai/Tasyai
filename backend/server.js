@@ -15,8 +15,6 @@ const app = express();
 const allowedOrigins = [
     'https://www.tasyai.com',
     'https://tasyai.com',
-    'https://tasyai-theta.vercel.app',
-    'https://tasyai-630ycd6to-tasyais-projects.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000'
 ];
@@ -25,11 +23,19 @@ app.use(cors({
     origin: function (origin, callback) {
         // allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-            return callback(new Error(msg), false);
+        
+        // Check if origin is in the allowed list
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            return callback(null, true);
         }
-        return callback(null, true);
+
+        // Dynamically allow any Vercel deployment URL
+        if (origin.endsWith('.vercel.app') || /https:\/\/tasyai.*\.vercel\.app/.test(origin)) {
+            return callback(null, true);
+        }
+
+        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+        return callback(new Error(msg), false);
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],

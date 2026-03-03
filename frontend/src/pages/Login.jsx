@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
@@ -19,9 +19,12 @@ const Login = () => {
   const { isSignedIn, user } = useUser();
   const { signOut } = useClerk();
 
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   const handleGoogleLogin = async () => {
     try {
       if (!signInLoaded) return;
+      setIsRedirecting(true);
       
       // Force account selection: Sign out if already signed in
       if (isSignedIn) {
@@ -36,6 +39,7 @@ const Login = () => {
       });
     } catch (err) {
       console.error("Google login error:", err);
+      setIsRedirecting(false);
     }
   };
 
@@ -53,6 +57,20 @@ const Login = () => {
         title="Login"
         description="Login to Tasyai to access your startup dashboard and connect with top talent."
       />
+
+      {isRedirecting && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-[100] bg-[#020617] flex items-center justify-center flex-col gap-6"
+        >
+          <div className="size-16 border-4 border-[#4245f0] border-t-transparent rounded-full animate-spin shadow-[0_0_30px_rgba(66,69,240,0.3)]"></div>
+          <div className="flex flex-col items-center">
+            <h3 className="text-xl font-bold text-white mb-2">Connecting to Secure Portal</h3>
+            <p className="text-slate-400 animate-pulse text-sm">Initializing encrypted authentication...</p>
+          </div>
+        </motion.div>
+      )}
 
       {/* Decorative Background */}
       <div className="fixed inset-0 z-0">
