@@ -1,66 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import { 
   Rocket, 
-  Zap, 
-  Code2, 
-  Terminal, 
-  Globe, 
-  Github, 
-  Rss, 
   ArrowRight, 
   CheckCircle2,
-  Sparkles
+  TrendingUp,
+  Zap
 } from 'lucide-react';
 
-// --- Sub-Components ---
-
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
-    <header 
-      className={`fixed top-0 left-0 w-full z-50 px-6 py-4 transition-all duration-300 border-b border-white/5 ${
-        scrolled ? 'bg-[#020617]/90 backdrop-blur-md py-3' : 'bg-transparent py-5'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2 cursor-pointer group">
-          <div className="size-8 bg-indigo-600 rounded flex items-center justify-center group-hover:rotate-12 transition-transform">
-            <Code2 className="text-white size-5" />
-          </div>
-          <span className="text-xl font-bold tracking-tight text-white group-hover:text-indigo-400 transition-colors">Tasyai</span>
-        </div>
-        
-        <nav className="hidden md:flex items-center gap-8">
-          {['Manifesto', 'Pulse', 'Journey'].map((item) => (
-            <a 
-              key={item} 
-              href={`#${item.toLowerCase()}`} 
-              className="text-sm font-medium text-white/60 hover:text-indigo-400 transition-colors relative group"
-            >
-              {item}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all group-hover:w-full" />
-            </a>
-          ))}
-        </nav>
+    <header className="w-full py-6 px-6 md:px-12 flex items-center justify-between bg-[#fcfbf9] z-50">
+      <div className="flex items-center gap-2 cursor-pointer">
+        <div className="size-6 bg-[#e75c13] rounded-sm flex items-center justify-center"></div>
+        <span className="text-xl font-black tracking-tight text-[#1a1a1a]">Tasyai</span>
+      </div>
+      
+      <nav className="hidden md:flex items-center gap-8">
+        {['FOUNDERS', 'TALENT', 'SHOWCASE', 'PRICING'].map((item) => (
+          <a key={item} href="#" className="text-xs font-bold tracking-widest text-[#e75c13] hover:text-[#c44e10] transition-colors">
+            {item}
+          </a>
+        ))}
+      </nav>
 
-        <div className="flex items-center gap-4">
-          <Link to="/login" className="hidden sm:block px-5 py-2 text-sm font-bold text-white/80 hover:text-white transition-all">
-            Sign In
-          </Link>
-          <Link to="/register" className="px-5 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:brightness-110 transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)]">
-            Join the Build
-          </Link>
-        </div>
+      <div className="flex items-center gap-5">
+        <Link to="/login" className="hidden sm:block text-sm font-semibold text-gray-500 hover:text-[#1a1a1a] transition-colors">
+          Sign in
+        </Link>
+        <Link to="/register" className="px-5 py-2.5 bg-[#d85511] text-white text-sm font-bold rounded-lg hover:bg-[#b5460e] transition-colors">
+          Get Started
+        </Link>
       </div>
     </header>
   );
@@ -68,266 +40,293 @@ const Navbar = () => {
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-20 px-6 overflow-hidden">
-      {/* Nebula Background */}
-      <div className="absolute inset-0 z-0 bg-[#020617]">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[120px]" />
+    <section className="pt-16 pb-20 px-6 text-center max-w-5xl mx-auto flex flex-col items-center">
+      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 uppercase tracking-widest text-[10px] font-bold text-gray-500 mb-8 border border-gray-200">
+        <span className="text-[#e75c13]">🚀</span> REDEFINING THE STARTUP HUB
       </div>
+      
+      <h1 className="text-6xl md:text-7xl lg:text-8xl font-black text-[#1a1a1a] leading-[0.95] tracking-tighter mb-6 relative">
+        Don’t Apply for Jobs.<br />
+        <span className="text-[#e75c13]">Build Something</span><br />
+        That Matters.
+      </h1>
 
-      <div className="relative z-10 max-w-5xl mx-auto text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-black uppercase tracking-widest mb-6">
-            <Sparkles className="size-3" />
-            The Tasyai Experience
-          </div>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.1] tracking-tight mb-8">
-            Don’t Apply for Jobs.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-violet-400 italic">
-              Build Something
-            </span> That Matters.
-          </h1>
-        </motion.div>
+      <p className="text-lg md:text-xl text-gray-500 font-medium max-w-2xl mx-auto mb-10 leading-relaxed">
+        A high-intensity collaboration hub for world-class founders and talent. We don't match resumes; we spark revolutions.
+      </p>
 
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-12 font-light leading-relaxed"
-        >
-          A startup collaboration platform emphasizing community and building over traditional hiring. No corporate clutter. Pure human connection.
-        </motion.p>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
-          <Link to="/register" className="w-full sm:w-auto px-10 py-4 bg-indigo-600 text-white font-bold rounded-xl text-lg hover:scale-105 transition-transform shadow-[0_0_20px_rgba(99,102,241,0.4)] flex items-center justify-center gap-2 group">
-            I’m a Founder
-            <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
-          <Link to="/register" className="w-full sm:w-auto px-10 py-4 bg-white/5 backdrop-blur-sm border border-white/10 text-white font-bold rounded-xl text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-            I’m Talent
-          </Link>
-        </motion.div>
+      <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+        <Link to="/register" className="w-full sm:w-auto px-8 py-4 bg-[#b5460e] text-white font-bold tracking-wide rounded-md text-sm hover:bg-[#91380b] transition-colors text-center">
+          LAUNCH A PROJECT
+        </Link>
+        <Link to="/showcase" className="w-full sm:w-auto px-8 py-4 bg-[#e5e5e5] text-[#1a1a1a] font-bold tracking-wide rounded-md text-sm hover:bg-[#d4d4d4] transition-colors flex items-center justify-center gap-2">
+          EXPLORE SHOWCASE <ArrowRight className="size-4" />
+        </Link>
       </div>
     </section>
   );
 };
 
-const Ticker = () => {
-  const items = [
-    { text: "Ankit matched with AI founder", icon: "pulse", color: "bg-green-500" },
-    { text: "New role: UX Intern (Equity)", icon: "token", color: "text-indigo-400" },
-    { text: "Sarah joined FinTech project", icon: "dot", color: "bg-blue-400" },
-    { text: "Founder: Need Next.js expert", icon: "terminal", color: "text-violet-400" },
-    { text: "Project 'Solaris' reached MVP", icon: "dot", color: "bg-orange-400" },
-  ];
-
-  return (
-    <div className="py-8 border-y border-white/5 bg-[#020617]/50 backdrop-blur-sm relative z-20 overflow-hidden">
-      <div className="ticker-container flex whitespace-nowrap">
-        <div className="animate-scroll flex gap-6 px-6 hover:[animation-play-state:paused]">
-          {[...items, ...items, ...items].map((item, idx) => (
-            <div key={idx} className="bg-white/5 border border-white/10 px-6 py-2 rounded-full flex items-center gap-3 hover:bg-white/10 transition-colors cursor-default">
-              {item.icon === 'pulse' ? (
-                <span className={`size-2 rounded-full ${item.color} animate-pulse`} />
-              ) : item.icon === 'dot' ? (
-                <span className={`size-2 rounded-full ${item.color}`} />
-              ) : (
-                <Terminal className={`size-4 ${item.color}`} />
-              )}
-              <span className="text-sm font-medium text-white/80">{item.text}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const BridgeSection = () => {
-  return (
-    <section className="py-24 px-6 max-w-7xl mx-auto relative overflow-hidden">
-      <div className="text-center mb-20">
-        <h2 className="text-4xl font-bold mb-4 text-white">The Bridge</h2>
-        <p className="text-white/40">Connect over problems, not job descriptions.</p>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-12 md:gap-0 items-center relative">
-        {/* Vertical Divider */}
-        <div className="hidden md:block absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-px bg-gradient-to-b from-transparent via-indigo-500/50 to-transparent" />
-        
-        {/* Left: Founder */}
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="md:pr-20 flex flex-col items-end text-right gap-6"
-        >
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl border-r-4 border-indigo-500/40 max-w-md hover:bg-white/10 transition-all">
-            <p className="text-indigo-400 text-xs font-black uppercase tracking-widest mb-2">Founder Persona</p>
-            <p className="text-xl font-medium text-white leading-relaxed">
-              "I have the users, but I need to fix onboarding drop-offs before we scale."
-            </p>
-          </div>
-          <div className="flex items-center gap-3 text-white/40">
-            <span className="text-sm italic">Searching for specific impact</span>
-            <Sparkles className="size-4" />
-          </div>
-        </motion.div>
-
-        {/* Mobile Connector */}
-        <div className="md:hidden flex justify-center py-4">
-          <div className="h-12 w-px bg-indigo-500 shadow-[0_0_10px_#6366f1]" />
-        </div>
-
-        {/* Right: Talent */}
-        <motion.div 
-          initial={{ opacity: 0, x: 50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="md:pl-20 flex flex-col items-start gap-6"
-        >
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl border-l-4 border-violet-400/40 max-w-md hover:bg-white/10 transition-all">
-            <p className="text-violet-400 text-xs font-black uppercase tracking-widest mb-2">Talent Persona</p>
-            <p className="text-xl font-medium text-white leading-relaxed">
-              "I can redesign your UX and setup the analytics to prove where users leave."
-            </p>
-          </div>
-          <div className="flex items-center gap-3 text-white/40">
-            <Rocket className="size-4" />
-            <span className="text-sm italic">Ready to solve real bottlenecks</span>
-          </div>
-        </motion.div>
-
-        {/* Central Node */}
-        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-4 bg-indigo-500 rounded-full shadow-[0_0_30px_#6366f1] animate-pulse" />
-      </div>
-    </section>
-  );
-};
-
-const Timeline = () => {
-  const steps = [
+const PulseSection = () => {
+  const activities = [
     {
-      num: "01",
-      title: "Express Interest",
-      desc: "Browse active challenges from vetted founders. No resumes required, just show your intent to help.",
-      active: true
+      initials: "JD",
+      name: "Julian D.",
+      action: "created a vision for",
+      project: "NexusLinter",
+      desc: `"Building the first smart code linter for low-latency systems... High conviction!"`,
+      tags: ["Core Engineer Needed", "2% Founders Equity"],
+      time: "2m ago",
+      bgColor: "bg-red-100",
+      textColor: "text-red-700"
     },
     {
-      num: "02",
-      title: "Accept",
-      desc: "If there's a match in values and vision, you're in. This isn't a 5-stage interview; it's a conversation.",
-      active: false
+      initials: "SK",
+      name: "Sarah K.",
+      action: "joined",
+      project: "Aura.ai",
+      role: "as Lead Designer",
+      desc: `Sarah matched with Aura.ai via intent-matching. Focus: Prototyping and UX strategy.`,
+      tags: ["UX/UI Refactor Phase"],
+      time: "14m ago",
+      bgColor: "bg-emerald-100",
+      textColor: "text-emerald-700",
+      icon: <CheckCircle2 className="size-5 text-[#1a1a1a]" />
     },
     {
-      num: "03",
-      title: "Unlock Chat",
-      desc: "Access private workspace and direct messaging. Start aligning on the immediate milestones.",
-      active: false
-    },
-    {
-      num: "04",
-      title: "Build",
-      desc: "Collaborate on the project, earn equity or project fees, and grow your reputation as a builder.",
-      active: false
+      initials: "TM",
+      name: "Team Mercury",
+      action: "reached",
+      project: "MVP Milestone",
+      desc: `Project is now live in early alpha. Built by 3 Collaborate.YC founders.`,
+      tags: [],
+      time: "1h ago",
+      bgColor: "bg-gray-200",
+      textColor: "text-gray-700",
+      icon: <TrendingUp className="size-5 text-[#1a1a1a]" />
     }
   ];
 
   return (
-    <section id="journey" className="py-24 bg-surface/30 px-6">
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold mb-16 text-center text-white">How it works</h2>
-        <div className="space-y-0">
-          {steps.map((step, idx) => (
-            <div key={idx} className="relative pl-12 pb-16 border-l border-white/10 last:pb-0 last:border-0 group">
-              <div className={`absolute -left-[9px] top-0 size-4 rounded-full transition-all duration-500 ${
-                step.active 
-                  ? 'bg-indigo-600 ring-4 ring-indigo-500/20 shadow-[0_0_15px_#6366f1]' 
-                  : 'bg-white/20 group-hover:bg-indigo-500'
-              }`} />
-              
-              <div className="flex flex-col gap-2">
-                <span className={`font-bold text-sm tracking-widest uppercase ${
-                  step.active ? 'text-indigo-400' : 'text-white/40 group-hover:text-white/60'
-                }`}>
-                  {step.num}. {step.title}
-                </span>
-                <h3 className={`text-2xl font-bold ${step.active ? 'text-white' : 'text-white/80'}`}>
-                  {step.title}
-                </h3>
-                <p className="text-white/50 max-w-lg leading-relaxed">
-                  {step.desc}
-                </p>
+    <section className="py-10 px-6 max-w-6xl mx-auto grid lg:grid-cols-3 gap-8 items-start">
+      <div className="lg:col-span-2">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-bold text-lg text-[#1a1a1a]">Live Collaboration Pulse</h3>
+            <p className="text-sm text-gray-400">Real-time ecosystem activity across the network</p>
+          </div>
+          <div className="flex gap-1">
+            <span className="size-2 bg-[#e75c13] rounded-full animate-pulse"></span>
+            <span className="size-2 bg-gray-300 rounded-full"></span>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {activities.map((act, i) => (
+            <div key={i} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex gap-4">
+              <div className={`size-10 rounded-md flex items-center justify-center font-bold text-sm ${act.bgColor} ${act.textColor} shrink-0`}>
+                {act.initials}
               </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-start mb-1">
+                  <p className="text-sm text-[#1a1a1a] pr-4">
+                    <span className="font-bold">{act.name}</span> {act.action} <span className="font-bold text-[#e75c13]">{act.project}</span> {act.role}
+                  </p>
+                  <span className="text-xs text-gray-400 whitespace-nowrap">{act.time}</span>
+                </div>
+                <p className="text-sm text-gray-500 mb-3 italic">
+                  {act.desc}
+                </p>
+                {act.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {act.tags.map((tag, j) => (
+                      <span key={j} className="text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded bg-orange-50 text-[#e75c13]">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {act.icon && (
+                <div className="shrink-0 flex items-center">
+                  {act.icon}
+                </div>
+              )}
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="bg-[#1c1c1c] rounded-2xl p-8 text-white shadow-xl lg:mt-8 relative overflow-hidden">
+        {/* Glow effect behind stats */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#e75c13] opacity-20 blur-[50px] rounded-full"></div>
+        <div className="relative z-10">
+          <p className="text-[10px] uppercase font-bold tracking-widest text-gray-400 mb-6">Network Strength</p>
+          <div className="flex items-baseline gap-2 mb-4">
+            <h2 className="text-6xl font-black tracking-tighter">42.8k</h2>
+            <TrendingUp className="text-[#e75c13] size-8" />
+          </div>
+          <p className="text-sm text-gray-400 leading-relaxed mb-8">
+            World-class builders dividing tasks, breaking barriers, and building real alternatives.
+          </p>
+          
+          <div className="flex items-center gap-3 bg-white/10 rounded-lg p-3 mb-8">
+            <div className="flex -space-x-2">
+              <div className="size-8 rounded-full bg-orange-500 border-2 border-[#1c1c1c]"></div>
+              <div className="size-8 rounded-full bg-blue-500 border-2 border-[#1c1c1c]"></div>
+              <div className="size-8 rounded-full bg-emerald-500 border-2 border-[#1c1c1c]"></div>
+            </div>
+            <p className="text-[11px] font-bold tracking-wide">Active builders right now</p>
+          </div>
+
+          <button className="w-full py-3 border border-gray-600 rounded-md text-xs font-bold tracking-widest hover:bg-white/5 transition-colors">
+            VIEW NETWORK STATS
+          </button>
         </div>
       </div>
     </section>
   );
 };
 
-const Values = () => {
+const VisionMission = () => {
   return (
-    <section className="py-24 px-6 max-w-7xl mx-auto">
-      <div className="grid md:grid-cols-2 gap-8">
-        <motion.div 
-          whileHover={{ y: -5 }}
-          className="bg-white/5 backdrop-blur-sm border border-white/10 p-10 rounded-3xl border-t-2 border-indigo-500 hover:bg-white/10 transition-all"
-        >
-          <Rocket className="text-indigo-500 size-10 mb-6" />
-          <h3 className="text-4xl font-black mb-4 tracking-tighter italic text-white">Build &gt; Resume</h3>
-          <p className="text-lg text-white/50 leading-relaxed">
-            A list of past employers doesn't tell us what you're capable of doing today. We prioritize your current output and problem-solving velocity over your LinkedIn history.
-          </p>
-        </motion.div>
+    <section className="max-w-[1400px] w-full mx-auto border-t border-b border-gray-200 mt-20 grid md:grid-cols-2">
+      {/* Vision Card */}
+      <div className="p-12 lg:p-24 bg-white flex flex-col justify-center">
+        <Rocket className="size-8 text-[#e75c13] mb-8" />
+        <h2 className="text-3xl md:text-5xl font-black text-[#1a1a1a] leading-tight mb-6">
+          I have the Vision, but I need the Hands.
+        </h2>
+        <p className="text-gray-500 font-medium mb-10 leading-relaxed max-w-md text-lg">
+          Stop scrolling LinkedIn for "candidates." Find obsessed builders who don't want a salary—they want a legacy.
+        </p>
+        <ul className="space-y-4 mb-12">
+          {['Access TO verified talent', 'Automated equity framework setup', 'Proof-of-Work verified profiles'].map((item, i) => (
+            <li key={i} className="flex items-center gap-3 text-[#1a1a1a] font-bold text-sm">
+              <CheckCircle2 className="size-5 text-[#e75c13] shrink-0" />
+              {item}
+            </li>
+          ))}
+        </ul>
+        <Link to="/register" className="inline-flex items-center gap-2 text-xs font-bold text-[#e75c13] tracking-widest uppercase hover:text-[#b5460e] transition-colors">
+          Start Recruiting Obsession <ArrowRight className="size-4" />
+        </Link>
+      </div>
 
-        <motion.div 
-          whileHover={{ y: -5 }}
-          className="bg-white/5 backdrop-blur-sm border border-white/10 p-10 rounded-3xl border-t-2 border-violet-400 hover:bg-white/10 transition-all"
-        >
-          <Zap className="text-violet-400 size-10 mb-6" />
-          <h3 className="text-4xl font-black mb-4 tracking-tighter italic text-white">Intent &gt; Experience</h3>
-          <p className="text-lg text-white/50 leading-relaxed">
-            Ten years of doing the same thing is not experience. Ten days of intense building with high intent is. We find the hungry, not the settled.
-          </p>
-        </motion.div>
+      {/* Mission Card */}
+      <div className="p-12 lg:p-24 bg-[#1c1c1c] flex flex-col justify-center">
+        <Zap className="size-8 text-[#e75c13] mb-8" />
+        <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+          I have the Hands, but I need the Mission.
+        </h2>
+        <p className="text-gray-400 font-medium mb-10 leading-relaxed max-w-md text-lg">
+          Resumes are for corporate cogs. Show your GitHub, your side projects, and your drive. Join the next decacorn at Day 1.
+        </p>
+        <ul className="space-y-4 mb-12">
+          {['Direct access to Founding Teams', 'Equity-heavy roles for top builders', 'Escrew-based co-founding API'].map((item, i) => (
+            <li key={i} className="flex items-center gap-3 text-white font-bold text-sm">
+              <CheckCircle2 className="size-5 text-[#e75c13] shrink-0" />
+              {item}
+            </li>
+          ))}
+        </ul>
+        <Link to="/register" className="inline-flex items-center gap-2 text-xs font-bold text-[#e75c13] tracking-widest uppercase hover:text-[#c44e10] transition-colors">
+          Find Your Life's Work <ArrowRight className="size-4" />
+        </Link>
       </div>
     </section>
   );
 };
 
-const CTA = () => {
+const EntryPoints = () => {
   return (
-    <section className="py-32 px-6 text-center relative overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-96 bg-indigo-500/10 rounded-full blur-[150px]" />
+    <section className="py-24 px-6 max-w-6xl mx-auto">
+      <h2 className="text-3xl font-black text-center text-[#1a1a1a] mb-12 tracking-tight">Choose Your Entry Point</h2>
+      <div className="grid md:grid-cols-2 gap-6 w-full max-w-4xl mx-auto">
+        {/* Founder Mode */}
+        <div className="relative overflow-hidden rounded-3xl aspect-[4/5] bg-gradient-to-br from-[#2a2a2a] to-[#111111] group cursor-pointer flex items-end p-8 md:p-12 hover:-translate-y-2 transition-transform duration-300">
+          <div className="absolute inset-0 opacity-40 mix-blend-overlay">
+             <div className="absolute top-10 left-10 w-64 h-64 bg-orange-600 rounded-full blur-[100px]"></div>
+             <div className="absolute bottom-10 right-10 w-64 h-64 bg-red-800 rounded-full blur-[100px]"></div>
+          </div>
+          
+          <div className="relative z-10 w-full">
+            <span className="inline-block px-3 py-1 bg-[#e75c13] text-white text-[10px] font-bold uppercase tracking-widest rounded mb-4">MODE: ALPHA</span>
+            <h3 className="text-4xl font-black text-white mb-4">Founder Mode</h3>
+            <p className="text-white/70 font-medium max-w-[200px] mb-8 text-sm leading-relaxed">
+              Build the core team that scales your vision from zero to one.
+            </p>
+            <div className="size-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+              <ArrowRight className="text-[#1a1a1a] size-6" />
+            </div>
+          </div>
+        </div>
+
+        {/* Talent Mode */}
+        <div className="relative overflow-hidden rounded-3xl aspect-[4/5] bg-gradient-to-br from-[#404040] to-[#222222] group cursor-pointer flex items-end p-8 md:p-12 hover:-translate-y-2 transition-transform duration-300">
+           <div className="absolute inset-0 opacity-20">
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+          </div>
+
+          <div className="relative z-10 w-full">
+            <span className="inline-block px-3 py-1 bg-[#e75c13] text-white text-[10px] font-bold uppercase tracking-widest rounded mb-4">MODE: BETA</span>
+            <h3 className="text-4xl font-black text-white mb-4">Talent Mode</h3>
+            <p className="text-white/70 font-medium max-w-[200px] mb-8 text-sm leading-relaxed">
+              Apply your skills where they are truly needed. No corporate fluff.
+            </p>
+            <div className="size-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+              <Zap className="text-[#e75c13] size-6" />
+            </div>
+          </div>
+        </div>
       </div>
-      
-      <div className="relative z-10 max-w-3xl mx-auto">
-        <h2 className="text-4xl md:text-5xl font-bold mb-8 leading-tight text-white">
-          Your next opportunity won’t come from applying. It comes from collaborating.
-        </h2>
-        <p className="text-white/40 text-lg mb-12">
-          Stop waiting for the perfect job post. Start finding the perfect problem.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link to="/register" className="w-full sm:w-auto px-12 py-5 bg-indigo-600 text-white font-bold rounded-2xl text-xl hover:shadow-[0_0_30px_#6366f1] transition-all hover:scale-105">
-            Start Building
+    </section>
+  );
+};
+
+const Philosophy = () => {
+  return (
+    <section className="py-24 px-6 max-w-4xl mx-auto flex flex-col items-center">
+      <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase mb-4">Our Philosophy</span>
+      <h2 className="text-4xl font-black text-[#1a1a1a] mb-20 tracking-tight">Ship or Die.</h2>
+
+      <div className="grid sm:grid-cols-2 gap-12 w-full">
+        <div className="border-l-[3px] border-[#a03006] pl-6 md:pl-8">
+          <h3 className="text-3xl font-black text-[#1a1a1a] mb-4">Build &gt; Resume</h3>
+          <p className="text-gray-500 font-medium leading-relaxed">
+            We don't care where you went to school. We care what you've shipped. Your portfolio is your password to the elite circle.
+          </p>
+        </div>
+        <div className="border-l-[3px] border-[#e75c13] pl-6 md:pl-8">
+          <h3 className="text-3xl font-black text-[#1a1a1a] mb-4">Intent &gt; Experience</h3>
+          <p className="text-gray-500 font-medium leading-relaxed">
+            Obsession beats 10 years of "experience" every time. We help founders find the people who will stay up all night to solve the "unsolvable."
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const BottomCTA = () => {
+  return (
+    <section className="pb-24 px-6 max-w-6xl mx-auto mt-12">
+      <div className="bg-gradient-to-br from-[#d34e15] to-[#8f2f05] rounded-[2.5rem] p-12 md:p-24 text-center relative overflow-hidden shadow-2xl">
+        {/* Abstract rings */}
+        <div className="absolute top-0 right-0 -mr-32 -mt-32 w-[30rem] h-[30rem] border-[60px] border-white/5 rounded-full pointer-events-none"></div>
+        <div className="absolute top-10 right-10 -mr-32 -mt-32 w-[30rem] h-[30rem] border-[60px] border-white/5 rounded-full pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-[40rem] h-[40rem] bg-white/5 rounded-full pointer-events-none blur-3xl"></div>
+
+        <div className="relative z-10 flex flex-col items-center">
+          <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[1] mb-6">
+            Ready to disrupt the<br />status quo?
+          </h2>
+          <p className="text-white/90 font-medium text-lg md:text-xl mb-12 max-w-xl">
+            Join Tasyai and start building the future today.
+          </p>
+          <Link to="/register" className="inline-block px-10 py-5 bg-white text-[#b5460e] font-black tracking-widest text-sm rounded-xl hover:bg-gray-100 transition-transform hover:scale-105 active:scale-95 uppercase shadow-xl">
+            Apply to Join the Network
           </Link>
-          <button className="w-full sm:w-auto px-12 py-5 bg-white/5 backdrop-blur-sm border border-white/10 text-white font-bold rounded-2xl text-xl hover:bg-white/10 transition-all">
-            Read Manifesto
-          </button>
         </div>
       </div>
     </section>
@@ -336,45 +335,65 @@ const CTA = () => {
 
 const Footer = () => {
   return (
-    <footer className="py-12 px-6 border-t border-white/5 text-center bg-[#020617]">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-2">
-          <Code2 className="text-indigo-500 size-6" />
-          <span className="font-bold tracking-tight text-white">Tasyai v1.0</span>
+    <footer className="w-full bg-[#fcfbf9] pt-20 pb-12 px-6 max-w-6xl mx-auto border-t border-gray-200">
+      <div className="grid md:grid-cols-4 gap-12 mb-12">
+        <div className="md:col-span-2">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-xl font-black tracking-tight text-[#e75c13]">Tasyai</span>
+          </div>
+          <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-xs">
+            © 2024 Spatial Canvas. A YC-inspired Platform<br/>for world class builders.
+          </p>
         </div>
-        <p className="text-white/20 text-sm">
-          © 2024 Experimental Startup Collaboration Platform. Made for the builders.
-        </p>
-        <div className="flex gap-6">
-          <a href="#" className="text-white/40 hover:text-indigo-400 transition-colors"><Globe size={20} /></a>
-          <a href="#" className="text-white/40 hover:text-indigo-400 transition-colors"><Github size={20} /></a>
-          <a href="#" className="text-white/40 hover:text-indigo-400 transition-colors"><Rss size={20} /></a>
+
+        <div>
+          <h4 className="font-bold text-[10px] tracking-widest uppercase text-gray-400 mb-6">Network</h4>
+          <ul className="space-y-4">
+            <li><Link to="/founders" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Founders</Link></li>
+            <li><Link to="/talent" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Talent</Link></li>
+            <li><Link to="/showcase" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Showcase</Link></li>
+          </ul>
+        </div>
+
+        <div>
+           <div className="flex gap-x-16 gap-y-12 flex-wrap">
+              <div>
+                <h4 className="font-bold text-[10px] tracking-widest uppercase text-gray-400 mb-6">Legal</h4>
+                <ul className="space-y-4">
+                  <li><Link to="/privacy" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Privacy</Link></li>
+                  <li><Link to="/terms" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Terms</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-bold text-[10px] tracking-widest uppercase text-gray-400 mb-6">Social</h4>
+                <ul className="space-y-4">
+                  <li><a href="#" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Twitter</a></li>
+                  <li><a href="#" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">LinkedIn</a></li>
+                </ul>
+              </div>
+           </div>
         </div>
       </div>
     </footer>
   );
 };
 
-
-// --- Main Component ---
-
 const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-[#020617] text-white font-sans selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[#fcfbf9] font-sans selection:bg-[#e75c13] selection:text-white">
       <SEO 
-        title="Smart Startup Collaboration & Talent Hub"
-        description="Tasyai is a smart job searching platform and startup collaboration hub. Build something that matters with the best founders and talent."
-        keywords="tasyai, tasy-ai, job searching platform, startup hiring, tech jobs, founder matching, talent collaboration, build startups"
+        title="Tasyai - Redefining the Startup Hub"
+        description="Don't apply for jobs. Build something that matters."
+        keywords="tasyai, startup hub, build something, collaborate"
       />
-      
       <Navbar />
       <main>
         <Hero />
-        <Ticker />
-        <BridgeSection />
-        <Timeline />
-        <Values />
-        <CTA />
+        <PulseSection />
+        <VisionMission />
+        <EntryPoints />
+        <Philosophy />
+        <BottomCTA />
       </main>
       <Footer />
     </div>

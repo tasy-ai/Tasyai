@@ -1,30 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import SEO from '../components/SEO';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import authService from '../services/authService';
 import { 
-  Rocket,
-  Compass,
-  Star,
-  User,
-  Book,
-  Settings,
-  Menu,
-  ChevronLeft,
   MapPin,
-  Mail,
-  Linkedin,
-  Github,
-  Award,
-  Briefcase,
-  Send,
+  ChevronLeft,
   Loader2,
-  Globe,
-  Link2
+  Box,
+  ShieldAlert,
+  Search
 } from 'lucide-react';
 import { toast, Toaster } from 'react-hot-toast';
-import { candidates } from '../data/foundTalentData';
 
 const ProfileExpansion = () => {
   const location = useLocation();
@@ -32,8 +19,50 @@ const ProfileExpansion = () => {
   const queryParams = new URLSearchParams(location.search);
   const candidateId = queryParams.get('id');
 
-  const [candidate, setCandidate] = useState(location.state?.candidate || null);
-  const [loading, setLoading] = useState(!location.state?.candidate && !!candidateId);
+  const formatCandidate = (user) => ({
+      id: user._id || user.id,
+      name: user.name,
+      role: user.role || 'Member',
+      title: user.motto || 'UX Engineer',
+      experience: user.experience || 'N/A',
+      location: user.country || 'San Francisco, CA',
+      image: user.profilePicture || `https://ui-avatars.com/api/?name=${user.name}&background=random`,
+      status: 'Open to collaborate',
+      matchScore: 85,
+      badge: user.role ? user.role.toUpperCase() : 'FOUNDER',
+      quote: user.motto || 'Building decentralized futures.',
+      skills: user.skills ? (typeof user.skills[0] === 'string' ? user.skills.map(s => ({ name: s })) : user.skills) : [{name:'React.js'},{name:'Product Strategy'},{name:'Solidity'},{name:'UI/UX Design'},{name:'Rust'}],
+      about: [
+         user.achievements || "A detailed personal introduction focusing on building scalable systems and guiding startup teams. Dedicated to bridging the gap between high-level product strategy and technical execution.",
+         "Currently focused on developing open-source tooling for collaboration protocols. Looking for passionate designers and frontend architects to join the core team."
+      ],
+      experienceList: [
+          {
+              title: user.role || 'Principal Architect • BlockTech',
+              period: '2021 — PRESENT',
+              description: user.achievements || 'Led the development of a layer-2 scaling solution used by 50k+ daily users.',
+              active: true
+          },
+          {
+              title: 'Lead Designer • CreativeX',
+              period: '2018 — 2021',
+              description: 'Designed enterprise design systems for Fortune 500 startups.',
+              active: false
+          }
+      ],
+      links: [
+          { name: 'Github', url: user.github || 'github.com/arivera-dev' },
+          { name: 'LinkedIn', url: user.linkedin || 'linkedin.com/in/alexrivera' },
+          { name: 'Personal', url: user.portfolio || 'alexrivera.io' },
+          { name: 'Whitepapers', url: 'Medium / Substack' }
+      ]
+  });
+
+  const [candidate, setCandidate] = useState(() => {
+     if (location.state?.candidate) return formatCandidate(location.state.candidate);
+     return null;
+  });
+  const [loading, setLoading] = useState(!candidate && !!candidateId);
 
   useEffect(() => {
     const fetchCandidate = async () => {
@@ -43,38 +72,7 @@ const ProfileExpansion = () => {
             setLoading(true);
             const user = await authService.getUserById(candidateId);
             if (user) {
-                // Map backend user to candidate schema
-                const mappedCandidate = {
-                    id: user._id,
-                    name: user.name,
-                    role: user.role || 'Member',
-                    experience: user.experience || 'N/A',
-                    location: user.country || 'Remote',
-                    image: user.profilePicture || `https://ui-avatars.com/api/?name=${user.name}&background=random`,
-                    status: 'offline',
-                    matchScore: 85,
-                    badge: user.role || 'Member',
-                    badgeColor: 'primary',
-                    quote: user.motto || 'No bio available',
-                    skills: user.skills ? user.skills.map(s => ({ name: s, level: 'high' })) : [],
-                    about: [user.achievements || "No detailed about section available.", user.motto || ""],
-                    partnership: user.partnership || 'N/A',
-                    experienceList: [
-                        {
-                            title: user.role || 'Professional',
-                            company: user.partnership || 'Independent',
-                            period: `${user.experience || 'N/A'} Experience`,
-                            description: user.achievements || 'Detailed background not provided.',
-                            active: true
-                        }
-                    ],
-                    links: [
-                        user.linkedin ? { name: 'LinkedIn', url: user.linkedin, icon: Linkedin, color: 'bg-[#0077b5]' } : null,
-                        user.github ? { name: 'GitHub', url: user.github, icon: Github, color: 'bg-slate-800' } : null,
-                        user.portfolio ? { name: 'Portfolio', url: user.portfolio, icon: Globe, color: 'bg-primary/40' } : null
-                    ].filter(Boolean)
-                };
-                setCandidate(mappedCandidate);
+                setCandidate(formatCandidate(user));
             }
         } catch (error) {
             console.error("Error fetching candidate:", error);
@@ -89,367 +87,293 @@ const ProfileExpansion = () => {
 
   if (loading) {
     return (
-        <div className="flex items-center justify-center min-h-screen bg-[#020617] text-white">
-            <Loader2 className="animate-spin size-10 text-[#4245f0]" />
+        <div className="flex items-center justify-center min-h-screen bg-[#F8F7F4]">
+            <Loader2 className="animate-spin size-10 text-[#ff5a00]" />
         </div>
     );
   }
 
   if (!candidate) {
     return (
-        <div className="flex items-center justify-center min-h-screen bg-[#020617] text-white">
+        <div className="flex items-center justify-center min-h-screen bg-[#F8F7F4] text-gray-900">
             <div className="text-center">
-                <h2 className="text-xl font-bold mb-2">No candidate data found</h2>
-                <p className="text-slate-400 mb-4">Please select a candidate from the main list.</p>
+                <h2 className="text-2xl font-black mb-2">No candidate data found</h2>
+                <p className="text-gray-500 mb-6 font-medium">Please select a candidate from the main directory.</p>
                 <button 
                     onClick={() => navigate('/found-talent')}
-                    className="px-4 py-2 bg-[#4245f0] rounded-lg hover:bg-[#4245f0]/90 transition-colors"
+                    className="px-6 py-3 bg-[#ff5a00] text-white rounded-sm hover:bg-[#e04e00] transition-colors font-bold shadow-sm"
                 >
-                    Back to Talent
+                    Back to Directory
                 </button>
             </div>
         </div>
     );
   }
 
-  const getStatusColor = (status) => {
-    const colors = {
-
-      online: 'bg-emerald-500',
-      offline: 'bg-slate-500',
-      away: 'bg-amber-500'
-    };
-    return colors[status] || 'bg-slate-500';
-  };
-
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneCode: '',
-    phoneNumber: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleContactSubmit = async (e) => {
-    e.preventDefault();
-
-    if (
-      !formData.firstName.trim() ||
-      !formData.lastName.trim() ||
-      !formData.email.trim() ||
-      !formData.phoneCode.trim() ||
-      !formData.phoneNumber.trim() ||
-      !formData.message.trim()
-    ) {
-      toast.error("❌ Please fill out all fields before submitting.");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const res = await fetch(
-        "https://formsubmit.co/ajax/unisire.mainhub@gmail.com",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            phoneCode: formData.phoneCode,
-            phoneNumber: formData.phoneNumber,
-            message: formData.message,
-            _subject: `📩 Contact for candidate: ${candidate.name}`,
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        toast.success(
-          "✅ Your message has been sent. Our team will reach out soon!"
-        );
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phoneCode: "",
-          phoneNumber: "",
-          message: "",
-        });
-      } else {
-        toast.error("❌ Failed to send message. Please try again later.");
-      }
-    } catch (error) {
-      toast.error("⚠️ Network error. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
-    <>
+    <div className="min-h-screen bg-[#F8F7F4] font-sans pb-20 w-full overflow-y-auto">
       <SEO 
-        title={`${candidate?.name || 'Talent'} | Tasyai`}
-        description={candidate?.quote || "View professional profile on Tasyai."}
+        title={`${candidate?.name || 'Talent Profile'} | StartupCollab`}
+        description={candidate?.quote || "View professional profile."}
       />
       <Toaster position="top-center" reverseOrder={false} />
 
-      <div className="p-5 md:p-10 pb-20">
-            <button 
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-4"
-            >
-                <ChevronLeft className="size-5" />
-                Back to Talent
-            </button>
+      {/* Main Page Container */}
+      <div className="w-full max-w-[1100px] mx-auto pt-8 px-4 md:px-8">
+          
+          <button 
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-1.5 text-[13px] font-bold text-gray-400 hover:text-gray-900 mb-6 transition-colors"
+          >
+              <ChevronLeft className="size-4" strokeWidth={3} /> Back
+          </button>
 
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="grid grid-cols-1 lg:grid-cols-3 gap-8"
-            >
-                {/* Left Column: Core Info */}
-                <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-8 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-[#4245f0]/20 to-purple-500/20"></div>
-                        <div className="relative z-10 flex flex-col items-center text-center mt-12">
-                            <div className="relative mb-4">
-                                <img 
-                                    src={candidate.image} 
-                                    alt={candidate.name} 
-                                    className="w-32 h-32 rounded-full object-cover border-4 border-[#0f172a]"
-                                />
-                                <div className={`absolute bottom-1 right-1 w-6 h-6 rounded-full border-4 border-[#0f172a] ${getStatusColor(candidate.status)}`}></div>
-                            </div>
-                            <h1 className="text-3xl font-bold text-white mb-2">{candidate.name}</h1>
-                            <p className="text-[#4245f0] font-semibold text-lg mb-1">{candidate.role}</p>
-                             <div className="flex items-center gap-2 text-slate-400 text-sm mb-6">
-                                <MapPin className="size-4" />
-                                {candidate.location}
-                            </div>
-                            
-                            <div className="w-full grid grid-cols-2 gap-4 mb-6">
-                                <div className="bg-white/5 rounded-xl p-3 text-center border border-white/10">
-                                    <div className="text-2xl font-bold text-white">{candidate.matchScore}%</div>
-                                    <div className="text-xs text-slate-500 uppercase font-bold">Match</div>
-                                </div>
-                                <div className="bg-white/5 rounded-xl p-3 text-center border border-white/10">
-                                    <div className="text-2xl font-bold text-white">{candidate.experience.split(' ')[0]}</div>
-                                    <div className="text-xs text-slate-500 uppercase font-bold">Years Exp</div>
-                                </div>
-                            </div>
+          {/* White Card Wrapper */}
+          <div className="bg-white border border-gray-200 shadow-sm w-full relative">
+              
+              {/* Fake StartupCollab Orange Top Navbar inside the card to match the mock exactly */}
+              <div className="bg-[#ff5a00] w-full flex flex-col md:flex-row items-center justify-between px-6 py-3 text-white">
+                  <div className="flex items-center gap-4">
+                      {/* Logo Area */}
+                      <div className="flex items-center gap-2">
+                          <div className="bg-white p-1 rounded-sm">
+                              <Box className="size-5 text-[#ff5a00]" strokeWidth={3} />
+                          </div>
+                          <span className="font-extrabold text-[17px] tracking-tight">StartupCollab</span>
+                      </div>
+                      <div className="hidden md:flex items-center gap-3 text-[13px] font-bold text-white/80">
+                          <span className="text-white/40">|</span>
+                          <a href="#" className="hover:text-white transition-colors">explore</a>
+                          <span className="text-white/40">|</span>
+                          <a href="#" className="hover:text-white transition-colors">network</a>
+                          <span className="text-white/40">|</span>
+                          <a href="#" className="hover:text-white transition-colors">projects</a>
+                          <span className="text-white/40">|</span>
+                          <a href="#" className="hover:text-white transition-colors">messages</a>
+                      </div>
+                  </div>
+                  
+                  <div className="hidden md:flex items-center gap-4">
+                      <div className="relative">
+                          Search
+                          <input 
+                              type="text" 
+                              placeholder="search" 
+                              className="bg-white/20 border-none outline-none text-white placeholder:text-white/60 text-[12px] px-3 py-1.5 rounded-sm w-48 font-medium"
+                          />
+                      </div>
+                      <div className="flex items-center gap-3 text-[13px] font-bold">
+                          <span>{candidate.name.toLowerCase().replace(' ', '_')}</span>
+                          <a href="#" className="text-black/60 hover:text-black transition-colors">logout</a>
+                      </div>
+                  </div>
+              </div>
 
-                            <button className="w-full py-3 rounded-xl font-bold gradient-primary text-white shadow-lg shadow-[#4245f0]/20 hover:opacity-90 transition-all mb-3">
-                                Connect Now
-                            </button>
-                            <button className="w-full py-3 rounded-xl font-bold bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all">
-                                Download Resume
-                            </button>
-                        </div>
-                    </div>
+              {/* Profile Hero Section */}
+              <div className="p-8 pb-10 flex flex-col md:flex-row items-start gap-6 border-b border-gray-100">
+                  <img 
+                      src={candidate.image} 
+                      alt={candidate.name} 
+                      className="w-32 h-32 md:w-40 md:h-40 object-cover border border-gray-200"
+                  />
+                  <div className="flex-1 pt-1">
+                      <div className="flex items-center gap-3 mb-2">
+                          <h1 className="text-[28px] font-black text-gray-900 leading-none">{candidate.name}</h1>
+                          <span className="px-2 py-0.5 border border-[#ff5a00] text-[#ff5a00] text-[10px] font-black uppercase tracking-widest rounded-sm">
+                              {candidate.badge}
+                          </span>
+                      </div>
+                      <h2 className="text-[17px] text-gray-700 font-medium mb-3 tracking-tight">
+                          {candidate.quote} | {candidate.title}
+                      </h2>
+                      <div className="flex items-center gap-2 text-[13px] font-bold text-gray-500 mb-6">
+                          <MapPin className="size-4" />
+                          {candidate.location} 
+                          <span className="mx-1">•</span>
+                          <span className="text-emerald-600">{candidate.status}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                          <button 
+                              onClick={() => toast.success("Edit profile opened")}
+                              className="px-6 py-2 bg-[#ff5a00] hover:bg-[#e04e00] text-white text-[12px] font-bold rounded-sm shadow-sm transition-colors uppercase tracking-wider"
+                          >
+                              edit profile
+                          </button>
+                          <button 
+                              onClick={() => toast.success("Profile link copied")}
+                              className="px-6 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 text-[12px] font-bold rounded-sm shadow-sm transition-colors uppercase tracking-wider"
+                          >
+                              share
+                          </button>
+                      </div>
+                  </div>
+              </div>
 
-                    <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6">
-                        <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                            <Briefcase className="size-5 text-[#4245f0]" />
-                            Skills
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                            {candidate.skills.map((skill) => (
-                                <span 
-                                    key={skill.name} 
-                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium border ${
-                                        skill.level === 'high' 
-                                        ? 'bg-[#4245f0]/10 text-[#4245f0] border-[#4245f0]/20' 
-                                        : 'bg-white/5 text-slate-300 border-white/10'
-                                    }`}
-                                >
-                                    {skill.name}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
+              {/* Two Column Layout Grid */}
+              <div className="flex flex-col lg:flex-row">
+                  
+                  {/* Left Column (Main Content) */}
+                  <div className="flex-1 p-8 lg:pr-12 border-b lg:border-b-0 lg:border-r border-gray-100">
+                      
+                      {/* About */}
+                      <section className="mb-12">
+                          <h3 className="text-[12px] font-black uppercase tracking-widest text-gray-900 border-t border-b border-gray-100 py-3 mb-6">
+                              About
+                          </h3>
+                          <div className="space-y-4 text-[14px] leading-relaxed text-gray-700 font-medium">
+                              {candidate.about && candidate.about.map((paragraph, idx) => (
+                                  <p key={idx}>{paragraph}</p>
+                              ))}
+                          </div>
+                      </section>
 
-                    {candidate.links && candidate.links.length > 0 && (
-                        <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6">
-                            <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                                <Link2 className="size-5 text-[#4245f0]" />
-                                Links
-                            </h3>
-                            <div className="grid grid-cols-1 gap-3">
-                                {candidate.links.map((link) => {
-                                    const IconComponent = link.icon;
-                                    return (
-                                        <a 
-                                            key={link.name}
-                                            href={link.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group"
-                                        >
-                                            <div className={`w-8 h-8 rounded-lg ${link.color} flex items-center justify-center shrink-0`}>
-                                                <IconComponent className="size-4 text-white" />
-                                            </div>
-                                            <span className="text-sm font-medium text-slate-300 group-hover:text-white truncate">{link.name}</span>
-                                        </a>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-                </div>
+                      {/* Experience */}
+                      <section className="mb-12">
+                          <h3 className="text-[12px] font-black uppercase tracking-widest text-gray-900 border-t border-b border-gray-100 py-3 mb-6">
+                              Experience
+                          </h3>
+                          <div className="space-y-6 pl-1">
+                              {candidate.experienceList && candidate.experienceList.map((exp, idx) => (
+                                  <div key={idx} className={`pl-4 border-l-[3px] py-1 ${exp.active ? 'border-[#ff5a00]' : 'border-gray-200'}`}>
+                                      <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">
+                                          {exp.period}
+                                      </div>
+                                      <h4 className="text-[14px] font-black text-gray-900 mb-1.5">{exp.title}</h4>
+                                      <p className="text-[13px] text-gray-500 font-medium leading-relaxed">
+                                          {exp.description}
+                                      </p>
+                                  </div>
+                              ))}
+                          </div>
+                      </section>
 
-                {/* Right Column: Detailed Info */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-8">
-                        <div className="mb-6 p-4 rounded-xl bg-[#4245f0]/10 border border-[#4245f0]/20 italic text-slate-200 text-lg">
-                            "{candidate.quote}"
-                        </div>
-                        
-                        <h3 className="text-xl font-bold text-white mb-4">About</h3>
-                        <div className="space-y-4 text-slate-400 leading-relaxed">
-                            {candidate.about && candidate.about.map((paragraph, idx) => (
-                                <p key={idx}>{paragraph}</p>
-                            ))}
-                        </div>
-                    </div>
+                      {/* Links */}
+                      <section>
+                          <h3 className="text-[12px] font-black uppercase tracking-widest text-gray-900 border-t border-b border-gray-100 py-3 mb-6">
+                              Links
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4">
+                              {candidate.links && candidate.links.map((link, idx) => (
+                                  <div key={`${link.name}-${idx}`} className="flex items-start gap-2 text-[13px]">
+                                      <span className="font-bold text-[#ff5a00] min-w-[80px]">{link.name}:</span>
+                                      <a href={link.url.startsWith('http') ? link.url : `https://${link.url}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 font-medium hover:text-gray-900 truncate">
+                                          {link.url}
+                                      </a>
+                                  </div>
+                              ))}
+                          </div>
+                      </section>
 
-                    <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-8">
-                        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                            <Award className="size-5 text-[#4245f0]" />
-                            Work History
-                        </h3>
-                        <div className="space-y-8 relative before:absolute before:left-[19px] before:top-2 before:h-[calc(100%-20px)] before:w-0.5 before:bg-white/10">
-                            {candidate.experienceList && candidate.experienceList.map((exp, idx) => (
-                                <div key={idx} className="relative pl-12 group">
-                                    <div className={`absolute left-0 top-1 w-10 h-10 rounded-full border-4 border-[#0f172a] flex items-center justify-center ${exp.active ? 'bg-[#4245f0]' : 'bg-slate-700'}`}>
-                                        <Briefcase className="size-4 text-white" />
-                                    </div>
-                                    <div>
-                                        <div className="flex items-baseline justify-between mb-1">
-                                            <h4 className="text-lg font-bold text-white group-hover:text-[#4245f0] transition-colors">{exp.title}</h4>
-                                            <span className="text-sm font-medium text-slate-500">{exp.period}</span>
-                                        </div>
-                                        <div className="text-[#4245f0] font-medium mb-2">{exp.company}</div>
-                                        <p className="text-slate-400 text-sm leading-relaxed">{exp.description}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                  </div>
 
-                    {/* Contact Form */}
-                    <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.25 }}
-                        className="bg-[#0f172a] border border-[#4245f0]/30 rounded-2xl p-8 relative overflow-hidden"
-                    >
-                        <div className="absolute top-0 right-0 p-32 bg-[#4245f0]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-                        
-                        <h3 className="mb-6 flex items-center gap-2 text-xl font-bold text-white relative z-10">
-                            <Mail className="size-5 text-[#4245f0]" />
-                            Contact {candidate.name.split(' ')[0]}
-                        </h3>
-                        
-                        <form onSubmit={handleContactSubmit} className="space-y-4 relative z-10">
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">First Name</label>
-                                    <input 
-                                        required
-                                        type="text" 
-                                        value={formData.firstName}
-                                        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                                        className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                        placeholder="Jordan"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Last Name</label>
-                                    <input 
-                                        required
-                                        type="text" 
-                                        value={formData.lastName}
-                                        onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                                        className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                        placeholder="Smith"
-                                    />
-                                </div>
-                            </div>
+                  {/* Right Column (Sidebar Widgets) */}
+                  <div className="w-full lg:w-[35%] p-8">
+                      
+                      {/* Company Activity */}
+                      <section className="mb-12">
+                          <h3 className="text-[12px] font-black uppercase tracking-widest text-gray-900 border-b border-gray-100 py-3 mb-4">
+                              Company Activity
+                          </h3>
+                          <div className="flex items-center gap-4 border-b border-gray-100 mb-6 pb-2 text-[10px] font-black uppercase tracking-widest">
+                              <span className="text-gray-900 border-b-2 border-gray-900 pb-2 -mb-[10px]">My Ventures</span>
+                              <span className="text-gray-400">Applied To</span>
+                          </div>
+                          
+                          <div className="space-y-6">
+                              <div className="flex items-start justify-between group">
+                                  <div className="flex gap-3">
+                                      <div className="w-8 h-8 rounded-sm bg-blue-50 flex items-center justify-center shrink-0">
+                                          <Box className="size-4 text-blue-500 fill-blue-500" />
+                                      </div>
+                                      <div>
+                                          <h4 className="text-[13px] font-black text-gray-900">Project Nexus</h4>
+                                          <p className="text-[11px] font-medium text-gray-400">Decentralized ERP Systems</p>
+                                      </div>
+                                  </div>
+                                  <button className="text-[11px] font-bold text-[#ff5a00] hover:underline">
+                                      manage
+                                  </button>
+                              </div>
 
-                            <div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Your Email</label>
-                                <input 
-                                    required
-                                    type="email" 
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                    className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                    placeholder="jordan@example.com"
-                                />
-                            </div>
+                              <div className="flex items-start justify-between group">
+                                  <div className="flex gap-3">
+                                      <div className="w-8 h-8 rounded-sm bg-orange-50 flex items-center justify-center shrink-0">
+                                          <ShieldAlert className="size-4 text-[#ff5a00] fill-[#ff5a00]" />
+                                      </div>
+                                      <div>
+                                          <h4 className="text-[13px] font-black text-gray-900">SafeGuard AI</h4>
+                                          <p className="text-[11px] font-medium text-gray-400">Governance Security Tools</p>
+                                      </div>
+                                  </div>
+                                  <button className="text-[11px] font-bold text-[#ff5a00] hover:underline">
+                                      manage
+                                  </button>
+                              </div>
+                          </div>
+                      </section>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                                <div className="sm:col-span-1">
-                                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Code</label>
-                                    <input 
-                                        required
-                                        type="text" 
-                                        value={formData.phoneCode}
-                                        onChange={(e) => setFormData({...formData, phoneCode: e.target.value})}
-                                        className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                        placeholder="+1"
-                                    />
-                                </div>
-                                <div className="sm:col-span-3">
-                                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Phone Number</label>
-                                    <input 
-                                        required
-                                        type="tel" 
-                                        value={formData.phoneNumber}
-                                        onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
-                                        className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                        placeholder="555-0123"
-                                    />
-                                </div>
-                            </div>
+                      {/* Skills */}
+                      <section className="mb-12">
+                          <h3 className="text-[12px] font-black uppercase tracking-widest text-gray-900 border-b border-gray-100 py-3 mb-6">
+                              Skills
+                          </h3>
+                          <p className="text-[13px] font-bold leading-relaxed">
+                              {candidate.skills.map((skill, index) => {
+                                  // Replicate the fading color effect from the image
+                                  let colorClass = "text-gray-800";
+                                  if (index > 2 && index <= 4) colorClass = "text-gray-500";
+                                  if (index > 4) colorClass = "text-gray-400";
+                                  
+                                  return (
+                                      <span key={index} className={`${colorClass}`}>
+                                          {skill.name}{index < candidate.skills.length - 1 ? ', ' : ''}
+                                      </span>
+                                  );
+                              })}
+                          </p>
+                      </section>
 
-                            <div>
-                                <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Message</label>
-                                <textarea 
-                                    required
-                                    rows="4"
-                                    value={formData.message}
-                                    onChange={(e) => setFormData({...formData, message: e.target.value})}
-                                    className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all resize-none placeholder:text-slate-600"
-                                    placeholder={`Hi ${candidate.name.split(' ')[0]}, I'd like to discuss a potential role...`}
-                                ></textarea>
-                            </div>
-                            
-                            <motion.button 
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full py-3 rounded-xl bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#4245f0]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-                                {isSubmitting ? 'Sending...' : 'Send Message'}
-                            </motion.button>
-                        </form>
-                    </motion.div>
-                </div>
-            </motion.div>
-        </div>
-    </>
+                      {/* Stats */}
+                      <section>
+                          <h3 className="text-[12px] font-black uppercase tracking-widest text-gray-900 border-b border-gray-100 py-3 mb-6">
+                              Stats
+                          </h3>
+                          <div className="flex items-center gap-10">
+                              <div>
+                                  <div className="text-[24px] font-black text-gray-900 mb-1">42</div>
+                                  <div className="text-[9px] font-black uppercase tracking-widest text-gray-500">Collaborations</div>
+                              </div>
+                              <div>
+                                  <div className="text-[24px] font-black text-gray-900 mb-1">1.2k</div>
+                                  <div className="text-[9px] font-black uppercase tracking-widest text-gray-500">Profile Views</div>
+                              </div>
+                          </div>
+                      </section>
+
+                  </div>
+              </div>
+
+              {/* Bottom Thick Orange Border */}
+              <div className="h-1.5 w-full bg-[#ff5a00]"></div>
+          </div>
+
+          {/* Footer Below Card */}
+          <footer className="mt-8 mb-16 text-center text-[10px] font-bold text-gray-400 uppercase tracking-wider space-y-4">
+              <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
+                  <a href="#" className="hover:text-gray-900 transition-colors">Guidelines</a>
+                  <a href="#" className="hover:text-gray-900 transition-colors">FAQ</a>
+                  <a href="#" className="hover:text-gray-900 transition-colors">Lists</a>
+                  <a href="#" className="hover:text-gray-900 transition-colors">API</a>
+                  <a href="#" className="hover:text-gray-900 transition-colors">Security</a>
+                  <a href="#" className="hover:text-gray-900 transition-colors">Legal</a>
+                  <a href="#" className="hover:text-gray-900 transition-colors">Apply to YC</a>
+                  <a href="#" className="hover:text-gray-900 transition-colors">Contact</a>
+              </div>
+              <p>StartupCollab © 2024</p>
+          </footer>
+
+      </div>
+    </div>
   );
 };
 

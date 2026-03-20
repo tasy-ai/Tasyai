@@ -3,21 +3,18 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import { 
-  Rocket,
-  Compass,
-  Star,
-  User,
-  Book,
-  Settings,
-  Search,
-  PlusCircle,
+  Plus,
   Bookmark,
-  BookmarkPlus,
-  ChevronDown,
   Building2,
-  MapPin
+  SlidersHorizontal,
+  Cloud,
+  Sun,
+  Shield,
+  Activity,
+  Bot,
+  ChevronDown
 } from 'lucide-react';
-import { filters } from '../data/dashboardData'; // Still using filters for UI
+import { filters, companies as mockCompanies } from '../data/dashboardData'; 
 
 import { useUser } from "@clerk/clerk-react";
 import authService from '../services/authService';
@@ -48,15 +45,26 @@ const Dashboard = () => {
     if (clerkSignedIn) fetchSavedStatus();
   }, [clerkSignedIn]);
 
-  // Dashboard now relies on global AuthSync for protection and backend synchronization
-
   // Fetch companies
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
         setLoadingCompanies(true);
         const data = await companyService.getCompanies();
-        setCompanies(data);
+        if (data && data.length > 0) {
+          setCompanies(data);
+        } else {
+          // Fallback to exactly match the design image and show companies
+          const formattedMocks = mockCompanies.map(c => ({
+            _id: c.id.toString(),
+            name: c.name,
+            description: c.description,
+            logo: c.image,
+            openings: c.roles.map(r => ({ role: r })),
+            industry: 'Technology'
+          }));
+          setCompanies(formattedMocks);
+        }
       } catch (err) {
         console.error("Failed to fetch companies:", err);
       } finally {
@@ -68,10 +76,10 @@ const Dashboard = () => {
 
   if (isSyncing || !clerkLoaded) {
     return (
-      <div className="bg-[#020617] text-white flex items-center justify-center h-screen">
+      <div className="bg-white text-gray-900 flex items-center justify-center h-screen">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#6467f2] border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-400 font-medium">Syncing your account...</p>
+          <div className="w-10 h-10 border-4 border-[#ff5a00] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-medium text-sm">Loading...</p>
         </div>
       </div>
     );
@@ -79,18 +87,20 @@ const Dashboard = () => {
 
   const filteredCompanies = companies.filter(company => {
     // 1. Search Logic
-    const searchLower = searchQuery.toLowerCase();
-    const matchesSearch = 
-      company.name?.toLowerCase().includes(searchLower) ||
-      company.industry?.toLowerCase().includes(searchLower) ||
-      company.tagline?.toLowerCase().includes(searchLower) ||
-      company.description?.toLowerCase().includes(searchLower) ||
-      company.openings?.some(op => 
-        op.role?.toLowerCase().includes(searchLower) || 
-        op.techStack?.some(tech => tech.toLowerCase().includes(searchLower))
-      );
+    if (searchQuery.trim() !== '') {
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = 
+        company.name?.toLowerCase().includes(searchLower) ||
+        company.industry?.toLowerCase().includes(searchLower) ||
+        company.tagline?.toLowerCase().includes(searchLower) ||
+        company.description?.toLowerCase().includes(searchLower) ||
+        company.openings?.some(op => 
+          op.role?.toLowerCase().includes(searchLower) || 
+          op.techStack?.some(tech => tech.toLowerCase().includes(searchLower))
+        );
 
-    if (!matchesSearch) return false;
+      if (!matchesSearch) return false;
+    }
 
     // 2. Filter Logic
     if (activeFilter === 'All Roles') return true;
@@ -106,11 +116,9 @@ const Dashboard = () => {
     }
 
     if (activeFilter === 'Full-time') {
-      // Assuming full-time if not specified otherwise in typical startup context
-      // Or check if 'Full-time' appears in description
       return company.description?.toLowerCase().includes('full-time') || 
              company.description?.toLowerCase().includes('fulltime') ||
-             true; // Defaulting to true for startups usually implies commitment
+             true; 
     }
 
     if (activeFilter === 'AI/ML') {
@@ -142,223 +150,204 @@ const Dashboard = () => {
       if (res.isSaved) {
         setSavedCompanyIds(prev => [...prev, companyId]);
         notificationService.addNotification({
-            title: 'Company Saved',
-            message: `${company?.name || 'Company'} has been added to your interests.`,
+            title: 'Saved',
+            message: `${company?.name || 'Company'} saved.`,
             type: 'company',
-            iconName: 'BookmarkPlus',
-            color: 'bg-[#6467f2]/10 border-[#6467f2]/20'
+            iconName: 'Bookmark',
+            color: 'bg-[#ff5a00]/10 border-[#ff5a00]/20 text-[#ff5a00]'
         });
       } else {
         setSavedCompanyIds(prev => prev.filter(id => id !== companyId));
-        notificationService.addNotification({
-            title: 'Company Removed',
-            message: `${company?.name || 'Company'} has been removed from your saved list.`,
-            type: 'info',
-            iconName: 'Bookmark',
-            color: 'bg-slate-500/10 border-slate-500/20'
-        });
       }
     } catch (err) {
       console.error("Save toggle failed:", err);
     }
   };
 
+  // Helper icons logic for random card icons just like the image
+  const getIconData = (index) => {
+    const iconStyles = [
+        { bg: 'bg-indigo-50', icon: <Bot className="size-5 text-indigo-500" /> },
+        { bg: 'bg-orange-50', icon: <Sun className="size-5 text-orange-500" /> },
+        { bg: 'bg-emerald-50', icon: <Cloud className="size-5 text-emerald-500" /> },
+        { bg: 'bg-pink-50', icon: <Activity className="size-5 text-pink-500" /> },
+        { bg: 'bg-cyan-50', icon: <Bot className="size-5 text-cyan-500" /> },
+        { bg: 'bg-purple-50', icon: <Shield className="size-5 text-purple-500" /> },
+    ];
+    return iconStyles[index % iconStyles.length];
+  };
+
   return (
-    <>
+    <div className="min-h-screen bg-[#F8F7F4] font-sans flex flex-col w-full overflow-y-auto">
       <SEO 
         title="Dashboard"
         description="Discover high-growth startups and collaborative opportunities on Tasyai."
       />
-      <div className="p-5 md:p-10 pb-20">
 
-            <header className="mb-8 md:mb-10 flex flex-col md:flex-row items-start justify-between gap-6">
-              <div className="flex items-center gap-4">
-                <div>
-                  <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2">Discover Companies</h2>
-                  <p className="text-slate-400 text-base md:text-lg">Collaborate with high-growth startups looking for world-class talent.</p>
-                </div>
-              </div>
-              <motion.button 
-                onClick={() => navigate('/add-company')}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full md:w-auto py-3 px-6 bg-gradient-to-r from-[#6467f2] to-indigo-500 hover:from-indigo-500 hover:to-[#6467f2] text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-all indigo-glow"
-              >
-                <PlusCircle className="size-4" />
-                <span>Add Company</span>
-              </motion.button>
-            </header>
 
-            {/* Search and Filters */}
-            <div className="mb-12 space-y-6">
-              {/* Search Bar */}
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                  <Search className="size-5 text-slate-400 group-focus-within:text-[#6467f2] transition-colors" />
-                </div>
-                <input 
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-14 md:h-16 pl-14 pr-6 rounded-2xl glass-effect text-white placeholder-slate-500 focus:ring-2 focus:ring-[#6467f2] focus:border-transparent transition-all outline-none text-base md:text-lg"
-                  placeholder="Search by startup name, role, or technology stack..."
-                />
-              </div>
 
-              {/* Filter Buttons */}
-              <div className="flex flex-wrap items-center gap-3">
-                {filters.map((filter) => {
-                  const Icon = filter.icon;
-                  const isActive = activeFilter === filter.name;
-                  
-                  return (
-                    <motion.button
-                      key={filter.name}
-                      onClick={() => setActiveFilter(filter.name)}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all ${
-                        isActive 
-                          ? 'bg-[#6467f2] text-white' 
-                          : 'glass-effect text-slate-300 hover:text-white hover:bg-white/10'
-                      }`}
-                    >
-                      {Icon && <Icon className="size-4" />}
-                      {filter.name}
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Company Cards Grid */}
-            {loadingCompanies ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="h-80 rounded-2xl glass-effect animate-pulse bg-white/5"></div>
-                ))}
-              </div>
-            ) : filteredCompanies.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredCompanies.map((company, index) => {
-                  const isSaved = savedCompanyIds.includes(company._id);
-                  
-                  return (
-                    <motion.div
-                      key={company._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      whileHover={{ borderColor: 'rgba(100, 103, 242, 0.5)' }}
-                      className="group rounded-3xl glass-effect flex flex-col transition-all cursor-pointer border border-white/5 overflow-hidden"
-                    >
-                      {/* Company Header Image (20% of card) */}
-                      <div className="h-32 w-full relative bg-slate-900/40">
-                        {company.logo ? (
-                          <img 
-                            src={company.logo} 
-                            alt={company.name} 
-                            className="w-full h-full object-cover transition-transform duration-500 opacity-80" 
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-500/10 to-transparent">
-                            <Building2 className="text-slate-700 size-12" />
-                          </div>
-                        )}
-                        
-                        {/* Save Button relocated to top right of header image */}
-                        <div className="absolute top-4 right-4 z-20">
-                          <button 
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              toggleSave(company._id);
-                            }}
-                            className="p-2.5 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 text-white hover:text-[#6467f2] transition-all"
-                          >
-                            {isSaved ? (
-                              <Bookmark className="size-4 fill-[#6467f2] text-[#6467f2]" />
-                            ) : (
-                              <BookmarkPlus className="size-4" />
-                            )}
-                          </button>
-                        </div>
-                        
-                        {/* Subtle Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-transparent to-transparent opacity-60"></div>
-                      </div>
-
-                      <div className="p-6 flex flex-col flex-1">
-
-                      {/* Content */}
-                      <h3 className="text-xl font-bold text-white mb-2">{company.name}</h3>
-                      <p className="text-slate-400 text-sm italic mb-3">"{company.tagline}"</p>
-                      <p className="text-slate-500 text-xs leading-relaxed mb-6 line-clamp-2">{company.description}</p>
-                      
-                      <div className="flex items-center gap-4 mb-6 text-xs text-slate-400">
-                         <div className="flex items-center gap-1">
-                            <Compass className="size-3 text-[#6467f2]" />
-                            <span>{company.industry}</span>
-                         </div>
-                         {company.location && (
-                           <div className="flex items-center gap-1">
-                              <MapPin className="size-3 text-[#6467f2]" />
-                              <span>{company.location}</span>
-                           </div>
-                         )}
-                      </div>
-
-                      {/* Roles */}
-                      <div className="flex flex-wrap gap-2 mb-8">
-                        {company.openings?.slice(0, 2).map((op, i) => (
-                          <span 
-                            key={i} 
-                            className="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] font-bold text-slate-300 uppercase tracking-tight"
-                          >
-                            {op.role}
-                          </span>
-                        ))}
-                        {company.openings?.length > 2 && (
-                           <span className="text-[10px] text-slate-500 font-bold self-center">+{company.openings.length - 2} more</span>
-                        )}
-                      </div>
-
-                      {/* Actions */}
-                      <div className="mt-auto flex gap-3">
-                        <Link 
-                          to={`/company-detail?id=${company._id}`}
-                          state={{ company }}
-                          className="flex-1 py-3 px-4 bg-white/5 border border-white/10 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center hover:bg-white/10"
-                        >
-                          View Details
-                        </Link>
-                      </div>
-                    </div>
-                  </motion.div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
-                 <Building2 className="size-16 text-slate-700 mx-auto mb-4" />
-                 <h3 className="text-xl font-bold text-slate-300">No companies found</h3>
-                 <p className="text-slate-500">Try adjusting your search or filters.</p>
-              </div>
-            )}
-
-            {/* Load More */}
-            <div className="mt-16 flex justify-center">
-              <motion.button 
-                whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.05)' }}
-                whileTap={{ scale: 0.98 }}
-                className="px-8 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-white font-semibold transition-all flex items-center gap-2"
-              >
-                Explore More Ecosystems
-                <ChevronDown className="size-5" />
-              </motion.button>
-            </div>
+      <div className="flex-1 w-full max-w-[1200px] mx-auto p-6 md:p-10 mb-10">
+        
+        <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="text-[28px] font-black text-gray-900 mb-2.5 tracking-tight">Discover Companies</h1>
+            <p className="text-gray-500 text-[15px] max-w-2xl font-medium">Collaborate with high-growth startups looking for world-class talent.</p>
           </div>
-    </>
+          <button 
+            onClick={() => navigate('/add-company')}
+            className="flex items-center gap-2 text-white bg-[#ff5a00] px-5 py-2.5 rounded-sm font-bold text-[13px] hover:bg-[#e04e00] transition-colors shadow-sm self-start md:self-auto uppercase tracking-wider"
+          >
+            <Plus className="size-4" strokeWidth={3} /> Add Company
+          </button>
+        </header>
+
+        {/* Search */}
+        <div className="bg-white border border-gray-200 rounded-sm flex items-center px-4 py-3.5 shadow-sm mb-5 transition-shadow focus-within:ring-2 focus-within:ring-[#ff5a00]/20 focus-within:border-[#ff5a00]">
+           <input 
+             type="text"
+             value={searchQuery}
+             onChange={(e) => setSearchQuery(e.target.value)}
+             className="w-full bg-transparent outline-none text-[15px] font-medium text-gray-900 placeholder:text-gray-400 placeholder:font-normal"
+             placeholder="Search by name, role, or technology stack..."
+           />
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap items-center gap-3 mb-10">
+          {filters.slice(0, 6).map(filter => {
+             const isActive = activeFilter === filter.name;
+             return (
+               <button
+                 key={filter.name}
+                 onClick={() => setActiveFilter(filter.name)}
+                 className={`px-4 py-2 rounded-sm text-[13px] font-bold transition-all bg-white shadow-sm ${
+                   isActive 
+                   ? 'border border-[#ff5a00] text-[#ff5a00]' 
+                   : 'border border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
+                 }`}
+               >
+                 {filter.name}
+               </button>
+             )
+          })}
+          <div className="w-px h-6 bg-gray-200 mx-2 hidden sm:block"></div>
+          <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-bold text-gray-500 hover:text-gray-800 transition-colors">
+            <SlidersHorizontal className="size-3.5" /> More Filters
+          </button>
+        </div>
+
+        {/* Grid View */}
+        {loadingCompanies ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="h-72 rounded-sm border border-gray-100 bg-white shadow-sm animate-pulse p-6">
+                  <div className="w-10 h-10 bg-gray-100/50 rounded-sm mb-6"></div>
+                  <div className="w-3/4 h-5 bg-gray-100/50 mb-3 rounded-sm"></div>
+                  <div className="w-full h-4 bg-gray-100/50 mb-2 rounded-sm"></div>
+                  <div className="w-1/2 h-4 bg-gray-100/50 mb-6 rounded-sm"></div>
+                  <div className="mt-auto flex gap-3 h-10">
+                      <div className="flex-1 bg-gray-100/50 rounded-sm"></div>
+                      <div className="flex-1 bg-gray-100/50 rounded-sm"></div>
+                  </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredCompanies.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCompanies.map((company, index) => {
+              const isSaved = savedCompanyIds.includes(company._id);
+              const iconData = getIconData(index);
+              
+              return (
+                <div
+                  key={company._id}
+                  className="bg-white border border-gray-200 rounded-sm p-6 flex flex-col shadow-sm transition-all hover:shadow-md hover:border-gray-300 group"
+                >
+                  <div className="flex justify-between items-start mb-5">
+                    <div className={`w-10 h-10 rounded-sm flex items-center justify-center ${iconData.bg}`}>
+                       {company.logo ? (
+                           <img src={company.logo} alt="logo" className="w-6 h-6 object-contain" />
+                       ) : (
+                           iconData.icon
+                       )}
+                    </div>
+                    <button onClick={(e) => { e.preventDefault(); toggleSave(company._id); }}>
+                      <Bookmark className={`size-4 transition-colors ${isSaved ? 'fill-[#ff5a00] text-[#ff5a00]' : 'text-gray-300 group-hover:text-gray-400'}`} />
+                    </button>
+                  </div>
+                  
+                  <h3 className="font-bold text-gray-900 text-[17px] mb-2">{company.name}</h3>
+                  <p className="text-gray-500 text-[13px] leading-relaxed line-clamp-2 mb-5 min-h-[40px] font-medium">{company.description || company.tagline || 'No description provided.'}</p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {company.openings?.slice(0, 2).map((op, i) => (
+                      <span 
+                        key={i} 
+                        className="px-2.5 py-1 bg-gray-50 border border-gray-100 text-gray-500 text-[11px] font-bold rounded-sm whitespace-nowrap"
+                      >
+                        {op.role}
+                      </span>
+                    ))}
+                    {company.openings?.length === 0 && (
+                        <span className="px-2.5 py-1 bg-gray-50 border border-gray-100 text-gray-400 text-[11px] font-bold rounded-sm">General</span>
+                    )}
+                  </div>
+                  
+                  <div className="mt-auto flex gap-3">
+                    <button className="flex-1 bg-[#ff5a00] hover:bg-[#e04e00] text-white text-[13px] font-bold py-2.5 rounded-sm transition-colors shadow-sm">
+                      Show Interest
+                    </button>
+                    <Link 
+                      to={`/company-detail?id=${company._id}`} 
+                      state={{ company }}
+                      className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-[13px] font-bold py-2.5 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-white border border-gray-200 border-dashed rounded-sm">
+             <Building2 className="size-16 text-gray-300 mx-auto mb-4" />
+             <h3 className="text-[17px] font-bold text-gray-900 mb-1">No startups found</h3>
+             <p className="text-gray-500 text-[13px] font-medium">Try adjusting your filters or search terms.</p>
+          </div>
+        )}
+
+        {/* Load More */}
+        {filteredCompanies.length > 0 && (
+          <div className="mt-12 flex justify-center">
+            <button className="px-5 py-2.5 bg-gray-50 rounded-sm border border-gray-200 hover:bg-gray-100 hover:border-gray-300 text-gray-900 font-bold text-[13px] transition-all flex items-center gap-2 shadow-sm">
+              Load More Startups
+              <ChevronDown className="size-4 text-gray-500" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <footer className="w-full mt-auto border-t border-gray-200 px-6 py-8">
+         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+             <div className="flex items-center gap-4 text-gray-500 text-[13px] font-medium">
+                 <a href="#" className="hover:text-gray-900 transition-colors">Guidelines</a>
+                 <span className="text-gray-300">|</span>
+                 <a href="#" className="hover:text-gray-900 transition-colors">FAQ</a>
+                 <span className="text-gray-300">|</span>
+                 <a href="#" className="hover:text-gray-900 transition-colors">Lists</a>
+                 <span className="text-gray-300">|</span>
+                 <a href="#" className="hover:text-gray-900 transition-colors">API</a>
+                 <span className="text-gray-300">|</span>
+                 <a href="#" className="hover:text-gray-900 transition-colors">Security</a>
+             </div>
+             <div>
+                 <p className="text-gray-500 text-[13px] italic font-medium">“Working on something people want.”</p>
+             </div>
+         </div>
+      </footer>
+    </div>
   );
 };
 

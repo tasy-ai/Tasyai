@@ -6,8 +6,6 @@ import {
   Shield, 
   CreditCard, 
   Check,
-  ToggleLeft,
-  ToggleRight,
   ChevronRight,
   Mail,
   Lock,
@@ -58,12 +56,6 @@ const Settings = () => {
     security: true
   });
 
-  const [privacy, setPrivacy] = useState({
-    profileVisibility: 'Public',
-    showEmail: false,
-    onlineStatus: true
-  });
-
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -93,9 +85,7 @@ const Settings = () => {
     fetchProfile();
   }, []);
 
-  const handleNotificationToggle = (key) => {
-    setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
-  };
+  const handleNotificationToggle = (key) => setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -110,10 +100,7 @@ const Settings = () => {
   };
 
   const handleRemoveSkill = (skillToRemove) => {
-    setProfile(prev => ({
-      ...prev,
-      skills: prev.skills.filter(skill => skill !== skillToRemove)
-    }));
+    setProfile(prev => ({ ...prev, skills: prev.skills.filter(skill => skill !== skillToRemove) }));
   };
 
   const handleSaveProfile = async () => {
@@ -131,80 +118,44 @@ const Settings = () => {
 
   const tabs = [
     { id: 'Account', icon: User, label: 'Account' },
-    { id: 'Notifications', icon: Bell, label: 'Notifications' },
-    { id: 'Privacy', icon: Shield, label: 'Privacy & Security' },
+    { id: 'Notifications', icon: Bell, label: 'Notification' },
+    { id: 'Privacy', icon: Shield, label: 'Privacy and security' },
     { id: 'Billing', icon: CreditCard, label: 'Billing' },
     { id: 'Feedback', icon: MessageSquare, label: 'Feedback' },
   ];
 
   // Feedback Form State
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneCode: '',
-    phoneNumber: '',
-    message: ''
+    firstName: '', lastName: '', email: '', phoneCode: '', phoneNumber: '', message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault();
-
-    if (
-      !formData.firstName.trim() ||
-      !formData.lastName.trim() ||
-      !formData.email.trim() ||
-      !formData.phoneCode.trim() ||
-      !formData.phoneNumber.trim() ||
-      !formData.message.trim()
-    ) {
-      toast.error("❌ Please fill out all fields before submitting.");
-      return;
+    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim() || !formData.phoneCode.trim() || !formData.phoneNumber.trim() || !formData.message.trim()) {
+      return toast.error("Please fill out all fields before submitting.");
     }
 
     setIsSubmitting(true);
-
     try {
-      const res = await fetch(
-        "https://formsubmit.co/ajax/unisire.mainhub@gmail.com",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            phoneCode: formData.phoneCode,
-            phoneNumber: formData.phoneNumber,
-            message: formData.message,
-            _subject: "📩 New Settings Feedback Submission",
-          }),
-        }
-      );
-
+      const res = await fetch("https://formsubmit.co/ajax/unisire.mainhub@gmail.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          firstName: formData.firstName, lastName: formData.lastName, email: formData.email,
+          phoneCode: formData.phoneCode, phoneNumber: formData.phoneNumber, message: formData.message,
+          _subject: "New Settings Feedback Submission"
+        }),
+      });
       const data = await res.json();
-
       if (res.ok && data.success) {
-        toast.success(
-          "✅ Your feedback has been sent. Thank you!"
-        );
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          phoneCode: "",
-          phoneNumber: "",
-          message: "",
-        });
+        toast.success("Your feedback has been sent. Thank you!");
+        setFormData({ firstName: "", lastName: "", email: "", phoneCode: "", phoneNumber: "", message: "" });
       } else {
-        toast.error("❌ Failed to send feedback. Please try again later.");
+        toast.error("Failed to send feedback. Please try again later.");
       }
     } catch (error) {
-      toast.error("⚠️ Network error. Please try again.");
+      toast.error("Network error. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -212,487 +163,299 @@ const Settings = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#020617] text-white">
-        <Loader2 className="animate-spin size-10 text-[#4245f0]" />
+      <div className="min-h-screen flex items-center justify-center bg-[#F8F7F4]">
+        <Loader2 className="animate-spin size-10 text-[#ff5a00]" />
       </div>
     );
   }
 
   return (
     <>
-      <SEO 
-        title="Settings"
-        description="Manage your account settings, privacy preferences, and notification on Tasyai."
-      />
-      <Toaster position="top-center" reverseOrder={false} />
-      <div className="p-5 md:p-10 pb-32">
-        <div className="mb-8 md:mb-10">
-            <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-2">Settings</h1>
-            <p className="text-slate-400 text-base md:text-lg">Manage your account preferences and configurations.</p>
-          </div>
-
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Sidebar Navigation for Settings */}
-            <div className="lg:w-64 flex-shrink-0 overflow-x-auto no-scrollbar">
-               <nav className="flex lg:flex-col gap-2 sticky top-8 min-w-max lg:min-w-0">
-                 {tabs.map((tab) => {
-                   const Icon = tab.icon;
-                   return (
-                     <button
-                       key={tab.id}
-                       onClick={() => setActiveTab(tab.id)}
-                       className={`flex-1 lg:w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium whitespace-nowrap ${
-                         activeTab === tab.id 
-                           ? 'bg-[#4245f0] text-white shadow-lg shadow-[#4245f0]/20' 
-                           : 'text-slate-400 hover:text-white hover:bg-white/5'
-                       }`}
-                     >
-                       <Icon className="size-5 shrink-0" />
-                       {tab.label}
-                     </button>
-                   )
-                 })}
-               </nav>
-            </div>
-
-            {/* Content Area */}
-            <div className="flex-1 min-w-0">
-               <div
-                 key={activeTab}
-                 className="space-y-6"
-               >
-                 {activeTab === 'Account' && (
-                   <div className="space-y-6">
-                     {/* Section: Profile */}
-                     <section className="glass rounded-2xl p-5 md:p-8 border border-white/10">
-                       <h2 className="text-xl font-bold text-white mb-6">Profile Information</h2>
-                                             <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
-                         {profile.profilePicture ? (
-                           <div className="relative group shrink-0">
-                             <img 
-                              src={profile.profilePicture} 
-                              alt="Avatar" 
-                              className="size-24 rounded-full object-cover border-2 border-[#4245f0]/30 shadow-xl shadow-indigo-500/10"
-                             />
-                             <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                               <label htmlFor="imageUpload" className="cursor-pointer p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors">
-                                 <Plus className="size-5 text-white" />
-                               </label>
-                             </div>
-                           </div>
-                         ) : (
-                           <div className="size-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-xl shadow-indigo-500/20 shrink-0">
-                             {profile.name ? profile.name.charAt(0).toUpperCase() : 'U'}
-                           </div>
-                         )}
-                         <div className="flex-1 w-full space-y-4 text-center md:text-left">
-                           <div>
-                             <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Profile Picture</label>
-                             <div className="flex flex-col sm:flex-row gap-3">
-                               <input 
-                                 type="text" 
-                                 name="profilePicture"
-                                 placeholder="Paste image URL..."
-                                 value={profile.profilePicture}
-                                 onChange={handleProfileChange}
-                                 className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
-                               />
-                               <div className="flex items-center">
-                                 <span className="text-xs text-slate-600 px-2 uppercase font-bold">OR</span>
-                                 <input 
-                                   type="file" 
-                                   id="imageUpload"
-                                   accept="image/*"
-                                   className="hidden"
-                                   onChange={async (e) => {
-                                     const file = e.target.files[0];
-                                     if (file) {
-                                       if (file.size > 2 * 1024 * 1024) {
-                                         toast.error("Image size must be less than 2MB");
-                                         return;
-                                       }
-                                       const reader = new FileReader();
-                                       reader.onloadend = () => {
-                                         setProfile(prev => ({ ...prev, profilePicture: reader.result }));
-                                         toast.success("Image selected from device");
-                                       };
-                                       reader.readAsDataURL(file);
-                                     }
-                                   }}
-                                 />
-                                 <button 
-                                   type="button"
-                                   onClick={() => document.getElementById('imageUpload').click()}
-                                   className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap"
-                                 >
-                                   <Plus className="size-4" />
-                                   Upload Local Image
-                                 </button>
-                               </div>
-                             </div>
-                           </div>
-                           <p className="text-xs text-slate-500">Supported formats: JPG, PNG, GIF. Max size 2MB.</p>
-                         </div>
-                       </div>
-
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <User className="size-3" /> Full Name
-                           </label>
-                           <input 
-                             type="text" 
-                             name="name"
-                             value={profile.name}
-                             onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
-                           />
-                         </div>
-                         <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Briefcase className="size-3" /> Professional Role
-                           </label>
-                           <input 
-                             type="text" 
-                             name="role"
-                             placeholder="e.g. Fullstack Developer"
-                             value={profile.role}
-                             onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
-                           />
-                         </div>
-                         <div className="space-y-2 md:col-span-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Zap className="size-3" /> Headline / Motto
-                           </label>
-                           <input 
-                             type="text" 
-                             name="motto"
-                             placeholder="Building the future of tech..."
-                             value={profile.motto}
-                             onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
-                           />
-                         </div>
-                         
-                         <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Globe className="size-3" /> Location
-                           </label>
-                           <input 
-                             type="text" 
-                             name="country"
-                             placeholder="e.g. USA, Canada"
-                             value={profile.country}
-                             onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
-                           />
-                         </div>
-                         <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Clock className="size-3" /> Availability
-                           </label>
-                           <input 
-                             type="text" 
-                             name="time"
-                             placeholder="e.g. Full-time, Freelance"
-                             value={profile.time}
-                             onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
-                           />
-                         </div>
-
-                         <div className="space-y-2 md:col-span-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Award className="size-3" /> Key Achievements
-                           </label>
-                           <textarea 
-                             rows="3" 
-                             name="achievements"
-                             placeholder="Briefly describe your highlights..."
-                             value={profile.achievements}
-                             onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none resize-none" 
-                           />
-                         </div>
-
-                         {/* Skills Section */}
-                         <div className="space-y-4 md:col-span-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Zap className="size-3" /> Skills & Expertise
-                           </label>
-                           <div className="flex gap-2">
-                             <input 
-                               type="text" 
-                               value={newSkill}
-                               onChange={(e) => setNewSkill(e.target.value)}
-                               onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
-                               placeholder="Add a skill (e.g. React)"
-                               className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none"
-                             />
-                             <button 
-                               type="button"
-                               onClick={handleAddSkill}
-                               className="p-2.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
-                             >
-                               <Plus className="size-5" />
-                             </button>
-                           </div>
-                           <div className="flex flex-wrap gap-2">
-                             {profile.skills.map((skill, index) => (
-                               <span 
-                                 key={index} 
-                                 className="flex items-center gap-2 px-3 py-1.5 bg-[#4245f0]/10 border border-[#4245f0]/20 rounded-lg text-sm font-medium text-[#4245f0]"
-                               >
-                                 {skill}
-                                 <button onClick={() => handleRemoveSkill(skill)}>
-                                   <X className="size-3 hover:text-white" />
-                                 </button>
-                               </span>
-                             ))}
-                             {profile.skills.length === 0 && (
-                               <p className="text-xs text-slate-600 italic">No skills added yet.</p>
-                             )}
-                           </div>
-                         </div>
-
-                         {/* Social Links */}
-                         <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Linkedin className="size-3" /> LinkedIn URL
-                           </label>
-                           <input 
-                             type="text" 
-                             name="linkedin"
-                             placeholder="linkedin.com/in/username"
-                             value={profile.linkedin}
-                             onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
-                           />
-                         </div>
-                         <div className="space-y-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Github className="size-3" /> GitHub URL
-                           </label>
-                           <input 
-                             type="text" 
-                             name="github"
-                             placeholder="github.com/username"
-                             value={profile.github}
-                             onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
-                           />
-                         </div>
-                         <div className="space-y-2 md:col-span-2">
-                           <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-                             <Globe className="size-3" /> Portfolio URL
-                           </label>
-                           <input 
-                             type="text" 
-                             name="portfolio"
-                             placeholder="yourportfolio.com"
-                             value={profile.portfolio}
-                             onChange={handleProfileChange}
-                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none" 
-                           />
-                         </div>
-                       </div>
-                       
-                       <div className="mt-8 flex justify-end">
-                         <button 
-                           onClick={handleSaveProfile}
-                           disabled={isSaving}
-                           className="px-8 py-3 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-xl shadow-lg shadow-[#4245f0]/20 transition-all flex items-center gap-2 disabled:opacity-50"
-                         >
-                           {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
-                           {isSaving ? 'Saving...' : 'Save Profile Changes'}
-                         </button>
-                       </div>
-                     </section>
-
-                     {/* Section: Email */}
-                     <section className="glass rounded-2xl p-8 border border-white/10">
-                        <h2 className="text-xl font-bold text-white mb-6">Email Address</h2>
-                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
-                          <div className="flex items-center gap-4">
-                            <div className="p-3 bg-white/5 rounded-lg">
-                              <Mail className="size-5 text-slate-300" />
-                            </div>
-                            <div>
-                              <p className="text-white font-medium">{profile.email}</p>
-                              <p className="text-xs text-green-400 flex items-center gap-1 mt-0.5">
-                                <Check className="size-3" /> Verified Account
-                              </p>
-                            </div>
-                          </div>
-                          <span className="text-xs text-slate-500 italic">Primary Contact</span>
-                        </div>
-                     </section>
-                   </div>
-                 )}
-
-                 {activeTab === 'Notifications' && (
-                    <section className="glass rounded-2xl p-8 border border-white/10">
-                       <h2 className="text-xl font-bold text-white mb-6">Notification Preferences</h2>
-                       <div className="space-y-6">
-                         {Object.entries(notifications).map(([key, value]) => (
-                           <div key={key} className="flex items-center justify-between py-4 border-b border-white/5 last:border-0">
-                             <div>
-                               <p className="text-white font-medium capitalize">{key} Notifications</p>
-                               <p className="text-sm text-slate-400">Receive updates about {key} events.</p>
-                             </div>
-                             <button 
-                               onClick={() => handleNotificationToggle(key)}
-                               className={`relative w-12 h-6 rounded-full transition-colors ${value ? 'bg-[#4245f0]' : 'bg-slate-700'}`}
-                             >
-                               <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${value ? 'translate-x-6' : 'translate-x-0'}`} />
-                             </button>
-                           </div>
-                         ))}
-                       </div>
-                    </section>
-                 )}
-
-                 {activeTab === 'Privacy' && (
-                    <section className="glass rounded-2xl p-8 border border-white/10">
-                       <h2 className="text-xl font-bold text-white mb-6">Privacy & Security</h2>
-                       <div className="space-y-6">
-                         <button className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors group">
-                           <div className="flex items-center gap-4">
-                             <div className="p-3 bg-white/5 rounded-lg">
-                               <Lock className="size-5 text-slate-300" />
-                             </div>
-                             <div className="text-left">
-                               <p className="text-white font-medium">Change Password</p>
-                               <p className="text-xs text-slate-400">Update your security credentials</p>
-                             </div>
-                           </div>
-                           <ChevronRight className="size-5 text-slate-500 group-hover:text-white transition-colors" />
-                         </button>
-                         
-                         <button className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-colors group">
-                           <div className="flex items-center gap-4">
-                             <div className="p-3 bg-white/5 rounded-lg">
-                               <Globe className="size-5 text-slate-300" />
-                             </div>
-                             <div className="text-left">
-                               <p className="text-white font-medium">Active Sessions</p>
-                               <p className="text-xs text-slate-400">Manage your logged-in interactions</p>
-                             </div>
-                           </div>
-                           <ChevronRight className="size-5 text-slate-500 group-hover:text-white transition-colors" />
-                         </button>
-                       </div>
-                    </section>
-                 )}
-
-                 {activeTab === 'Billing' && (
-                    <section className="glass rounded-2xl p-8 border border-white/10 text-center py-20">
-                       <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
-                         <CreditCard className="size-10 text-slate-500" />
-                       </div>
-                       <h2 className="text-xl font-bold text-white mb-2">No Active Subscription</h2>
-                       <p className="text-slate-400 max-w-md mx-auto mb-8">You are currently on the free plan. Upgrade to unlock premium features and higher limits.</p>
-                       <button className="px-8 py-3 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-xl shadow-lg shadow-[#4245f0]/20 transition-all">
-                         View Plans
-                       </button>
-                    </section>
-                 )}
-
-                 {activeTab === 'Feedback' && (
-                    <section className="glass rounded-2xl p-8 border border-white/10 relative overflow-hidden">
-                       <div className="absolute top-0 right-0 p-32 bg-[#4245f0]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-                       <h2 className="text-xl font-bold text-white mb-6 relative z-10">Share Your Feedback</h2>
-                       
-                       <form onSubmit={handleFeedbackSubmit} className="space-y-4 relative z-10 max-w-2xl">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <div>
-                               <label className="block text-xs font-bold text-slate-400 uppercase mb-1">First Name</label>
-                               <input 
-                                 required
-                                 type="text" 
-                                 value={formData.firstName}
-                                 onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                                 className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                 placeholder="Jordan"
-                               />
-                             </div>
-                             <div>
-                               <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Last Name</label>
-                               <input 
-                                 required
-                                 type="text" 
-                                 value={formData.lastName}
-                                 onChange={(e) => setFormData({...formData, lastName: e.target.value})}
-                                 className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                 placeholder="Smith"
-                               />
-                             </div>
-                           </div>
-
-                          <div>
-                            <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Email</label>
-                            <input 
-                              required
-                              type="email" 
-                              value={formData.email}
-                              onChange={(e) => setFormData({...formData, email: e.target.value})}
-                              className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                              placeholder="jordan@example.com"
-                            />
-                          </div>
-
-                           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                             <div className="sm:col-span-1">
-                               <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Code</label>
-                               <input 
-                                 required
-                                 type="text" 
-                                 value={formData.phoneCode}
-                                 onChange={(e) => setFormData({...formData, phoneCode: e.target.value})}
-                                 className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                 placeholder="+1"
-                               />
-                             </div>
-                             <div className="sm:col-span-3">
-                               <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Phone Number</label>
-                               <input 
-                                 required
-                                 type="tel" 
-                                 value={formData.phoneNumber}
-                                 onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
-                                 className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-                                 placeholder="555-0123"
-                               />
-                             </div>
-                           </div>
-
-                          <div>
-                            <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Message</label>
-                            <textarea 
-                              required
-                              rows="4"
-                              value={formData.message}
-                              onChange={(e) => setFormData({...formData, message: e.target.value})}
-                              className="w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all resize-none placeholder:text-slate-600"
-                              placeholder="Tell us what you think..."
-                            ></textarea>
-                          </div>
-                          
-                          <button 
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="w-full py-3 rounded-xl bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#4245f0]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98]"
-                          >
-                            {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-                            {isSubmitting ? 'Sending...' : 'Send Feedback'}
-                          </button>
-                       </form>
-                    </section>
-                 )}
-                </div>
+      <SEO title="Settings" description="Manage your account preferences." />
+      <Toaster position="top-center" />
+      <div className="min-h-screen bg-[#F8F7F4] font-sans pb-32 pt-8">
+          <div className="max-w-6xl mx-auto px-6">
+              
+              <div className="mb-8">
+                  <h1 className="text-[32px] font-black text-gray-900 tracking-tight leading-none mb-2">Settings</h1>
+                  <p className="text-[15px] text-gray-500 font-medium">Manage your account preferences and configurations.</p>
               </div>
-            </div>
+
+              {/* Top Navigation Navbar */}
+              <div className="flex items-center gap-8 border-b border-gray-200 mb-10 overflow-x-auto no-scrollbar">
+                  {tabs.map((tab) => {
+                      const Icon = tab.icon;
+                      const isActive = activeTab === tab.id;
+                      return (
+                          <button
+                              key={tab.id}
+                              onClick={() => setActiveTab(tab.id)}
+                              className={`pb-4 flex items-center gap-2 text-[14px] font-bold whitespace-nowrap transition-all relative ${
+                                  isActive ? 'text-[#ff5a00]' : 'text-gray-500 hover:text-gray-900'
+                              }`}
+                          >
+                              <Icon className="size-4 shrink-0" strokeWidth={isActive ? 3 : 2} />
+                              {tab.label}
+                              {isActive && (
+                                  <div className="absolute bottom-0 left-0 w-full h-[2px] bg-[#ff5a00]"></div>
+                              )}
+                          </button>
+                      )
+                  })}
+              </div>
+
+              {/* Content Area */}
+              <div className="w-full">
+                  {activeTab === 'Account' && (
+                          <div className="space-y-6">
+                              
+                              {/* Profile Information */}
+                              <section className="bg-white border border-gray-200 shadow-sm p-8 rounded-sm">
+                                  <h2 className="text-[17px] font-black text-gray-900 mb-6 pb-4 border-b border-gray-100">Profile Information</h2>
+                                  
+                                  {/* Avatar Section */}
+                                  <div className="flex items-start gap-6 mb-10">
+                                      {profile.profilePicture ? (
+                                          <div className="relative group shrink-0">
+                                              <img src={profile.profilePicture} alt="Avatar" className="w-24 h-24 rounded-sm object-cover border border-gray-200 shadow-sm" />
+                                              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-sm cursor-pointer" onClick={() => document.getElementById('imageUpload').click()}>
+                                                  <Plus className="size-6 text-white" />
+                                                  <span className="text-[10px] font-bold text-white uppercase tracking-wider mt-1">Change</span>
+                                              </div>
+                                          </div>
+                                      ) : (
+                                          <div className="w-24 h-24 rounded-sm bg-gray-100 border border-gray-200 flex flex-col items-center justify-center text-gray-400 shrink-0 shadow-sm cursor-pointer hover:border-[#ff5a00] transition-colors" onClick={() => document.getElementById('imageUpload').click()}>
+                                              <Plus className="size-6 mb-1 text-gray-400" />
+                                              <span className="text-[10px] font-bold uppercase tracking-wider">Upload</span>
+                                          </div>
+                                      )}
+                                      <div className="flex-1">
+                                          <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Profile Picture URL</label>
+                                          <div className="flex flex-col sm:flex-row gap-3">
+                                              <input 
+                                                  type="text" name="profilePicture" placeholder="Paste image URL..." value={profile.profilePicture} onChange={handleProfileChange}
+                                                  className="flex-1 bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" 
+                                              />
+                                              <input 
+                                                  type="file" id="imageUpload" accept="image/*" className="hidden"
+                                                  onChange={async (e) => {
+                                                      const file = e.target.files[0];
+                                                      if (file) {
+                                                          if (file.size > 2 * 1024 * 1024) return toast.error("Max size 2MB");
+                                                          const reader = new FileReader();
+                                                          reader.onloadend = () => setProfile(prev => ({ ...prev, profilePicture: reader.result }));
+                                                          reader.readAsDataURL(file);
+                                                      }
+                                                  }}
+                                              />
+                                          </div>
+                                          <p className="text-[11px] text-gray-500 font-medium mt-3">Supported formats: JPG, PNG, GIF. Max size 2MB.</p>
+                                      </div>
+                                  </div>
+
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                                      <div>
+                                          <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"><User className="size-3" strokeWidth={3}/> Full Name</label>
+                                          <input type="text" name="name" value={profile.name} onChange={handleProfileChange} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" />
+                                      </div>
+                                      <div>
+                                          <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"><Briefcase className="size-3" strokeWidth={3}/> Professional Role</label>
+                                          <input type="text" name="role" placeholder="e.g. Fullstack Developer" value={profile.role} onChange={handleProfileChange} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" />
+                                      </div>
+                                      <div className="md:col-span-2">
+                                          <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"><Zap className="size-3" strokeWidth={3}/> Headline / Motto</label>
+                                          <input type="text" name="motto" placeholder="Building the future of tech..." value={profile.motto} onChange={handleProfileChange} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" />
+                                      </div>
+                                      
+                                      <div>
+                                          <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"><Globe className="size-3" strokeWidth={3}/> Location</label>
+                                          <input type="text" name="country" placeholder="e.g. USA, Canada" value={profile.country} onChange={handleProfileChange} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" />
+                                      </div>
+                                      <div>
+                                          <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"><Clock className="size-3" strokeWidth={3}/> Availability</label>
+                                          <input type="text" name="time" placeholder="e.g. Full-time, Freelance" value={profile.time} onChange={handleProfileChange} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" />
+                                      </div>
+
+                                      <div className="md:col-span-2">
+                                          <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"><Award className="size-3" strokeWidth={3}/> Key Achievements / Bio</label>
+                                          <textarea 
+                                              rows="4" name="achievements" placeholder="Briefly describe your highlights and background..." value={profile.achievements} onChange={handleProfileChange} 
+                                              className="w-full bg-white border border-gray-200 rounded-sm px-4 py-3 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors resize-none" 
+                                          />
+                                      </div>
+
+                                      {/* Skills */}
+                                      <div className="md:col-span-2">
+                                          <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"><Zap className="size-3" strokeWidth={3}/> Skills & Expertise</label>
+                                          <div className="flex gap-2">
+                                              <input 
+                                                  type="text" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())}
+                                                  placeholder="Add a skill (e.g. React)" className="flex-1 bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors"
+                                              />
+                                              <button type="button" onClick={handleAddSkill} className="px-4 bg-[#ff5a00] hover:bg-[#e04e00] rounded-sm transition-colors flex items-center justify-center">
+                                                  <Plus className="size-5 text-white" strokeWidth={3} />
+                                              </button>
+                                          </div>
+                                          <div className="flex flex-wrap gap-2 mt-4">
+                                              {profile.skills.map((skill, index) => (
+                                                  <span key={index} className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 border border-orange-100 rounded-sm text-[12px] font-bold text-[#ff5a00]">
+                                                      {skill}
+                                                      <button onClick={() => handleRemoveSkill(skill)}><X className="size-3 hover:text-orange-800" strokeWidth={3} /></button>
+                                                  </span>
+                                              ))}
+                                          </div>
+                                      </div>
+
+                                      {/* Socials */}
+                                      <div className="md:col-span-2 border-t border-gray-100 pt-6 mt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                          <div>
+                                              <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"><Linkedin className="size-3" strokeWidth={3}/> LinkedIn URL</label>
+                                              <input type="text" name="linkedin" placeholder="linkedin.com/in/username" value={profile.linkedin} onChange={handleProfileChange} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" />
+                                          </div>
+                                          <div>
+                                              <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"><Github className="size-3" strokeWidth={3}/> GitHub URL</label>
+                                              <input type="text" name="github" placeholder="github.com/username" value={profile.github} onChange={handleProfileChange} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" />
+                                          </div>
+                                          <div className="md:col-span-2">
+                                              <label className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2"><Globe className="size-3" strokeWidth={3}/> Portfolio URL</label>
+                                              <input type="text" name="portfolio" placeholder="yourportfolio.com" value={profile.portfolio} onChange={handleProfileChange} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" />
+                                          </div>
+                                      </div>
+                                  </div>
+                                  
+                                  <div className="mt-8 pt-6 border-t border-gray-100 flex justify-end">
+                                      <button onClick={handleSaveProfile} disabled={isSaving} className="px-8 py-3 bg-[#ff5a00] hover:bg-[#e04e00] text-white text-[13px] font-bold rounded-sm shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50 uppercase tracking-widest">
+                                          {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" strokeWidth={3} />}
+                                          {isSaving ? 'Saving...' : 'Save Profile'}
+                                      </button>
+                                  </div>
+                              </section>
+
+                              {/* Email Address */}
+                              <section className="bg-white border border-gray-200 shadow-sm p-8 rounded-sm flex items-center justify-between">
+                                  <div className="flex items-center gap-4">
+                                      <div className="p-3 bg-gray-100 rounded-sm border border-gray-200">
+                                          <Mail className="size-5 text-gray-600" />
+                                      </div>
+                                      <div>
+                                          <p className="text-gray-900 font-bold mb-1">{profile.email || 'Email missing'}</p>
+                                          <p className="text-[11px] font-black uppercase text-emerald-600 tracking-widest flex items-center gap-1">
+                                              <Check className="size-3" strokeWidth={3} /> Verified
+                                          </p>
+                                      </div>
+                                  </div>
+                                  <span className="text-[11px] font-black uppercase tracking-widest text-gray-400">Primary</span>
+                              </section>
+                          </div>
+                      )}
+
+                      {activeTab === 'Notifications' && (
+                          <section className="bg-white border border-gray-200 shadow-sm p-8 rounded-sm">
+                              <h2 className="text-[17px] font-black text-gray-900 mb-6 pb-4 border-b border-gray-100">Notification Preferences</h2>
+                              <div className="space-y-6">
+                                  {Object.entries(notifications).map(([key, value]) => (
+                                      <div key={key} className="flex items-center justify-between py-4 border-b border-gray-100 last:border-0 last:pb-0">
+                                          <div>
+                                              <p className="text-gray-900 font-bold capitalize text-[14px]">{key} Notifications</p>
+                                              <p className="text-[13px] text-gray-500 font-medium mt-1">Receive updates about {key} events to stay informed.</p>
+                                          </div>
+                                          <button onClick={() => handleNotificationToggle(key)} className={`relative w-12 h-6 rounded-full transition-colors border ${value ? 'bg-[#ff5a00] border-[#ff5a00]' : 'bg-gray-200 border-gray-300'}`}>
+                                              <div className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow-sm ${value ? 'translate-x-6' : 'translate-x-0'}`} />
+                                          </button>
+                                      </div>
+                                  ))}
+                              </div>
+                          </section>
+                      )}
+
+                      {activeTab === 'Privacy' && (
+                          <section className="bg-white border border-gray-200 shadow-sm p-8 rounded-sm">
+                              <h2 className="text-[17px] font-black text-gray-900 mb-6 pb-4 border-b border-gray-100">Privacy & Security</h2>
+                              <div className="space-y-4">
+                                  <div className="flex items-center justify-between p-5 bg-white border border-gray-200 rounded-sm hover:border-[#ff5a00] cursor-pointer transition-colors group">
+                                      <div className="flex items-center gap-4">
+                                          <div className="p-3 bg-gray-100 rounded-sm"><Lock className="size-5 text-gray-600" /></div>
+                                          <div>
+                                              <p className="text-gray-900 font-bold text-[14px]">Change Password</p>
+                                              <p className="text-[13px] text-gray-500 font-medium">Update your security credentials</p>
+                                          </div>
+                                      </div>
+                                      <ChevronRight className="size-5 text-gray-400 group-hover:text-[#ff5a00] transition-colors" strokeWidth={2.5}/>
+                                  </div>
+                                  
+                                  <div className="flex items-center justify-between p-5 bg-white border border-gray-200 rounded-sm hover:border-[#ff5a00] cursor-pointer transition-colors group">
+                                      <div className="flex items-center gap-4">
+                                          <div className="p-3 bg-gray-100 rounded-sm"><Globe className="size-5 text-gray-600" /></div>
+                                          <div>
+                                              <p className="text-gray-900 font-bold text-[14px]">Active Sessions</p>
+                                              <p className="text-[13px] text-gray-500 font-medium">Manage your logged-in interactions</p>
+                                          </div>
+                                      </div>
+                                      <ChevronRight className="size-5 text-gray-400 group-hover:text-[#ff5a00] transition-colors" strokeWidth={2.5}/>
+                                  </div>
+                              </div>
+                          </section>
+                      )}
+
+                      {activeTab === 'Billing' && (
+                          <section className="bg-white border border-gray-200 shadow-sm p-12 rounded-sm text-center">
+                              <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                                  <CreditCard className="size-8 text-gray-400" />
+                              </div>
+                              <h2 className="text-[20px] font-black text-gray-900 mb-3">No Active Subscription</h2>
+                              <p className="text-[14px] text-gray-500 font-medium max-w-sm mx-auto mb-8 leading-relaxed">You are currently on the free plan. Upgrade to unlock premium features and higher visibility.</p>
+                              <button className="px-8 py-3 bg-[#ff5a00] hover:bg-[#e04e00] text-white font-bold text-[13px] uppercase tracking-widest rounded-sm shadow-sm transition-colors">
+                                  View Plans
+                              </button>
+                          </section>
+                      )}
+
+                      {activeTab === 'Feedback' && (
+                          <section className="bg-white border border-gray-200 shadow-sm p-8 rounded-sm">
+                              <h2 className="text-[17px] font-black text-gray-900 mb-6 pb-4 border-b border-gray-100">Send us your feedback</h2>
+                              
+                              <form onSubmit={handleFeedbackSubmit} className="space-y-6">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                      <div>
+                                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">First Name</label>
+                                          <input required type="text" value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" placeholder="Jordan" />
+                                      </div>
+                                      <div>
+                                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Last Name</label>
+                                          <input required type="text" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" placeholder="Smith" />
+                                      </div>
+                                  </div>
+                                  
+                                  <div>
+                                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Email</label>
+                                      <input required type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" placeholder="hello@company.com" />
+                                  </div>
+
+                                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+                                      <div className="sm:col-span-1">
+                                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Code</label>
+                                          <input required type="text" value={formData.phoneCode} onChange={e => setFormData({...formData, phoneCode: e.target.value})} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" placeholder="+1" />
+                                      </div>
+                                      <div className="sm:col-span-3">
+                                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Phone Number</label>
+                                          <input required type="tel" value={formData.phoneNumber} onChange={e => setFormData({...formData, phoneNumber: e.target.value})} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" placeholder="(555) 000-0000" />
+                                      </div>
+                                  </div>
+
+                                  <div>
+                                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Message</label>
+                                      <textarea required rows="4" value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} className="w-full bg-white border border-gray-200 rounded-sm px-4 py-3 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors resize-none" placeholder="How can we improve?"></textarea>
+                                  </div>
+                                  
+                                  <button type="submit" disabled={isSubmitting} className="w-full py-3.5 bg-[#ff5a00] hover:bg-[#e04e00] text-white text-[13px] font-bold rounded-sm shadow-sm transition-colors uppercase tracking-widest flex items-center justify-center gap-2">
+                                      {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" strokeWidth={3} />}
+                                      {isSubmitting ? 'Sending...' : 'Send Feedback'}
+                                  </button>
+                              </form>
+                          </section>
+                      )}
+                  </div>
+              </div>
           </div>
     </>
   );

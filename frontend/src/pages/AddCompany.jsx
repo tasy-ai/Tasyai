@@ -3,27 +3,16 @@ import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import { 
   Rocket,
-  X,
-  Building2,
-  Briefcase,
-  HeartHandshake,
-  PieChart,
-  CalendarClock,
-  School,
-  Heart,
-  Users,
-  PlusCircle,
-  Verified,
-  ArrowRight,
-  CloudUpload,
+  ImageUp,
   Plus,
-  Trash2
+  Trash2,
+  Check
 } from 'lucide-react';
-
 import { useNavigate } from 'react-router-dom';
 import companyService from '../services/companyService';
+import { toast, Toaster } from 'react-hot-toast';
 
-const CreateCompanyProfile = () => {
+const AddCompany = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -32,7 +21,7 @@ const CreateCompanyProfile = () => {
     companyName: '',
     tagline: '',
     industry: 'Artificial Intelligence',
-    fundingStage: 'Seed',
+    fundingStage: 'Stealth Mode',
     mission: '',
     logo: '',
     location: '',
@@ -43,95 +32,51 @@ const CreateCompanyProfile = () => {
   const [newBenefit, setNewBenefit] = useState('');
 
   const [openings, setOpenings] = useState([
-    { role: '', experience: '', techStack: '', workModel: 'Remote', collaboration: '' }
+    { role: '', experience: 'Junior (1-2 years)', techStack: [], workModel: 'Remote', collaboration: 'Equity Only (Co-founder)' }
   ]);
 
-  const [selectedBenefits, setSelectedBenefits] = useState([]);
+  const [selectedBenefits, setSelectedBenefits] = useState(['High Equity', 'L&D Budget']);
 
-  const techOptions = [
-    { name: 'React', icon: '⚛️' },
-    { name: 'Node.js', icon: '🟢' },
-    { name: 'Python', icon: '🐍' },
-    { name: 'Go', icon: '🔵' },
-    { name: 'Rust', icon: '🦀' },
-    { name: 'TypeScript', icon: '🟦' },
-    { name: 'MongoDB', icon: '🍃' },
-    { name: 'AWS', icon: '☁️' }
+  const benefitsList = [
+    { id: 'High Equity', title: 'High Equity', desc: 'Significant share allocation for early hires.' },
+    { id: 'Async Culture', title: 'Async Culture', desc: 'Work on your own schedule from anywhere.' },
+    { id: 'L&D Budget', title: 'L&D Budget', desc: 'Annual stipend for courses and books.' },
+    { id: 'Premium Health', title: 'Premium Health', desc: 'Full medical coverage for you and family.' }
   ];
 
-  const benefits = [
-    { id: 'High Equity', icon: PieChart, title: 'High Equity', desc: 'Be a true owner with significant share allocation.' },
-    { id: 'Async Culture', icon: CalendarClock, title: 'Async Culture', desc: 'Work on your own schedule, from anywhere.' },
-    { id: 'L&D Budget', icon: School, title: 'L&D Budget', desc: 'Annual stipend for courses and conferences.' },
-    { id: 'Premium Health', icon: Heart, title: 'Premium Health', desc: 'Full medical coverage for you and family.' },
-    { id: 'Annual Retreats', icon: Users, title: 'Annual Retreats', desc: 'All-expenses-paid team offsites globally.' }
-  ];
+  const handleInputChange = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
+
+  const handleOpeningChange = (index, field, value) => {
+    const updated = [...openings];
+    updated[index][field] = value;
+    setOpenings(updated);
+  };
+
+  const handleTechStackChange = (index, value) => {
+      const parts = value.split(',').map(s => s.trim()).filter(Boolean);
+      handleOpeningChange(index, 'techStack', parts);
+  }
 
   const toggleBenefit = (benefitId) => {
     setSelectedBenefits(prev => 
-      prev.includes(benefitId) 
-        ? prev.filter(id => id !== benefitId)
-        : [...prev, benefitId]
+      prev.includes(benefitId) ? prev.filter(id => id !== benefitId) : [...prev, benefitId]
     );
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleOpeningChange = (index, field, value) => {
-    const updatedOpenings = [...openings];
-    updatedOpenings[index][field] = value;
-    setOpenings(updatedOpenings);
-  };
-
-  const addOpening = () => {
-    setOpenings([...openings, { role: '', experience: '', techStack: '', workModel: 'Remote', collaboration: '' }]);
-  };
-
-  const removeOpening = (index) => {
-    if (openings.length === 1) return;
-    setOpenings(openings.filter((_, i) => i !== index));
-  };
-
-  const addCustomBenefit = () => {
-    if (newBenefit.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        customBenefits: [...prev.customBenefits, newBenefit.trim()]
-      }));
-      setNewBenefit('');
-    }
-  };
-
-  const removeCustomBenefit = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      customBenefits: prev.customBenefits.filter((_, i) => i !== index)
-    }));
-  };
-
+  const addOpening = () => setOpenings([...openings, { role: '', experience: 'Junior (1-2 years)', techStack: [], workModel: 'Remote', collaboration: 'Equity Only (Co-founder)' }]);
+  
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File is too large (max 5MB)");
-        return;
-      }
+      if (file.size > 5 * 1024 * 1024) return toast.error("File is too large (max 5MB)");
       const reader = new FileReader();
-      reader.onloadend = () => {
-        handleInputChange('logo', reader.result);
-      };
+      reader.onloadend = () => handleInputChange('logo', reader.result);
       reader.readAsDataURL(file);
     }
   };
 
   const handleSubmit = async () => {
-    if (!formData.companyName || !formData.tagline || !formData.mission) {
-      alert("Please fill in main company details");
-      return;
-    }
-
+    if (!formData.companyName || !formData.industry) return toast.error("Please fill in company name & industry");
     setLoading(true);
     try {
       const dataToSubmit = {
@@ -142,458 +87,329 @@ const CreateCompanyProfile = () => {
         fundingStage: formData.fundingStage,
         logo: formData.logo,
         benefits: [...selectedBenefits, ...formData.customBenefits],
-        openings: openings.map(o => ({
-            ...o,
-            techStack: typeof o.techStack === 'string' ? o.techStack.split(',').map(s => s.trim()).filter(s => s) : o.techStack,
-            workModel: o.workModel
-        })),
-        location: formData.location,
+        openings: openings.map(o => ({ ...o })),
+        location: formData.location || 'Remote',
         website: formData.website
       };
-
       await companyService.createCompany(dataToSubmit);
-      alert("Company Profile Published Successfully!");
-      navigate('/my-startups');
+      toast.success("Profile Published Successfully!");
+      setTimeout(() => navigate('/my-startups'), 1000);
     } catch (err) {
-      console.error("Submission failed:", err);
-      alert("Failed to publish profile. Are you logged in?");
+      toast.error("Failed to publish. Are you logged in?");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <SEO 
-        title="Launch Venture"
-        description="Craft a detailed profile to showcase your vision and team."
-      />
-      <div className="p-5 md:p-10 pb-32">
-          {/* Header Actions */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#4245f0] rounded-lg flex items-center justify-center shrink-0">
-                  <Rocket className="text-white size-5" />
-                </div>
-                <h1 className="text-white text-xl md:text-2xl font-bold tracking-tight">Launch Venture</h1>
-             </div>
-             <div className="flex items-center gap-4 w-full sm:w-auto">
-                <button onClick={() => navigate('/dashboard')} className="flex-1 sm:flex-none text-slate-400 hover:text-white transition-colors font-medium">Cancel</button>
-                <motion.button 
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`flex-[2] sm:flex-none px-6 py-2.5 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-lg transition-all shadow-lg shadow-[#4245f0]/20 flex items-center justify-center gap-2 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {loading ? 'Publishing...' : 'Publish Profile'}
-                  <Rocket className="size-4" />
-                </motion.button>
-             </div>
+    <div className="min-h-screen bg-[#F8F7F4] font-sans pb-32">
+      <SEO title="Create Company Profile" description="Showcase your startup." />
+      <Toaster position="top-center" />
+
+      {/* Top Navbar */}
+      <nav className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
+          <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+              <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
+                  <div className="bg-[#ff5a00] p-1.5 rounded-sm">
+                      <Rocket className="size-4 text-white" strokeWidth={2.5} />
+                  </div>
+                  <span className="font-extrabold text-[15px] tracking-tight text-gray-900">Startup Hub</span>
+              </div>
+              <div className="flex items-center gap-6 text-[13px] font-bold">
+                  <button onClick={() => navigate(-1)} className="text-gray-500 hover:text-gray-900 transition-colors">Cancel</button>
+                  <button 
+                      onClick={handleSubmit} 
+                      disabled={loading}
+                      className="px-6 py-2 bg-[#ff5a00] hover:bg-[#e04e00] text-white rounded-sm shadow-sm transition-colors disabled:opacity-50"
+                  >
+                      {loading ? 'Publishing...' : 'Publish Profile'}
+                  </button>
+              </div>
           </div>
+      </nav>
 
-          <div className="flex flex-col lg:flex-row gap-12 relative">
-            {/* Left Column - Forms */}
-            <div className="flex-1 space-y-12">
-              {/* Header */}
-              <header className="max-w-3xl">
-                <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">Launch Your Venture</h2>
-                <p className="text-slate-400 text-base md:text-lg leading-relaxed">Craft a detailed profile to showcase your vision, team, and current opportunities to the world's best collaborators.</p>
-              </header>
+      <div className="max-w-4xl mx-auto px-6 pt-12">
+          
+          <header className="mb-12">
+              <h1 className="text-[32px] font-black text-gray-900 tracking-tight mb-2">Create Your Company Profile</h1>
+              <p className="text-[14px] text-gray-500 font-medium">Fill out the information below to showcase your startup to potential co-founders and collaborators.</p>
+          </header>
 
-            {/* Company Identity */}
-            <motion.section 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="glass rounded-2xl p-5 md:p-8 space-y-8"
-            >
-              <div className="flex items-center gap-3 border-b border-white/10 pb-6">
-                <Building2 className="text-[#4245f0] size-8" />
-                <h3 className="text-xl font-bold">Company Identity</h3>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Logo Upload */}
-                <div className="col-span-2">
-                  <label className="block text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Company Logo</label>
-                  <div 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="relative border-2 border-dashed border-white/10 rounded-2xl p-12 flex flex-col items-center justify-center bg-white/5 hover:bg-white/10 transition-all cursor-pointer group overflow-hidden"
-                  >
-                    {formData.logo ? (
-                      <img src={formData.logo} alt="Logo Preview" className="max-h-32 object-contain" />
-                    ) : (
-                      <>
-                        <CloudUpload className="size-12 text-slate-500 group-hover:text-[#4245f0] mb-4" />
-                        <p className="text-base font-medium text-slate-300">Drop your brand logo here or click to browse</p>
-                        <p className="text-xs text-slate-500 mt-2 font-mono uppercase">SVG, PNG or WEBP (Max 5MB)</p>
-                      </>
-                    )}
-                    <input 
-                      ref={fileInputRef}
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                    />
-                  </div>
-                </div>
-
-                {/* Company Name */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Company Name</label>
-                  <input 
-                    type="text"
-                    value={formData.companyName}
-                    onChange={(e) => handleInputChange('companyName', e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
-                    placeholder="e.g. Nexa Dynamics"
-                  />
-                </div>
-
-                {/* Tagline */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Tagline</label>
-                  <input 
-                    type="text"
-                    value={formData.tagline}
-                    onChange={(e) => handleInputChange('tagline', e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
-                    placeholder="The future of decentralized compute"
-                  />
-                </div>
-
-                {/* Industry */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Primary Industry</label>
-                  <select 
-                    value={formData.industry}
-                    onChange={(e) => handleInputChange('industry', e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all appearance-none"
-                  >
-                    <option className="bg-slate-900">Artificial Intelligence</option>
-                    <option className="bg-slate-900">Blockchain / Web3</option>
-                    <option className="bg-slate-900">CleanTech</option>
-                    <option className="bg-slate-900">Biotech</option>
-                    <option className="bg-slate-900">Enterprise SaaS</option>
-                  </select>
-                </div>
-
-                {/* Funding Stage */}
-                <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Funding Stage</label>
-                  <select 
-                    value={formData.fundingStage}
-                    onChange={(e) => handleInputChange('fundingStage', e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all appearance-none"
-                  >
-                    <option className="bg-slate-900">Stealth Mode</option>
-                    <option className="bg-slate-900">Pre-seed / Bootstrapped</option>
-                    <option className="bg-slate-900">Seed</option>
-                    <option className="bg-slate-900">Series A+</option>
-                  </select>
-                </div>
-
-                {/* Mission Statement */}
-                <div className="col-span-2">
-                  <label className="block text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Mission Statement</label>
-                  <textarea 
-                    value={formData.mission}
-                    onChange={(e) => handleInputChange('mission', e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all resize-none"
-                    rows="5"
-                    placeholder="Describe the problem you are solving and your unique approach..."
-                  ></textarea>
-                </div>
-              </div>
-            </motion.section>
-
-            {/* Open Positions */}
-            <motion.section 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="glass rounded-2xl p-5 md:p-8 space-y-8"
-            >
-              <div className="flex items-center justify-between border-b border-white/10 pb-6">
-                <div className="flex items-center gap-3">
-                  <Briefcase className="text-[#4245f0] size-8" />
-                  <h3 className="text-xl font-bold">Open Positions</h3>
-                </div>
-                <button 
-                  onClick={addOpening}
-                  className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded-lg border border-white/10 transition-all flex items-center gap-2"
-                >
-                  <Plus className="size-4" /> Add Role
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {openings.map((opening, idx) => (
-                  <div key={idx} className="p-5 md:p-8 bg-white/5 rounded-2xl border border-white/10 space-y-8 relative group">
-                    <button 
-                      onClick={() => removeOpening(idx)}
-                      className="absolute top-6 right-6 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
-                    >
-                      <Trash2 className="size-5" />
-                    </button>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Role Title</label>
-                        <input 
-                          type="text"
-                          value={opening.role}
-                          onChange={(e) => handleOpeningChange(idx, 'role', e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
-                          placeholder="e.g. Senior Backend Engineer"
-                        />
-                      </div>
-                      <div className="col-span-2 md:col-span-1">
-                        <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Experience Expectations</label>
-                        <input 
-                          type="text"
-                          value={opening.experience}
-                          onChange={(e) => handleOpeningChange(idx, 'experience', e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
-                          placeholder="e.g. 3+ years, Mid-Level..."
-                        />
-                      </div>
-                    </div>
-
-                    {/* Tech Stack */}
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Tech Stack (Comma separated)</label>
-                      <input 
-                        type="text"
-                        value={opening.techStack}
-                        onChange={(e) => handleOpeningChange(idx, 'techStack', e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
-                        placeholder="e.g. React, Node.js, Python..."
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Work Model */}
+          <div className="space-y-12">
+              {/* Section 1: Company Identity */}
+              <section>
+                  <h2 className="text-[15px] font-black text-gray-900 mb-6 pb-2 border-b border-gray-200">Company Identity</h2>
+                  
+                  <div className="space-y-6">
+                      {/* Logo Upload */}
                       <div>
-                        <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Work Model</label>
-                        <div className="flex flex-wrap gap-2">
-                          {['Remote', 'Hybrid', 'Onsite'].map(m => (
-                            <button 
-                              key={m}
-                              type="button"
-                              onClick={() => handleOpeningChange(idx, 'workModel', m)}
-                              className={`flex-1 min-w-[80px] px-4 py-2.5 rounded-xl text-xs font-bold transition-all border ${
-                                opening.workModel === m
-                                  ? 'bg-[#4245f0]/20 border-[#4245f0]/40 text-[#4245f0]'
-                                  : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:border-white/20'
-                              }`}
-                            >
-                              {m}
-                            </button>
-                          ))}
-                        </div>
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Company Logo</label>
+                          <div 
+                              onClick={() => fileInputRef.current?.click()}
+                              className="w-full bg-white border border-dashed border-gray-300 rounded-sm p-12 flex flex-col items-center justify-center cursor-pointer hover:border-[#ff5a00] hover:bg-orange-50/10 transition-colors"
+                          >
+                              {formData.logo ? (
+                                  <img src={formData.logo} alt="Preview" className="h-20 object-contain" />
+                              ) : (
+                                  <>
+                                      <ImageUp className="size-6 text-gray-400 mb-2" strokeWidth={2} />
+                                      <h4 className="text-[13px] font-bold text-gray-900">Upload brand logo</h4>
+                                      <p className="text-[10px] text-gray-400 uppercase font-black uppercase tracking-widest mt-1">SVG, PNG OR WEBP (MAX 5MB)</p>
+                                  </>
+                              )}
+                              <input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleLogoUpload} />
+                          </div>
                       </div>
 
-                      {/* Collaboration */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Company Name</label>
+                              <input 
+                                  value={formData.companyName} onChange={e => handleInputChange('companyName', e.target.value)}
+                                  className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors placeholder:text-gray-400"
+                                  placeholder="e.g. Nexa Dynamics"
+                              />
+                          </div>
+                          <div>
+                              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Tagline</label>
+                              <input 
+                                  value={formData.tagline} onChange={e => handleInputChange('tagline', e.target.value)}
+                                  className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors placeholder:text-gray-400"
+                                  placeholder="Short description of your startup"
+                              />
+                          </div>
+                          <div>
+                              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Primary Industry</label>
+                              <select 
+                                  value={formData.industry} onChange={e => handleInputChange('industry', e.target.value)}
+                                  className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors appearance-none"
+                              >
+                                  <option>Artificial Intelligence</option>
+                                  <option>Blockchain / Web3</option>
+                                  <option>Enterprise SaaS</option>
+                                  <option>Consumer Tech</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Funding Stage</label>
+                              <select 
+                                  value={formData.fundingStage} onChange={e => handleInputChange('fundingStage', e.target.value)}
+                                  className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors appearance-none"
+                              >
+                                  <option>Stealth Mode</option>
+                                  <option>Pre-seed / Bootstrapped</option>
+                                  <option>Seed</option>
+                                  <option>Series A</option>
+                              </select>
+                          </div>
+                      </div>
+
                       <div>
-                        <label className="block text-sm font-semibold text-slate-400 mb-2 uppercase tracking-tight">Collaboration / Perks</label>
-                        <input 
-                          type="text"
-                          value={opening.collaboration}
-                          onChange={(e) => handleOpeningChange(idx, 'collaboration', e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-[#4245f0] focus:border-transparent outline-none transition-all"
-                          placeholder="e.g. Stipend + Equity, 2% Equity..."
-                        />
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Mission Statement</label>
+                          <textarea 
+                              value={formData.mission} onChange={e => handleInputChange('mission', e.target.value)}
+                              className="w-full bg-white border border-gray-200 rounded-sm px-4 py-3 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors placeholder:text-gray-400 resize-none"
+                              rows="4"
+                              placeholder="Describe the problem you are solving..."
+                          ></textarea>
                       </div>
-                    </div>
                   </div>
-                ))}
-              </div>
-            </motion.section>
+              </section>
 
-            {/* Benefits & Perks */}
-            <motion.section 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="glass rounded-2xl p-5 md:p-8 space-y-8"
-            >
-              <div className="flex items-center gap-3 border-b border-white/10 pb-6">
-                <HeartHandshake className="text-[#4245f0] size-8" />
-                <h3 className="text-xl font-bold">Benefits & Perks</h3>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {benefits.map((benefit) => {
-                  const IconComponent = benefit.icon;
-                  const isSelected = selectedBenefits.includes(benefit.id);
-                  
-                  return (
-                    <label 
-                      key={benefit.id}
-                      onClick={() => toggleBenefit(benefit.id)}
-                      className={`group relative flex flex-col p-5 rounded-2xl border cursor-pointer transition-all ${
-                        isSelected
-                          ? 'bg-[#4245f0]/10 border-[#4245f0]/40'
-                          : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <IconComponent className="text-[#4245f0] size-6" />
-                        <input 
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => {}}
-                          className="w-5 h-5 rounded-md border-white/20 bg-transparent text-[#4245f0] focus:ring-offset-slate-900"
-                        />
-                      </div>
-                      <span className="text-base font-bold text-white">{benefit.title}</span>
-                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{benefit.desc}</p>
-                      {benefit.verified && (
-                        <div className="absolute -top-2 -right-2 bg-slate-800 text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                          Verified Tier 1
-                        </div>
-                      )}
-                    </label>
-                  );
-                })}
-                
-                {/* Custom Benefit Adder */}
-                <div className="sm:col-span-2 lg:col-span-3 mt-4">
-                  <label className="block text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Add Custom Benefit / Perk</label>
-                  <div className="flex gap-2">
-                    <input 
-                      type="text"
-                      value={newBenefit}
-                      onChange={(e) => setNewBenefit(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && addCustomBenefit()}
-                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all"
-                      placeholder="e.g. Flexible Travel Stipend..."
-                    />
-                    <button 
-                      onClick={addCustomBenefit}
-                      className="px-6 py-2.5 bg-[#4245f0] hover:bg-[#4245f0]/90 text-white font-bold rounded-lg transition-all"
-                    >
-                      Add
-                    </button>
-                  </div>
-                  
-                  {/* Custom Benefits Display */}
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {formData.customBenefits.map((benefit, i) => (
-                      <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-[#4245f0]/20 border border-[#4245f0]/30 rounded-full text-sm text-white">
-                        <span>{benefit}</span>
-                        <button 
-                          onClick={() => removeCustomBenefit(i)}
-                          className="text-[#4245f0] hover:text-white"
-                        >
-                          <X className="size-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.section>
-          </div>
-
-          {/* Right Column - Preview */}
-          <aside className="w-full lg:w-[420px]">
-            <div className="sticky top-24 space-y-6">
-              <div className="flex items-center justify-between px-2">
-                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">Real-time Preview</h3>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                  <span className="text-[10px] font-bold text-slate-400">Live Sync</span>
-                </div>
-              </div>
-
-              {/* Preview Card */}
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="glass rounded-3xl overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] border-white/20"
-              >
-                {/* Banner */}
-                <div className="h-32 bg-gradient-to-br from-indigo-600 via-[#4245f0] to-purple-600 relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-20 pointer-events-none">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="px-8 pb-8 mt-10">
-                  <div className="w-20 h-20 rounded-2xl bg-slate-950 border-4 border-slate-950 shadow-2xl mb-6 overflow-hidden flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600">
-                    {formData.logo ? (
-                      <img src={formData.logo} alt="Logo" className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-2xl font-bold text-white">
-                        {formData.companyName ? formData.companyName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'TY'}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="space-y-1 mb-6">
-                    <h4 className="text-2xl font-black text-white leading-tight">{formData.companyName || 'Your Company'}</h4>
-                    <p className="text-sm text-slate-400 italic">"{formData.tagline || 'Innovation at scale'}"</p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[11px] font-bold text-slate-300">{formData.industry}</span>
-                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[11px] font-bold text-slate-300">{formData.fundingStage}</span>
-                    <span className="px-3 py-1 bg-[#4245f0]/20 border border-[#4245f0]/30 text-[#4245f0] rounded-lg text-[11px] font-bold">Hiring</span>
+              {/* Section 2: Open Positions */}
+              <section>
+                  <div className="flex items-center justify-between mb-6 pb-2 border-b border-gray-200">
+                      <h2 className="text-[15px] font-black text-gray-900">Open Positions</h2>
+                      <button onClick={addOpening} className="text-[11px] font-bold text-[#ff5a00] hover:underline flex items-center gap-1">
+                          <Plus className="size-3" strokeWidth={3} /> Add Role
+                      </button>
                   </div>
 
                   <div className="space-y-4">
-                    {openings[0] && openings[0].role && (
-                      <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Top Opening</p>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="text-sm font-extrabold text-white">{openings[0].role}</p>
-                            <div className="flex gap-2 mt-2 flex-wrap">
-                              {typeof openings[0].techStack === 'string' 
-                                ? openings[0].techStack.split(',').slice(0, 3).map(tech => (
-                                    <span key={tech} className="text-[9px] bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-mono uppercase">{tech.trim()}</span>
-                                  ))
-                                : openings[0].techStack.slice(0, 3).map(tech => (
-                                    <span key={tech} className="text-[9px] bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-mono uppercase">{tech}</span>
-                                  ))
-                              }
-                            </div>
+                      {openings.map((opening, idx) => (
+                          <div key={idx} className="bg-white border border-gray-200 p-6 rounded-sm relative">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                  <div>
+                                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Role Title</label>
+                                      <input 
+                                          value={opening.role} onChange={e => handleOpeningChange(idx, 'role', e.target.value)}
+                                          className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors placeholder:text-gray-400"
+                                          placeholder="e.g. Senior Backend Engineer"
+                                      />
+                                  </div>
+                                  <div>
+                                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Experience Level</label>
+                                      <select 
+                                          value={opening.experience} onChange={e => handleOpeningChange(idx, 'experience', e.target.value)}
+                                          className="w-full bg-white border border-gray-200 rounded-sm px-4 py-2 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors appearance-none"
+                                      >
+                                          <option>Entry (0-1 years)</option>
+                                          <option>Junior (1-2 years)</option>
+                                          <option>Mid (3-5 years)</option>
+                                          <option>Senior (5+ years)</option>
+                                          <option>Lead / Director</option>
+                                      </select>
+                                  </div>
+                                  <div>
+                                      <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Primary Tech Stack</label>
+                                      <div className="flex gap-2">
+                                          <input 
+                                              onChange={e => handleTechStackChange(idx, e.target.value)}
+                                              className="flex-1 bg-white border border-gray-200 rounded-sm px-4 py-2 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors"
+                                              placeholder="e.g. React, Python"
+                                          />
+                                      </div>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Work Model</label>
+                                          <div className="flex rounded-sm overflow-hidden border border-gray-200">
+                                              <button 
+                                                  onClick={() => handleOpeningChange(idx, 'workModel', 'Remote')}
+                                                  className={`flex-1 py-2 text-[11px] font-bold transition-colors ${opening.workModel === 'Remote' ? 'bg-[#ff5a00] text-white' : 'bg-white text-gray-600'}`}
+                                              >
+                                                  Remote
+                                              </button>
+                                              <button 
+                                                  onClick={() => handleOpeningChange(idx, 'workModel', 'Hybrid')}
+                                                  className={`flex-1 py-2 text-[11px] font-bold transition-colors border-l border-gray-200 ${opening.workModel === 'Hybrid' ? 'bg-[#ff5a00] text-white' : 'bg-white text-gray-600'}`}
+                                              >
+                                                  Hybrid
+                                              </button>
+                                          </div>
+                                      </div>
+                                      <div>
+                                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Collaboration Type</label>
+                                          <select 
+                                              value={opening.collaboration} onChange={e => handleOpeningChange(idx, 'collaboration', e.target.value)}
+                                              className="w-full bg-white border border-gray-200 rounded-sm px-3 py-2 text-[11px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors appearance-none"
+                                          >
+                                              <option>Equity Only (Co-founder)</option>
+                                              <option>Salary + Equity</option>
+                                              <option>Contract</option>
+                                          </select>
+                                      </div>
+                                  </div>
+                              </div>
                           </div>
-                          <span className="text-[10px] bg-[#4245f0]/10 text-[#4245f0] px-2 py-1 rounded-full font-bold">{openings[0].workModel}</span>
-                        </div>
+                      ))}
+                  </div>
+              </section>
+
+              {/* Section 3: Benefits & Perks */}
+              <section>
+                  <h2 className="text-[15px] font-black text-gray-900 mb-6 pb-2 border-b border-gray-200">Benefits & Perks</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {benefitsList.map(benefit => {
+                          const isSelected = selectedBenefits.includes(benefit.id);
+                          return (
+                              <div 
+                                  key={benefit.id} 
+                                  onClick={() => toggleBenefit(benefit.id)}
+                                  className="bg-white border border-gray-200 p-5 rounded-sm flex flex-col cursor-pointer transition-colors hover:border-[#ff5a00]"
+                              >
+                                  <div className="flex gap-3">
+                                      <div className={`mt-0.5 min-w-[16px] w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${isSelected ? 'bg-[#ff5a00] border-[#ff5a00]' : 'border-gray-300'}`}>
+                                          {isSelected && <Check className="size-3 text-white" strokeWidth={3} />}
+                                      </div>
+                                      <div>
+                                          <h4 className="text-[13px] font-bold text-gray-900 mb-1 leading-none">{benefit.title}</h4>
+                                          <p className="text-[11px] text-gray-500 font-medium leading-relaxed">{benefit.desc}</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          )
+                      })}
+                      
+                      <div className="bg-white border border-dashed border-gray-300 p-5 rounded-sm flex flex-col items-center justify-center cursor-pointer hover:border-[#ff5a00] transition-colors min-h-[90px]">
+                          <Plus className="size-4 text-gray-400 mb-1" strokeWidth={3} />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Custom Perk</span>
                       </div>
-                    )}
+                  </div>
+              </section>
+
+              {/* Section 4: Live Preview */}
+              <section className="pt-8">
+                  <div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-2">
+                      <h2 className="text-[12px] font-black uppercase tracking-widest text-gray-400">Live Preview</h2>
+                      <div className="flex items-center gap-1.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                          <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">Updates Live</span>
+                      </div>
                   </div>
 
-                  <button className="w-full mt-8 py-4 bg-white text-slate-950 text-sm font-black rounded-xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2">
-                    Explore Profile
-                    <ArrowRight className="size-5" />
-                  </button>
-                </div>
-              </motion.div>
+                  <div className="bg-white border text-left border-gray-200 shadow-sm flex flex-col relative">
+                      <div className="h-1.5 w-full bg-[#ff5a00] absolute top-0 left-0"></div>
+                      <div className="p-8 pb-6 flex flex-col">
+                          <div className="flex gap-4 items-start mb-6">
+                              <div className="w-14 h-14 bg-gray-900 rounded-sm flex items-center justify-center shrink-0 border border-gray-100 overflow-hidden">
+                                  {formData.logo ? (
+                                      <img src={formData.logo} alt="Preview" className="w-full h-full object-cover" />
+                                  ) : (
+                                      <span className="text-white font-black text-xl">
+                                          {formData.companyName ? formData.companyName.charAt(0).toUpperCase() : 'A'}
+                                      </span>
+                                  )}
+                              </div>
+                              <div className="pt-0.5">
+                                  <div className="flex items-center gap-2 mb-1">
+                                      <h3 className="text-[20px] font-black text-gray-900 leading-none">{formData.companyName || 'Nexa Dynamics'}</h3>
+                                      <span className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 text-gray-500 text-[9px] font-black uppercase tracking-widest rounded-sm">
+                                          {formData.fundingStage === 'Stealth Mode' ? 'SEED' : formData.fundingStage.toUpperCase()}
+                                      </span>
+                                  </div>
+                                  <p className="text-[13px] text-gray-500 font-medium italic">"{formData.tagline || 'The future of decentralized compute'}"</p>
+                              </div>
+                          </div>
 
-              {/* Progress */}
-              <div className="glass p-6 rounded-2xl space-y-4">
-                <div className="flex items-center gap-3 text-slate-400">
-                  <Verified className="size-5" />
-                  <p className="text-xs font-medium">Your profile will be reviewed within 24 hours.</p>
-                </div>
-                <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                  <div className="w-2/3 h-full bg-[#4245f0] shadow-[0_0_12px_rgba(66,69,240,0.5)]"></div>
-                </div>
-                <p className="text-[10px] text-slate-500 text-center font-bold uppercase tracking-widest">67% Profile Completeness</p>
+                          <div className="flex items-center justify-between border-t border-gray-100 pt-6 mt-2">
+                              <div>
+                                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Featured Opening</p>
+                                  <h4 className="text-[14px] font-bold text-gray-900">{openings[0]?.role || 'Backend Lead'}</h4>
+                                  <div className="flex gap-2 mt-2">
+                                      <span className="text-[#ff5a00] text-[9px] font-bold uppercase tracking-wider">PYTHON</span>
+                                      <span className="text-gray-400 text-[9px] font-bold uppercase tracking-wider">REDIS</span>
+                                  </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-3">
+                                  <span className="px-2 py-1 border border-gray-200 text-gray-400 text-[9px] font-black uppercase tracking-widest rounded-sm">
+                                      {openings[0]?.workModel || 'REMOTE'}
+                                  </span>
+                                  <button disabled className="px-6 py-2.5 bg-[#ff5a00] text-white text-[11px] font-bold rounded-sm shadow-sm opacity-90">
+                                      View Full Profile
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </section>
+
+              {/* Progress & Submit */}
+              <div className="pt-12 pb-24 border-t border-gray-200 mt-12 flex flex-col items-center">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-3">67% Profile Completeness</p>
+                  <div className="w-1/2 h-1 bg-gray-200 rounded-full mb-3 overflow-hidden">
+                      <div className="h-full w-2/3 bg-[#ff5a00]"></div>
+                  </div>
+                  <p className="text-[10px] text-gray-400 font-medium">Your profile will be reviewed by our team before publishing.</p>
+                  
+                  <div className="w-full flex justify-end gap-4 mt-12">
+                      <button className="px-6 py-2.5 bg-[#F8F7F4] border border-gray-200 hover:bg-white text-gray-600 font-bold text-[13px] rounded-sm transition-colors">
+                          Save Draft
+                      </button>
+                      <button 
+                          onClick={handleSubmit} 
+                          disabled={loading}
+                          className="px-6 py-2.5 bg-[#ff5a00] hover:bg-[#e04e00] text-white font-bold text-[13px] rounded-sm transition-colors shadow-sm disabled:opacity-50"
+                      >
+                          {loading ? 'Publishing...' : 'Publish to Startup Hub'}
+                      </button>
+                  </div>
               </div>
-            </div>
-          </aside>
-        </div>
+
+          </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default CreateCompanyProfile;
+export default AddCompany;

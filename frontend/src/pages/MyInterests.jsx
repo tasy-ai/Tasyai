@@ -11,12 +11,18 @@ import {
   MapPin,
   Rocket,
   ArrowRight,
-  Loader2
+  Cloud,
+  Sun,
+  Shield,
+  Activity,
+  Bot,
+  ChevronDown
 } from 'lucide-react';
 import authService from '../services/authService';
 import companyService from '../services/companyService';
 import notificationService from '../services/notificationService';
 import { useUser } from "@clerk/clerk-react";
+import { toast } from 'react-hot-toast';
 
 const MyInterests = () => {
   const navigate = useNavigate();
@@ -122,120 +128,152 @@ const MyInterests = () => {
     );
   });
 
+  // Helper icons logic for random card icons just like the dashboard image
+  const getIconData = (index) => {
+    const iconStyles = [
+        { bg: 'bg-indigo-50', icon: <Bot className="size-5 text-indigo-500" /> },
+        { bg: 'bg-orange-50', icon: <Sun className="size-5 text-orange-500" /> },
+        { bg: 'bg-emerald-50', icon: <Cloud className="size-5 text-emerald-500" /> },
+        { bg: 'bg-pink-50', icon: <Activity className="size-5 text-pink-500" /> },
+        { bg: 'bg-cyan-50', icon: <Bot className="size-5 text-cyan-500" /> },
+        { bg: 'bg-purple-50', icon: <Shield className="size-5 text-purple-500" /> },
+    ];
+    return iconStyles[index % iconStyles.length];
+  };
+
   return (
-    <>
-      <div className="p-5 md:p-10 pb-20">
-        <header className="mb-12">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-2">My Interests</h1>
-              <p className="text-slate-400 text-lg">Opportunities hand-picked for your profile and expertise.</p>
-            </div>
-            
-            <div className="relative w-full md:w-96 group">
-              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none group-focus-within:text-[#4245f0] text-slate-500 transition-colors">
-                <Search className="size-5" />
-              </div>
-              <input 
-                type="text"
-                placeholder="Search your matches..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:ring-2 focus:ring-[#4245f0] outline-none transition-all placeholder:text-slate-600"
-              />
-            </div>
-          </div>
+    <div className="min-h-screen font-sans flex flex-col w-full overflow-y-auto">
+      <div className="flex-1 w-full max-w-[1200px] mx-auto p-6 md:p-10 mb-10">
+        
+        {/* Header */}
+        <header className="mb-10">
+          <h1 className="text-[28px] font-black text-gray-900 mb-2.5 tracking-tight">My Interests</h1>
+          <p className="text-gray-500 text-[15px] max-w-2xl font-medium">Opportunities hand-picked for your profile and expertise.</p>
         </header>
 
+        {/* Search */}
+        <div className="bg-white border border-gray-200 rounded-sm flex items-center px-4 py-3.5 shadow-sm mb-10 transition-shadow focus-within:ring-2 focus-within:ring-[#ff5a00]/20 focus-within:border-[#ff5a00]">
+           <input 
+             type="text"
+             value={searchQuery}
+             onChange={(e) => setSearchQuery(e.target.value)}
+             className="w-full bg-transparent outline-none text-[15px] font-medium text-gray-900 placeholder:text-gray-400 placeholder:font-normal"
+             placeholder="Search by name, role, or technology stack..."
+           />
+        </div>
+
+        {/* Grid View */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-80 rounded-2xl glass-effect animate-pulse bg-white/5"></div>
+              <div key={i} className="h-72 rounded-sm border border-gray-100 bg-white shadow-sm animate-pulse p-6">
+                  <div className="w-10 h-10 bg-gray-100/50 rounded-sm mb-6"></div>
+                  <div className="w-3/4 h-5 bg-gray-100/50 mb-3 rounded-sm"></div>
+                  <div className="w-full h-4 bg-gray-100/50 mb-2 rounded-sm"></div>
+                  <div className="w-1/2 h-4 bg-gray-100/50 mb-6 rounded-sm"></div>
+                  <div className="mt-auto flex gap-3 h-10">
+                      <div className="flex-1 bg-gray-100/50 rounded-sm"></div>
+                      <div className="flex-1 bg-gray-100/50 rounded-sm"></div>
+                  </div>
+              </div>
             ))}
           </div>
         ) : filteredMatches.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMatches.map((company, index) => {
               const isSaved = savedCompanyIds.includes(company._id);
+              const iconData = getIconData(index);
+              
               return (
-                <motion.div
+                <div
                   key={company._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group relative bg-[#0a0f1d] border border-white/5 rounded-3xl overflow-hidden hover:border-[#4245f0]/30 transition-all duration-500 flex flex-col h-full"
+                  className="bg-white border border-gray-200 rounded-sm p-6 flex flex-col shadow-sm transition-all hover:shadow-md hover:border-gray-300 group"
                 >
-                  <div className="relative h-48 overflow-hidden">
-                    <img 
-                      src={company.logo || '/default-company.png'} 
-                      alt={company.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1d] via-transparent to-transparent opacity-80"></div>
-                  </div>
-
-                  <div className="p-6 flex flex-col flex-1">
-                    <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-xl font-bold text-white group-hover:text-[#4245f0] transition-colors">{company.name}</h3>
-                      <button 
-                        onClick={(e) => {
-                            e.preventDefault();
-                            toggleSave(company._id);
-                        }}
-                        className="p-2 rounded-xl bg-white/5 border border-white/5 text-slate-400 hover:text-white transition-all"
-                      >
-                        {isSaved ? <Bookmark className="size-4 fill-[#4245f0] text-[#4245f0]" /> : <BookmarkPlus className="size-4" />}
-                      </button>
-                    </div>
-
-                    <p className="text-sm text-slate-400 line-clamp-2 mb-6 italic">"{company.tagline}"</p>
-
-                    <div className="flex items-center gap-4 mb-4 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                       <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5">
-                          <Compass className="size-3 text-[#4245f0]" />
-                          <span>{company.industry}</span>
-                       </div>
-                       {company.location && (
-                         <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-white/5">
-                            <MapPin className="size-3 text-[#4245f0]" />
-                            <span>{company.location}</span>
-                         </div>
+                  <div className="flex justify-between items-start mb-5">
+                    <div className={`w-10 h-10 rounded-sm flex items-center justify-center ${iconData.bg}`}>
+                       {company.logo ? (
+                           <img src={company.logo} alt="logo" className="w-6 h-6 object-contain" />
+                       ) : (
+                           iconData.icon
                        )}
                     </div>
-
-                    <div className="flex flex-wrap gap-2 mb-6 min-h-[50px]">
-                      {company.openings?.slice(0, 3).map((op, i) => (
-                         <div key={i} className="flex flex-col gap-1 p-2 rounded-lg bg-white/5 border border-white/5 w-full">
-                            <div className="flex justify-between items-center">
-                                <span className="text-[11px] font-bold text-white tracking-tight">{op.role}</span>
-                                <span className="text-[9px] bg-[#4245f0]/20 text-[#6366f1] px-1.5 py-0.5 rounded">Match Found</span>
-                            </div>
-                         </div>
-                      ))}
-                    </div>
-
-                    <div className="flex gap-2 mt-auto">
-                       <Link 
-                        to={`/company-detail?id=${company._id}`}
-                        className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 border border-white/5"
-                       >
-                         View Details
-                       </Link>
-                    </div>
+                    <button onClick={(e) => { e.preventDefault(); toggleSave(company._id); }}>
+                      <Bookmark className={`size-4 transition-colors ${isSaved ? 'fill-[#ff5a00] text-[#ff5a00]' : 'text-gray-300 group-hover:text-gray-400'}`} strokeWidth={isSaved ? 2.5 : 2} />
+                    </button>
                   </div>
-                </motion.div>
+                  
+                  <h3 className="font-bold text-gray-900 text-[17px] mb-2">{company.name}</h3>
+                  <p className="text-gray-500 text-[13px] leading-relaxed line-clamp-2 mb-5 min-h-[40px] font-medium">{company.description || company.tagline || 'No description provided.'}</p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {company.openings?.slice(0, 2).map((op, i) => (
+                      <span 
+                        key={i} 
+                        className="px-2.5 py-1 bg-[#ff5a00]/10 border border-[#ff5a00]/20 text-[#ff5a00] text-[11px] font-bold rounded-sm whitespace-nowrap"
+                      >
+                        {op.role} - Match
+                      </span>
+                    ))}
+                    {(!company.openings || company.openings.length === 0) && (
+                        <span className="px-2.5 py-1 bg-gray-50 border border-gray-100 text-gray-400 text-[11px] font-bold rounded-sm">Match Found</span>
+                    )}
+                  </div>
+                  
+                  <div className="mt-auto flex gap-3">
+                    <button className="flex-1 bg-[#ff5a00] hover:bg-[#e04e00] text-white text-[13px] font-bold py-2.5 rounded-sm transition-colors shadow-sm">
+                      Apply Now
+                    </button>
+                    <Link 
+                      to={`/company-detail?id=${company._id}`} 
+                      state={{ company }}
+                      className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-[13px] font-bold py-2.5 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center"
+                    >
+                      View Details
+                    </Link>
+                  </div>
+                </div>
               );
             })}
           </div>
         ) : (
-          <div className="text-center py-32 bg-white/5 rounded-3xl border border-dashed border-white/10">
-             <Star className="size-16 text-slate-700 mx-auto mb-4" />
-             <h3 className="text-xl font-bold text-slate-300">No interest matches yet</h3>
-             <p className="text-slate-500 max-w-md mx-auto mt-2">Update your profile with more skills or experience to help our matching engine find the perfect startups for you.</p>
+          <div className="text-center py-20 bg-white border border-gray-200 border-dashed rounded-sm">
+             <Building2 className="size-16 text-gray-300 mx-auto mb-4" />
+             <h3 className="text-[17px] font-bold text-gray-900 mb-1">No matches found</h3>
+             <p className="text-gray-500 text-[13px] font-medium">Try adjusting your filters or complete your profile skills.</p>
+          </div>
+        )}
+
+        {/* Load More */}
+        {filteredMatches.length > 0 && (
+          <div className="mt-12 flex justify-center">
+            <button className="px-5 py-2.5 bg-gray-50 rounded-sm border border-gray-200 hover:bg-gray-100 hover:border-gray-300 text-gray-900 font-bold text-[13px] transition-all flex items-center gap-2 shadow-sm">
+              Load More Startups
+              <ChevronDown className="size-4 text-gray-500" />
+            </button>
           </div>
         )}
       </div>
-    </>
+
+      {/* Footer */}
+      <footer className="w-full mt-auto border-t border-gray-200 px-6 py-8 bg-[#F8F7F4]">
+         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+             <div className="flex items-center gap-4 text-gray-500 text-[13px] font-medium">
+                 <a href="#" className="hover:text-gray-900 transition-colors">Guidelines</a>
+                 <span className="text-gray-300">|</span>
+                 <a href="#" className="hover:text-gray-900 transition-colors">FAQ</a>
+                 <span className="text-gray-300">|</span>
+                 <a href="#" className="hover:text-gray-900 transition-colors">Lists</a>
+                 <span className="text-gray-300">|</span>
+                 <a href="#" className="hover:text-gray-900 transition-colors">API</a>
+                 <span className="text-gray-300">|</span>
+                 <a href="#" className="hover:text-gray-900 transition-colors">Security</a>
+             </div>
+             <div>
+                 <p className="text-gray-500 text-[13px] italic font-medium">“Working on something people want.”</p>
+             </div>
+         </div>
+      </footer>
+    </div>
   );
 };
 

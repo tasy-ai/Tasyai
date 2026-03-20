@@ -18,11 +18,11 @@ const MainLayout = () => {
   };
 
   return (
-    <div className="bg-[#020617] text-white font-sans min-h-screen flex overflow-hidden">
+    <div className="bg-[#F8F7F4] text-gray-900 font-sans min-h-screen flex overflow-hidden">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       
       <main 
-        className={`flex-1 overflow-y-auto h-screen bg-[#020617] transition-all duration-300 ${
+        className={`flex-1 overflow-y-auto h-screen bg-[#F8F7F4] transition-all duration-300 ${
           isSidebarOpen ? 'md:ml-72' : 'md:ml-20'
         }`}
       >

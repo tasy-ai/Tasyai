@@ -50,11 +50,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     }
   };
 
+  const linkActiveStyle = 'bg-orange-50 text-[#ff5a00] border border-orange-100 font-bold shadow-sm';
+  const linkInactiveStyle = 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border border-transparent font-medium';
+
   return (
     <>
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-gray-900/20 z-40 md:hidden backdrop-blur-sm"
           onClick={toggleSidebar}
         />
       )}
@@ -63,161 +66,139 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       {!isOpen && (
         <button 
           onClick={toggleSidebar}
-          className="fixed top-4 right-4 z-50 p-3 rounded-xl bg-[#0f172a] border border-white/10 text-slate-400 hover:text-white md:hidden shadow-lg"
+          className="fixed top-4 right-4 z-50 p-2.5 rounded-sm bg-white border border-gray-200 text-gray-500 hover:text-gray-900 md:hidden shadow-sm transition-colors"
         >
-          <Menu className="size-6" />
+          <Menu className="size-5" />
         </button>
       )}
 
       {/* Sidebar */}
       <aside 
-        className={`fixed left-0 top-0 h-full z-50 flex flex-col sidebar-glass border-r border-white/5 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+        className={`fixed left-0 top-0 h-full z-50 flex flex-col bg-white border-r border-gray-200 shadow-sm transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
           isOpen ? 'translate-x-0 w-72' : '-translate-x-full md:translate-x-0 md:w-20'
         }`}
       >
-        <div className={`flex flex-col h-full ${isOpen ? 'p-6' : 'p-4 items-center'} transition-all`}>
+        <div className={`flex flex-col h-full bg-white ${isOpen ? 'p-5' : 'p-3 items-center'} transition-all`}>
           
           {/* Header */}
-          <div className={`flex items-center mb-8 ${isOpen ? 'justify-between' : 'justify-center'}`}>
+          <div className={`flex items-center mb-8 mt-2 ${isOpen ? 'justify-between px-2' : 'justify-center'}`}>
             <div className={`flex items-center gap-3 overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+              <div className="flex items-center justify-center size-8 bg-[#ff5a00] text-white rounded-sm shrink-0 font-black text-lg">
+                T
+              </div>
               <div className="whitespace-nowrap">
-                <h1 className="text-lg font-bold tracking-tight text-white">Tasyai</h1>
-                <p className="text-[10px] text-slate-400">Discovery Engine</p>
+                <h1 className="text-[17px] font-black tracking-tight text-gray-900">Tasyai</h1>
               </div>
             </div>
 
             <button 
               onClick={toggleSidebar}
-              className={`p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors absolute right-[-12px] top-6 z-50 bg-[#020617] border border-white/10 md:static md:mr-0 md:bg-transparent md:border-none ${!isOpen && 'hidden md:block'}`}
+              className={`p-2 rounded-sm text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors absolute right-[-12px] top-6 z-50 bg-white border border-gray-200 md:static md:mr-0 md:bg-transparent md:border-none ${!isOpen && 'hidden md:block md:mt-2'}`}
             >
-               <Menu className="size-6" />
+               <Menu className="size-5" />
             </button>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-2 w-full">
+          <nav className="flex-1 space-y-1.5 w-full">
             <Link 
               to="/dashboard" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
+              className={`flex items-center gap-3 rounded-sm transition-all group ${
                 isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/dashboard')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
+              } ${isActive('/dashboard') ? linkActiveStyle : linkInactiveStyle}`}
             >
-              <Compass className={`size-[22px] shrink-0 ${isActive('/dashboard') ? 'fill-current' : ''}`} />
-              <span className={`text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                Discover Companies
+              <Compass className={`size-[18px] shrink-0`} strokeWidth={2.5} />
+              <span className={`text-[14px] whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                Discover
               </span>
             </Link>
             
             <Link 
               to="/my-interests" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
+              className={`flex items-center gap-3 rounded-sm transition-all group ${
                 isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/my-interests')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
+              } ${isActive('/my-interests') ? linkActiveStyle : linkInactiveStyle}`}
             >
-              <div className={`p-1.5 rounded-lg transition-colors ${isActive('/my-interests') ? 'bg-amber-500/20 text-amber-500' : 'bg-white/5 text-slate-400 group-hover:text-amber-500 group-hover:bg-amber-500/10'}`}>
-                <Star className={`size-4 ${isActive('/my-interests') ? 'fill-current' : ''}`} />
-              </div>
-              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                My Interest
+              <Star className={`size-[18px] shrink-0`} strokeWidth={2.5} />
+              <span className={`text-[14px] whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                My Interests
               </span>
             </Link>
             
             <Link 
               to="/saved-companies" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
+              className={`flex items-center gap-3 rounded-sm transition-all group ${
                 isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/saved-companies')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
+              } ${isActive('/saved-companies') ? linkActiveStyle : linkInactiveStyle}`}
             >
-              <Book className={`size-[22px] shrink-0 ${isActive('/saved-companies') ? 'fill-current' : ''}`} />
-              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+              <Book className={`size-[18px] shrink-0`} strokeWidth={2.5} />
+              <span className={`text-[14px] whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
                 Saved Companies
               </span>
             </Link>
+            
             <Link 
               to="/my-startups" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
+              className={`flex items-center gap-3 rounded-sm transition-all group ${
                 isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/my-startups')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
+              } ${isActive('/my-startups') ? linkActiveStyle : linkInactiveStyle}`}
             >
-              <Rocket className={`size-[22px] shrink-0 ${isActive('/my-startups') ? 'fill-current' : ''}`} />
-              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+              <Rocket className={`size-[18px] shrink-0`} strokeWidth={2.5} />
+              <span className={`text-[14px] whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
                 My Startups
               </span>
             </Link>
+            
             <Link 
               to="/notifications" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
+              className={`flex items-center gap-3 rounded-sm transition-all group ${
                 isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/notifications')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
+              } ${isActive('/notifications') ? linkActiveStyle : linkInactiveStyle}`}
             >
               <div className="relative">
-                <Bell className={`size-[22px] shrink-0 ${isActive('/notifications') ? 'fill-current' : ''}`} />
+                <Bell className={`size-[18px] shrink-0`} strokeWidth={2.5} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 size-2 bg-red-500 rounded-full border border-[#020617] animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]"></span>
+                  <span className="absolute -top-1 -right-1 size-2 bg-[#ff5a00] rounded-full border-[1.5px] border-white"></span>
                 )}
               </div>
-              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                Notifications
+              <span className={`flex-1 text-[14px] flex items-center justify-between whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                <span>Notifications</span>
+                {unreadCount > 0 && isOpen && (
+                   <span className="bg-[#ff5a00] text-white text-[10px] font-black px-1.5 py-0.5 rounded-sm">
+                     {unreadCount}
+                   </span>
+                )}
               </span>
             </Link>
 
             <Link 
               to="/found-talent" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
+              className={`flex items-center gap-3 rounded-sm transition-all group ${
                 isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/found-talent')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
+              } ${isActive('/found-talent') ? linkActiveStyle : linkInactiveStyle}`}
             >
-              <User className={`size-[22px] shrink-0 ${isActive('/found-talent') ? 'fill-current' : ''}`} />
-              <span className={`text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+              <User className={`size-[18px] shrink-0`} strokeWidth={2.5} />
+              <span className={`text-[14px] whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
                 Peoples
               </span>
             </Link>
           </nav>
 
           {/* Bottom Section */}
-          <div className={`mt-auto pt-6 border-t border-white/10 w-full ${!isOpen && 'flex flex-col items-center'}`}>
+          <div className={`mt-auto pt-5 border-t border-gray-200 w-full ${!isOpen && 'flex flex-col items-center'}`}>
             <Link 
               to="/settings" 
-              className={`flex items-center gap-3 rounded-xl transition-all group ${
+              className={`flex items-center gap-3 rounded-sm transition-all group ${
                 isOpen ? 'px-4 py-3' : 'p-3 justify-center'
-              } ${
-                isActive('/settings')
-                  ? 'bg-[#6467f2]/20 text-[#6467f2] border border-[#6467f2]/20'
-                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
-              }`}
+              } ${isActive('/settings') ? linkActiveStyle : linkInactiveStyle}`}
             >
-              <Settings className={`size-[22px] shrink-0 ${isActive('/settings') ? 'fill-current' : ''}`} />
-              <span className={`text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+              <Settings className={`size-[18px] shrink-0`} strokeWidth={2.5} />
+              <span className={`text-[14px] whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
                 Settings
               </span>
             </Link>
             
             {/* Profile */}
-            {/* Profile Menu Trigger */}
             <div className="relative">
               {(() => {
                 const user = authService.getCurrentUser() || {};
@@ -228,32 +209,29 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 return (
                   <button 
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  className={`mt-4 w-full flex items-center gap-3 rounded-xl transition-colors hover:bg-white/5 ${
+                  className={`mt-3 w-full flex items-center gap-3 rounded-sm transition-colors hover:bg-gray-50 border border-transparent hover:border-gray-200 ${
                     isOpen ? 'px-2 py-2 text-left' : 'p-2 justify-center'
                   }`}
                 >
-                  <div className="size-10 rounded-full border border-white/10 overflow-hidden bg-gradient-to-br from-indigo-500/30 to-purple-500/30 shrink-0">
+                  <div className="size-9 rounded-sm border border-gray-200 overflow-hidden bg-gray-100 shrink-0 flex items-center justify-center">
                     {user.profilePicture ? (
                          <img src={user.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white font-bold text-sm">
-                        {initials}
-                        </div>
+                        <span className="text-gray-600 font-bold text-xs">{initials}</span>
                     )}
                   </div>
-                  <div className={`overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
-                    <p className="text-sm font-semibold text-white truncate">{name}</p>
-                    <p className="text-xs text-slate-500 truncate">{role}</p>
+                  <div className={`flex-1 overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                    <p className="text-[13px] font-bold text-gray-900 truncate">{name}</p>
+                    <p className="text-[11px] font-medium text-gray-500 truncate mt-0.5">{role}</p>
                   </div>
                 </button>
                 );
               })()}
 
-
               {/* Popup Menu */}
               {showProfileMenu && (
                 <div
-                  className={`absolute bottom-full mb-2 bg-[#0f172a] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50 ${
+                  className={`absolute bottom-full mb-2 bg-white border border-gray-200 rounded-sm shadow-md overflow-hidden z-50 ${
                     isOpen ? 'left-0 w-full' : 'left-full ml-2 w-48'
                   }`}
                 >
@@ -261,16 +239,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     <Link 
                       to="/profile"
                       onClick={() => setShowProfileMenu(false)}
-                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                      className="flex items-center gap-2 w-full px-3 py-2.5 text-[13px] font-medium font-bold text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-sm transition-colors"
                     >
-                      <User className="size-4" />
+                      <User className="size-4" strokeWidth={2.5} />
                       <span>View Profile</span>
                     </Link>
                     <button 
                       onClick={handleLogout}
-                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors text-left"
+                      className="flex items-center gap-2 w-full px-3 py-2.5 text-[13px] font-medium font-bold text-red-500 hover:text-red-600 hover:bg-red-50 rounded-sm transition-colors text-left"
                     >
-                      <LogOut className="size-4" />
+                      <LogOut className="size-4" strokeWidth={2.5} />
                       <span>Log Out</span>
                     </button>
                   </div>

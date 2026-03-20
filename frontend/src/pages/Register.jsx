@@ -1,22 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
-import authService from '../services/authService';
-import { 
-  Rocket, 
-  Hexagon,
-  Sparkles,
-  Zap,
-  Globe,
-  ArrowRight
-} from 'lucide-react';
+import { Hexagon } from 'lucide-react';
 import { useSignUp, useUser, useClerk } from "@clerk/clerk-react";
 
 const Register = () => {
   const navigate = useNavigate();
   const { signUp, isLoaded: signUpLoaded } = useSignUp();
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn } = useUser();
   const { signOut } = useClerk();
 
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -43,16 +35,8 @@ const Register = () => {
     }
   };
 
-  // Authentication synchronization is now handled globally by AuthSync in App.jsx
-
-  const valueProps = [
-    { icon: <Rocket className="size-5" />, title: "Launch Fast", desc: "Build MVP ready projects with vetted teams." },
-    { icon: <Zap className="size-5" />, title: "Proof-of-Work", desc: "Showcase your skills through real contributions." },
-    { icon: <Globe className="size-5" />, title: "Global Network", desc: "Join 5,000+ builders from across the globe." }
-  ];
-
   return (
-    <div className="min-h-screen bg-[#020617] flex items-center justify-center overflow-hidden relative font-sans text-white">
+    <div className="min-h-screen bg-[#F8F7F4] flex flex-col items-center justify-center font-sans text-gray-900 relative">
       <SEO 
         title="Join Tasyai"
         description="Register for Tasyai and start your journey as a founder or talent in the startup ecosystem."
@@ -62,139 +46,67 @@ const Register = () => {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="fixed inset-0 z-[100] bg-[#020617] flex items-center justify-center flex-col gap-6"
+          className="fixed inset-0 z-[100] bg-[#F8F7F4]/90 backdrop-blur-sm flex items-center justify-center flex-col gap-6"
         >
-          <div className="size-16 border-4 border-[#6467f2] border-t-transparent rounded-full animate-spin shadow-[0_0_30px_rgba(100,103,242,0.3)]"></div>
-          <div className="flex flex-col items-center text-center px-6">
-            <h3 className="text-xl font-bold text-white mb-2">Preparing your Builder Profile</h3>
-            <p className="text-slate-400 animate-pulse text-sm">Setting up your collaborative ecosystem...</p>
-          </div>
+          <div className="size-12 border-4 border-[#ff5a00] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600 font-medium text-sm animate-pulse">Preparing your Builder Profile...</p>
         </motion.div>
       )}
 
-      {/* Decorative Orbs */}
-      <div className="fixed inset-0 z-0">
-        <motion.div 
-          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-[#4245f0]/30 rounded-full blur-[120px]"
-        />
-        <motion.div 
-          animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.15, 0.1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-[-5%] left-[-5%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[100px]"
-        />
-      </div>
-
-      <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-0" />
-
-      <main className="relative z-10 w-full max-w-5xl p-4 flex flex-col md:flex-row-reverse gap-6 items-center">
-        {/* Right Side: Visual/Text Section */}
-        <div className="flex-1 hidden md:flex flex-col gap-6 pl-8">
-          <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2"
-          >
-            <div className="size-10 bg-[#4245f0] rounded-xl flex items-center justify-center shadow-lg">
-              <Hexagon className="size-7 fill-white text-white" />
-            </div>
-            <h2 className="text-2xl font-black tracking-tighter">Tasyai</h2>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <h1 className="text-4xl lg:text-5xl font-black leading-tight mb-4">
-              Start your<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4245f0] to-purple-400 italic">Builder Journey</span>
-            </h1>
-            <p className="text-slate-400 text-base max-w-sm font-light leading-relaxed">
-              Connect with visionary founders and elite talent. Just pure creation.
-            </p>
-          </motion.div>
-
-          <div className="grid gap-4">
-            {valueProps.slice(0, 2).map((p, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 + (i * 0.1) }}
-                className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/5"
-              >
-                <div className="p-2 bg-[#4245f0]/10 rounded-lg text-[#4245f0]">
-                  {p.icon}
-                </div>
-                <div>
-                  <h4 className="font-bold text-white text-sm mb-0.5">{p.title}</h4>
-                  <p className="text-slate-500 text-xs">{p.desc}</p>
-                </div>
-              </motion.div>
-            ))}
+      {/* Main Container */}
+      <div className="w-full max-w-[420px] flex flex-col items-center px-4 relative z-10">
+        
+        {/* Logo Area */}
+        <div className="flex flex-col items-center mb-10">
+          <div className="w-12 h-12 bg-[#ff5a00] flex items-center justify-center mb-4">
+            <Hexagon className="w-7 h-7 text-white fill-white" />
           </div>
+          <h1 className="text-[20px] font-bold tracking-tight text-gray-900">Tasyai</h1>
         </div>
 
-        {/* Left Side: Register Card */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-[440px] glass-card rounded-[32px] p-8 md:p-10 border border-white/10 relative overflow-hidden shadow-2xl"
-        >
-          <div className="relative z-10 text-center">
-             {/* Mobile Brand */}
-             <div className="md:hidden flex flex-col items-center gap-3 mb-6">
-               <div className="size-12 bg-[#4245f0] rounded-xl flex items-center justify-center">
-                 <Hexagon className="size-8 fill-white" />
-               </div>
-               <h1 className="text-3xl font-black tracking-tighter text-white">Tasyai</h1>
-            </div>
-
-            <div className="mb-8">
-              <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#4245f0]/10 border border-[#4245f0]/20 text-[#4245f0] text-[10px] font-black uppercase tracking-widest mb-4">
-                <Sparkles className="size-3" />
-                Join builders
-              </span>
-              <h2 className="text-3xl font-black mb-2">Create Account</h2>
-              <p className="text-slate-400 text-sm max-w-[280px] mx-auto leading-tight">Instant Google setup in seconds.</p>
-            </div>
-
-            <motion.button
-              whileHover={signUpLoaded ? { scale: 1.02, y: -2 } : {}}
-              whileTap={signUpLoaded ? { scale: 0.98 } : {}}
-              onClick={handleGoogleSignup}
-              disabled={!signUpLoaded}
-              className={`w-full group relative flex items-center justify-center gap-3 bg-white text-black py-4 rounded-xl font-black text-lg transition-all ${!signUpLoaded ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-100'}`}
-            >
-              <svg className="size-6" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              Join Google
-              <ArrowRight className="size-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all font-black" />
-            </motion.button>
-
-            <div className="mt-10 pt-6 border-t border-white/5">
-              <p className="text-slate-500 text-sm">
-                Already member? 
-                <Link to="/login" className="text-[#4245f0] font-black ml-2 hover:underline tracking-tight">Login Now</Link>
-              </p>
-              <p className="text-[9px] text-slate-600 uppercase tracking-tighter mt-4 max-w-[200px] mx-auto leading-none">
-                By signing, you agree to Terms & Privacy
-              </p>
-            </div>
+        {/* Register Card */}
+        <div className="w-full bg-white border border-gray-200 py-10 px-8 shadow-sm">
+          <div className="text-center mb-8">
+            <h2 className="text-[24px] font-bold mb-2 text-gray-900 tracking-tight">Create Account</h2>
+            <p className="text-gray-500 text-[14px]">Join the builders community</p>
           </div>
-          <div className="absolute top-0 left-0 p-20 bg-indigo-500/5 rounded-full blur-3xl -ml-16 -mt-16 pointer-events-none"></div>
-        </motion.div>
-      </main>
+          
+          <button
+            onClick={handleGoogleSignup}
+            disabled={!signUpLoaded}
+            className={`w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 py-2.5 font-semibold text-[13px] transition-all ${!signUpLoaded ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Join with Google
+          </button>
 
-      {/* Persistent Decorative Link */}
-      <footer className="fixed bottom-8 w-full flex justify-center text-slate-500 text-[10px] font-bold uppercase tracking-widest z-10">
-        Design optimized for builders
+          <div className="mt-8 border-t border-gray-100 pt-6 text-center">
+            <p className="text-gray-500 text-[13px]">
+              Already a member?{' '}
+              <Link to="/login" className="text-[#ff5a00] font-bold hover:underline">
+                Login Now
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Links */}
+      <footer className="absolute bottom-10 w-full flex justify-center items-center gap-4 text-gray-400 text-[12px] font-medium">
+        <a href="#" className="hover:text-gray-600 transition-colors">Guidelines</a>
+        <span className="text-gray-300">|</span>
+        <a href="#" className="hover:text-gray-600 transition-colors">FAQ</a>
+        <span className="text-gray-300">|</span>
+        <a href="#" className="hover:text-gray-600 transition-colors">Terms</a>
+        <span className="text-gray-300">|</span>
+        <a href="#" className="hover:text-gray-600 transition-colors">Privacy</a>
+        <span className="text-gray-300">|</span>
+        <a href="#" className="hover:text-gray-600 transition-colors">Contact</a>
       </footer>
     </div>
   );
