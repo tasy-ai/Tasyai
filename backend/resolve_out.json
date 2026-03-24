@@ -1,0 +1,32 @@
+{
+  "srv": [
+    {
+      "name": "ac-kealzm1-shard-00-01.qjtfd8g.mongodb.net",
+      "port": 27017,
+      "priority": 0,
+      "weight": 0,
+      "type": "SRV"
+    },
+    {
+      "name": "ac-kealzm1-shard-00-00.qjtfd8g.mongodb.net",
+      "port": 27017,
+      "priority": 0,
+      "weight": 0,
+      "type": "SRV"
+    },
+    {
+      "name": "ac-kealzm1-shard-00-02.qjtfd8g.mongodb.net",
+      "port": 27017,
+      "priority": 0,
+      "weight": 0,
+      "type": "SRV"
+    }
+  ],
+  "err": null,
+  "txt": [
+    [
+      "authSource=admin&replicaSet=atlas-6849vn-shard-0"
+    ]
+  ],
+  "err2": null
+}

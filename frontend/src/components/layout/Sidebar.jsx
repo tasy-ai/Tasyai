@@ -11,7 +11,8 @@ import {
   Menu,
   LogOut,
   Bell,
-  CheckCircle2
+  CheckCircle2,
+  MessageSquare
 } from 'lucide-react';
 import { useClerk } from "@clerk/clerk-react";
 import companyService from '../../services/companyService';
@@ -180,6 +181,18 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               <User className={`size-[18px] shrink-0`} strokeWidth={2.5} />
               <span className={`text-[14px] whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
                 Peoples
+              </span>
+            </Link>
+
+            <Link 
+              to="/messages" 
+              className={`flex items-center gap-3 rounded-sm transition-all group ${
+                isOpen ? 'px-4 py-3' : 'p-3 justify-center'
+              } ${isActive('/messages') ? linkActiveStyle : linkInactiveStyle}`}
+            >
+              <MessageSquare className={`size-[18px] shrink-0`} strokeWidth={2.5} />
+              <span className={`text-[14px] whitespace-nowrap overflow-hidden transition-all duration-500 ${isOpen ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'}`}>
+                Messages
               </span>
             </Link>
           </nav>

@@ -29,8 +29,8 @@ app.use(cors({
             return callback(null, true);
         }
 
-        // Dynamically allow any Vercel deployment URL
-        if (origin.endsWith('.vercel.app') || /https:\/\/tasyai.*\.vercel\.app/.test(origin)) {
+        // Dynamically allow any localhost or Vercel deployment URL
+        if (origin.startsWith('http://localhost:') || origin.endsWith('.vercel.app') || /https:\/\/tasyai.*\.vercel\.app/.test(origin)) {
             return callback(null, true);
         }
 

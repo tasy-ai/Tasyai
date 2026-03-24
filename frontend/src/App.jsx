@@ -17,6 +17,7 @@ import Settings from './pages/Settings'
 import OnboardingChatbot from './pages/OnboardingChatbot'
 import SavedCompanies from './pages/SavedCompanies'
 import MyInterests from './pages/MyInterests'
+import Messages from './pages/Messages'
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from "@clerk/clerk-react";
@@ -78,7 +79,7 @@ const AuthSync = ({ children }) => {
           return;
         }
 
-        const protectedRoutes = ['/dashboard', '/found-talent', '/profile', '/add-company', '/notifications', '/my-startups', '/company-detail', '/profile-expansion', '/settings', '/saved-companies', '/my-interests', '/OnboardingChatbot'];
+        const protectedRoutes = ['/dashboard', '/found-talent', '/profile', '/add-company', '/notifications', '/my-startups', '/company-detail', '/profile-expansion', '/settings', '/saved-companies', '/my-interests', '/OnboardingChatbot', '/messages'];
         if (protectedRoutes.includes(location.pathname)) {
           navigate('/login');
         }
@@ -129,6 +130,7 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/saved-companies" element={<SavedCompanies />} />
             <Route path="/my-interests" element={<MyInterests />} />
+            <Route path="/messages" element={<Messages />} />
           </Route>
 
           <Route path="/OnboardingChatbot" element={<OnboardingChatbot />} />
