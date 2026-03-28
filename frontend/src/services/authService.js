@@ -1,8 +1,7 @@
 import axios from 'axios';
+import config from '../config';
 
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ? 'http://localhost:5000/api/auth' 
-  : 'https://tasyai-9d31.onrender.com/api/auth';
+const API_URL = `${config.API_BASE_URL}/auth`;
 
 // Create axios instance with interceptor to add token
 const api = axios.create({

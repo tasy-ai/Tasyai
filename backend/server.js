@@ -23,7 +23,8 @@ const allowedOrigins = [
     'https://www.tasyai.com',
     'https://tasyai.com',
     'http://localhost:5173',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://tasyai.vercel.app'
 ];
 
 app.use(cors({
@@ -61,14 +62,16 @@ const io = new Server(server, {
         origin: function (origin, callback) {
             if (!origin) return callback(null, true);
             if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
-            if (origin.startsWith('http://localhost:') || origin.endsWith('.vercel.app') || /https:\/\/tasyai.*\.vercel\.app/.test(origin)) {
+            if (origin.startsWith('http://localhost:') || origin.endsWith('.vercel.app') || origin.endsWith('.onrender.com') || /https:\/\/tasyai.*\.vercel\.app/.test(origin)) {
                 return callback(null, true);
             }
+            console.log('CORS blocked origin:', origin);
             return callback(new Error('Not allowed by CORS'), false);
         },
         methods: ["GET", "POST"],
         credentials: true
-    }
+    },
+    transports: ["websocket", "polling"]
 });
 
 io.on('connection', (socket) => {

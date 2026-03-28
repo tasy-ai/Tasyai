@@ -1,9 +1,8 @@
 import axios from 'axios';
 import authService from './authService';
+import config from '../config';
 
-const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ? 'http://localhost:5000/api/notifications' 
-  : 'https://tasyai-9d31.onrender.com/api/notifications';
+const API_URL = `${config.API_BASE_URL}/notifications`;
 
 const getAuthHeaders = () => {
     const token = authService.getToken();

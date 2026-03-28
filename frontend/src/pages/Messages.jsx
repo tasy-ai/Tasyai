@@ -18,9 +18,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import authService from '../services/authService';
 import io from 'socket.io-client';
 import axios from 'axios';
+import config from '../config';
 
-const ENDPOINT = 'http://localhost:5000'; // Fallback to localhost if env isn't set
-const API_URL = `${import.meta.env.VITE_API_URL || ENDPOINT}/api/messages`;
+const API_URL = `${config.API_BASE_URL}/messages`;
 
 const Messages = () => {
   const [chats, setChats] = useState([]);
@@ -38,7 +38,10 @@ const Messages = () => {
 
   // Initialize Socket.io
   useEffect(() => {
-    socketRef.current = io(import.meta.env.VITE_API_URL || ENDPOINT);
+    socketRef.current = io(config.SOCKET_URL, {
+      transports: ['websocket'],
+      withCredentials: true
+    });
 
     socketRef.current.on('connect', () => {
       console.log('Socket connected');
