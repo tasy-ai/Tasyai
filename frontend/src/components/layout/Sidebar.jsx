@@ -27,8 +27,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    const checkNotifications = () => {
-      const all = notificationService.getNotifications();
+    const checkNotifications = async () => {
+      const all = await notificationService.getNotifications();
       const unread = all.filter(n => !n.read).length;
       setUnreadCount(unread);
     };

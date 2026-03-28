@@ -91,6 +91,11 @@ const getCurrentUser = () => {
     }
 };
 
+const getToken = () => {
+    const user = getCurrentUser();
+    return user ? user.token : null;
+};
+
 const getUsers = async () => {
     // Ensure we are hitting the correct endpoint. 
     // If baseURL is .../api/auth, then .get('/users') -> .../api/auth/users
@@ -153,6 +158,7 @@ const authService = {
     getProfile,
     updateProfile,
     getCurrentUser,
+    getToken,
     getUsers,
     getUserById,
     toggleSaveCompany,

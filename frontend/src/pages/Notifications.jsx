@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import notificationService from '../services/notificationService';
+import authService from '../services/authService';
+import axios from 'axios';
 
 const Notifications = () => {
   const navigate = useNavigate();
@@ -19,68 +21,38 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    // Specifically clear out old notifications to inject the exact UI mocks
-    notificationService.clearAll();
+    const fetchNotifications = async () => {
+      const data = await notificationService.getNotifications();
+      setNotifications(data || []);
+    };
+    fetchNotifications();
 
-    const mockData = [
-      {
-        id: '1',
-        title: 'Aura.ai is interested in your profile',
-        message: 'A specialized AI research startup just viewed your contribution history and wants to connect regarding their "Lumina" project.',
-        time: '2M AGO',
-        read: false,
-        iconName: 'Zap',
-        hasActions: true
-      },
-      {
-        id: '2',
-        title: 'Sarah Chen mentioned you',
-        message: '"I think @user would be a great fit for the frontend architecture design of the mobile app."',
-        time: '4H AGO',
-        read: true,
-        iconName: 'AtSign'
-      },
-      {
-        id: '3',
-        title: 'New message from Nexus Lab',
-        message: '"Hey! We\'ve reviewed your proposal and would love to jump on a quick call this week to discuss..."',
-        time: '6H AGO',
-        read: false,
-        iconName: 'MessageSquare'
-      },
-      {
-        id: '4',
-        title: 'Security: New login detected',
-        message: 'Your account was accessed from a new device in San Francisco, CA. If this wasn\'t you, please reset your password.',
-        time: '1D AGO',
-        read: true,
-        iconName: 'ShieldCheck'
-      },
-      {
-        id: '5',
-        title: 'Partnership opportunity: Cloud Scale',
-        message: 'Cloud Scale has invited you to join their preferred developer network for early access to their upcoming SDK.',
-        time: '2D AGO',
-        read: true,
-        iconName: 'Handshake'
-      }
-    ];
-
-    // Seed mock data for visual showcase
-    localStorage.setItem('tasyai_notifications', JSON.stringify(mockData));
-    setNotifications(mockData);
+    const handleNewNotif = (e) => {
+      setNotifications(prev => [e.detail, ...prev]);
+    };
+    window.addEventListener('new_notification', handleNewNotif);
+    return () => window.removeEventListener('new_notification', handleNewNotif);
   }, []);
 
-  const handleToggleRead = (id) => {
-    const updated = notifications.map(n => n.id === id ? { ...n, read: true } : n);
-    setNotifications(updated);
-    localStorage.setItem('tasyai_notifications', JSON.stringify(updated));
+  const handleToggleRead = async (id) => {
+    const notif = notifications.find(n => (n._id === id || n.id === id));
+    if (notif && !notif.read) {
+        await notificationService.markAsRead(id);
+        const updated = notifications.map(n => (n._id === id || n.id === id) ? { ...n, read: true } : n);
+        setNotifications(updated);
+    }
   };
 
-  const handleMarkAllRead = () => {
+  const handleMarkAllRead = async () => {
+    await notificationService.markAllAsRead();
     const updated = notifications.map(n => ({ ...n, read: true }));
     setNotifications(updated);
-    localStorage.setItem('tasyai_notifications', JSON.stringify(updated));
+  };
+
+  const handleChat = (e, targetUserId) => {
+    e.stopPropagation();
+    if (!targetUserId) return;
+    navigate(`/messages?userId=${targetUserId}`);
   };
 
   const getIconWrapper = (iconName) => {
@@ -180,8 +152,8 @@ const Notifications = () => {
               
               return (
                 <div
-                  key={notif.id}
-                  onClick={() => handleToggleRead(notif.id)}
+                  key={notif._id || notif.id}
+                  onClick={() => handleToggleRead(notif._id || notif.id)}
                   className={`relative p-8 rounded-sm flex gap-6 cursor-pointer transition-all shadow-sm ${bgClass}`}
                 >
                   {/* Left Orange Stripe for active items */}
@@ -200,14 +172,23 @@ const Notifications = () => {
                     {/* Action Buttons */}
                     {notif.hasActions && (
                         <div className="flex items-center gap-3 mt-6">
+                            {notif.type === 'company' && notif.sender ? (
+                                <button 
+                                  onClick={(e) => handleChat(e, notif.sender)}
+                                  className="bg-[#d95d39] hover:bg-[#c24f2b] text-white px-6 py-2 rounded-sm text-[12px] font-bold transition-colors shadow-sm"
+                                >
+                                    Chat with Applicant
+                                </button>
+                            ) : (
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); navigate('/my-interests'); }}
+                                  className="bg-[#d95d39] hover:bg-[#c24f2b] text-white px-6 py-2 rounded-sm text-[12px] font-bold transition-colors shadow-sm"
+                                >
+                                    View Request
+                                </button>
+                            )}
                             <button 
-                              onClick={(e) => { e.stopPropagation(); navigate('/my-interests'); }}
-                              className="bg-[#d95d39] hover:bg-[#c24f2b] text-white px-6 py-2 rounded-sm text-[12px] font-bold transition-colors shadow-sm"
-                            >
-                                View Request
-                            </button>
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); handleToggleRead(notif.id); }}
+                              onClick={(e) => { e.stopPropagation(); handleToggleRead(notif._id || notif.id); }}
                               className="bg-[#e5e5e5] hover:bg-gray-300 text-black px-6 py-2 rounded-sm text-[12px] font-bold transition-colors shadow-sm"
                             >
                                 Dismiss

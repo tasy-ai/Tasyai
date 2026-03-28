@@ -19,7 +19,8 @@ import {
   Clock,
   Laptop,
   Share2,
-  Globe
+  Globe,
+  MessageSquare
 } from 'lucide-react';
 import { companies as mockCompanies } from '../data/dashboardData';
 import companyService from '../services/companyService';
@@ -41,6 +42,7 @@ const CompanyDetail = () => {
     benefitsAcceptance: '',
     duration: ''
   });
+  const [selectedRole, setSelectedRole] = useState(null);
 
   const queryParams = new URLSearchParams(location.search);
   const companyId = queryParams.get('id');
@@ -165,18 +167,33 @@ const CompanyDetail = () => {
             userName: user.name,
             userEmail: user.email,
             companyName: company.name,
+            appliedRole: selectedRole || 'General Interest',
             experience: joinAnswers.experience,
             benefitsAcceptance: joinAnswers.benefitsAcceptance,
             durationMonths: joinAnswers.duration,
-            _subject: `🚀 New Team Member Interest: ${user.name} for ${company.name}`,
+            _subject: `🚀 New Team Member Interest: ${user.name} for ${company.name}${selectedRole ? ` as ${selectedRole}` : ''}`,
           }),
         }
       );
 
       const data = await res.json();
       if (res.ok && data.success) {
+        // Send in-app notification to the company creator
+        if (company.creator) {
+            await notificationService.addNotification({
+                recipient: company.creator,
+                sender: user._id || user.id,
+                title: 'New Application Received',
+                message: `${user.name} applied for "${selectedRole || 'General Interest'}" at ${company.name}`,
+                type: 'company',
+                iconName: 'Zap',
+                hasActions: true
+            });
+        }
+
         toast.success("Interest submitted! The team will contact you soon.");
         setShowJoinModal(false);
+        setSelectedRole(null);
         setJoinStep(1);
         setJoinAnswers({ experience: '', benefitsAcceptance: '', duration: '' });
       } else {
@@ -295,10 +312,10 @@ const CompanyDetail = () => {
               {/* Action Buttons Right Side */}
               <div className="flex flex-col w-full lg:w-40 gap-3 shrink-0">
                   <button 
-                     onClick={() => setShowJoinModal(true)}
-                     className="w-full py-2.5 bg-[#ff5a00] hover:bg-[#e04e00] text-white font-bold text-[14px] rounded-sm transition-colors shadow-sm"
+                     onClick={() => navigate(`/messages?companyId=${company._id || companyId}`)}
+                     className="w-full py-2.5 bg-[#ff5a00] hover:bg-[#e04e00] text-white font-bold text-[14px] rounded-sm transition-colors shadow-sm flex items-center justify-center gap-2"
                   >
-                      Show Interest
+                      <MessageSquare className="size-4" strokeWidth={2.5} /> Message
                   </button>
                   <button 
                      onClick={handleToggleSave}
@@ -343,7 +360,10 @@ const CompanyDetail = () => {
                                          </p>
                                      </div>
                                      <button 
-                                        onClick={() => setShowJoinModal(true)}
+                                        onClick={() => {
+                                            setSelectedRole(role.role);
+                                            setShowJoinModal(true);
+                                        }}
                                         className="text-[14px] font-black tracking-wide text-[#ff5a00] hover:text-[#e04e00] transition-colors self-start md:self-center uppercase"
                                      >
                                         Apply
@@ -474,7 +494,12 @@ const CompanyDetail = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => !isSubmitting && setShowJoinModal(false)}
+              onClick={() => {
+                if (!isSubmitting) {
+                  setShowJoinModal(false);
+                  setTimeout(() => setSelectedRole(null), 300); // clear after exit animation
+                }
+              }}
               className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
             />
             <motion.div 
@@ -484,14 +509,19 @@ const CompanyDetail = () => {
               className="relative w-full max-w-lg bg-white rounded-lg overflow-hidden shadow-xl border border-gray-100"
             >
               <div className="p-8">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-start justify-between mb-8 gap-4">
                   <div>
-                    <h3 className="text-2xl font-black text-gray-900">Join {company.name}</h3>
+                    <h3 className="text-2xl font-black text-gray-900 leading-tight">Join {company.name}{selectedRole ? ` as ${selectedRole}` : ''}</h3>
                     <p className="text-gray-500 text-sm font-medium mt-1">Step {joinStep} of 3</p>
                   </div>
                   <button 
-                    onClick={() => !isSubmitting && setShowJoinModal(false)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    onClick={() => {
+                      if (!isSubmitting) {
+                        setShowJoinModal(false);
+                        setTimeout(() => setSelectedRole(null), 300);
+                      }
+                    }}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors shrink-0"
                   >
                     <X className="size-5 text-gray-500" strokeWidth={3} />
                   </button>

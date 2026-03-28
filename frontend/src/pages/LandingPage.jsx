@@ -9,6 +9,7 @@ import {
   TrendingUp,
   Zap
 } from 'lucide-react';
+import authService from '../services/authService';
 
 const Navbar = () => {
   return (
@@ -27,12 +28,20 @@ const Navbar = () => {
       </nav>
 
       <div className="flex items-center gap-5">
-        <Link to="/login" className="hidden sm:block text-sm font-semibold text-gray-500 hover:text-[#1a1a1a] transition-colors">
-          Sign in
-        </Link>
-        <Link to="/register" className="px-5 py-2.5 bg-[#d85511] text-white text-sm font-bold rounded-lg hover:bg-[#b5460e] transition-colors">
-          Get Started
-        </Link>
+        {authService.getCurrentUser() ? (
+          <Link to="/dashboard" className="px-5 py-2.5 bg-[#d85511] text-white text-sm font-bold rounded-lg hover:bg-[#b5460e] transition-colors">
+            Go to Dashboard
+          </Link>
+        ) : (
+          <>
+            <Link to="/login" className="hidden sm:block text-sm font-semibold text-gray-500 hover:text-[#1a1a1a] transition-colors">
+              Sign in
+            </Link>
+            <Link to="/register" className="px-5 py-2.5 bg-[#d85511] text-white text-sm font-bold rounded-lg hover:bg-[#b5460e] transition-colors">
+              Get Started
+            </Link>
+          </>
+        )}
       </div>
     </header>
   );

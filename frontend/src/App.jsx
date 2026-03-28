@@ -65,7 +65,7 @@ const AuthSync = ({ children }) => {
            // Enforcement: If signed in, ensure they are where they belong
            if (!localUser.isOnboarded && location.pathname !== '/OnboardingChatbot') {
               navigate('/OnboardingChatbot');
-           } else if (localUser.isOnboarded && location.pathname === '/OnboardingChatbot') {
+           } else if (localUser.isOnboarded && (location.pathname === '/OnboardingChatbot' || ['/', '/login', '/register'].includes(location.pathname))) {
               navigate('/dashboard');
            }
         }
@@ -90,10 +90,10 @@ const AuthSync = ({ children }) => {
 
   if (isSyncing || !clerkLoaded) {
     return (
-      <div className="bg-[#020617] text-white flex items-center justify-center h-screen">
+      <div className="bg-white text-gray-900 flex items-center justify-center h-screen">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#6467f2] border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-400 font-medium">Synchronizing your ecosystem...</p>
+          <div className="w-10 h-10 border-4 border-[#ff5a00] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-medium text-sm">Synchronizing your ecosystem...</p>
         </div>
       </div>
     );

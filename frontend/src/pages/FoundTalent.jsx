@@ -222,7 +222,7 @@ const FoundTalent = () => {
                           Profile
                       </Link>
                       <button 
-                         onClick={notifyContact}
+                         onClick={() => navigate(`/messages?userId=${candidate.id}`)}
                          className="flex-1 py-2.5 bg-[#ff5a00] hover:bg-[#e04e00] text-white font-bold text-[13px] rounded-sm text-center transition-colors shadow-sm"
                       >
                           Contact
