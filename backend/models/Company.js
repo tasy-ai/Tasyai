@@ -40,6 +40,10 @@ const companySchema = mongoose.Schema({
     },
     benefits: [String],
     openings: [openingSchema],
+    questions: {
+        type: [String],
+        default: []
+    },
     website: String,
     location: String
 }, {
