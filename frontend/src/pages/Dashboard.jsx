@@ -341,16 +341,14 @@ const Dashboard = () => {
       {/* Footer */}
       <footer className="w-full mt-auto border-t border-gray-200 px-6 py-8">
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4 text-gray-500 text-[13px] font-medium">
-            <a href="#" className="hover:text-gray-900 transition-colors">Guidelines</a>
-            <span className="text-gray-300">|</span>
-            <a href="#" className="hover:text-gray-900 transition-colors">FAQ</a>
-            <span className="text-gray-300">|</span>
-            <a href="#" className="hover:text-gray-900 transition-colors">Lists</a>
-            <span className="text-gray-300">|</span>
-            <a href="#" className="hover:text-gray-900 transition-colors">API</a>
-            <span className="text-gray-300">|</span>
-            <a href="#" className="hover:text-gray-900 transition-colors">Security</a>
+          <div className="flex items-center gap-4 text-gray-500 text-[13px] font-bold uppercase tracking-widest">
+            <Link to="/guidelines" className="hover:text-[#ff5a00] transition-colors">Guidelines</Link>
+            <span className="text-gray-300 opacity-50">|</span>
+            <Link to="/faq" className="hover:text-[#ff5a00] transition-colors">FAQ</Link>
+            <span className="text-gray-300 opacity-50">|</span>
+            <Link to="/lists" className="hover:text-[#ff5a00] transition-colors">Lists</Link>
+            <span className="text-gray-300 opacity-50">|</span>
+            <Link to="/security" className="hover:text-[#ff5a00] transition-colors">Security</Link>
           </div>
           <div>
             <p className="text-gray-500 text-[13px] italic font-medium">“Working on something people want.”</p>

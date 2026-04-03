@@ -365,6 +365,16 @@ const Footer = () => {
         </div>
 
         <div>
+          <h4 className="font-bold text-[10px] tracking-widest uppercase text-gray-400 mb-6">Resources</h4>
+          <ul className="space-y-4">
+            <li><Link to="/guidelines" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Guidelines</Link></li>
+            <li><Link to="/faq" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">FAQ</Link></li>
+            <li><Link to="/lists" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Lists</Link></li>
+            <li><Link to="/security" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Security</Link></li>
+          </ul>
+        </div>
+
+        <div>
            <div className="flex gap-x-16 gap-y-12 flex-wrap">
               <div>
                 <h4 className="font-bold text-[10px] tracking-widest uppercase text-gray-400 mb-6">Legal</h4>
@@ -382,6 +392,17 @@ const Footer = () => {
               </div>
            </div>
         </div>
+      </div>
+      
+      {/* Bottom Legal bar for the extra links requested in specific format */}
+      <div className="mt-20 pt-8 border-t border-gray-100 flex flex-wrap justify-center gap-4 text-[11px] font-black uppercase tracking-widest text-gray-400">
+          <Link to="/guidelines" className="hover:text-[#e75c13] transition-colors">Guidelines</Link>
+          <span className="opacity-30">|</span>
+          <Link to="/faq" className="hover:text-[#e75c13] transition-colors">FAQ</Link>
+          <span className="opacity-30">|</span>
+          <Link to="/lists" className="hover:text-[#e75c13] transition-colors">Lists</Link>
+          <span className="opacity-30">|</span>
+          <Link to="/security" className="hover:text-[#e75c13] transition-colors">Security</Link>
       </div>
     </footer>
   );
