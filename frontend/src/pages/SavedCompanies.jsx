@@ -114,50 +114,58 @@ const SavedCompanies = () => {
               return (
                 <div
                   key={company._id}
-                  className="bg-white border border-gray-200 rounded-sm p-6 flex flex-col shadow-sm transition-all hover:shadow-md hover:border-gray-300 group"
+                  className="bg-white border border-gray-200 rounded-sm flex flex-col shadow-sm transition-all hover:shadow-md hover:border-gray-300 group overflow-hidden h-full"
                 >
-                  <div className="flex justify-between items-start mb-5">
-                    <div className={`w-10 h-10 rounded-sm flex items-center justify-center ${iconData.bg}`}>
-                       {company.logo ? (
-                           <img src={company.logo} alt="logo" className="w-6 h-6 object-contain" />
-                       ) : (
-                           iconData.icon
-                       )}
+                  {/* Banner Header - approx 20% of card height */}
+                  <div className={`h-28 w-full relative ${iconData.bg} flex items-center justify-center shrink-0`}>
+                     <div className="absolute inset-0 opacity-10 bg-grain"></div>
+                     <div className="absolute top-4 right-4 z-10">
+                        <button onClick={(e) => handleUnsave(company._id, e)}>
+                          <Bookmark className="size-4 fill-[#ff5a00] text-[#ff5a00] transition-colors" strokeWidth={2.5} />
+                        </button>
+                     </div>
+                     
+                     {/* Centered Logo or Icon */}
+                     <div className="w-14 h-14 bg-white rounded-sm shadow-md flex items-center justify-center z-10 overflow-hidden border border-gray-50">
+                        {company.logo ? (
+                            <img src={company.logo} alt="logo" className="w-full h-full object-contain p-2" />
+                        ) : (
+                            React.cloneElement(iconData.icon, { className: "size-6" })
+                        )}
+                     </div>
+                  </div>
+
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="font-bold text-gray-900 text-[17px] mb-2">{company.name}</h3>
+                    <p className="text-gray-500 text-[13px] leading-relaxed line-clamp-2 mb-5 min-h-[40px] font-medium">{company.description || company.tagline || 'No description provided.'}</p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-8 mt-auto">
+                        <span className="px-2.5 py-1 bg-gray-50 border border-gray-100 text-gray-500 text-[11px] font-bold rounded-sm whitespace-nowrap">
+                          {company.location || 'Remote'}
+                        </span>
+                        <span className="px-2.5 py-1 bg-gray-50 border border-gray-100 text-gray-500 text-[11px] font-bold rounded-sm whitespace-nowrap flex items-center gap-1.5">
+                          <Globe className="size-3 text-gray-400" />
+                          {company.industry || 'Tech'}
+                        </span>
                     </div>
-                    <button onClick={(e) => handleUnsave(company._id, e)}>
-                      <Bookmark className={`size-4 fill-[#ff5a00] text-[#ff5a00] transition-colors`} strokeWidth={2.5} />
-                    </button>
-                  </div>
-                  
-                  <h3 className="font-bold text-gray-900 text-[17px] mb-2">{company.name}</h3>
-                  <p className="text-gray-500 text-[13px] leading-relaxed line-clamp-2 mb-5 min-h-[40px] font-medium">{company.description || company.tagline || 'No description provided.'}</p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-8">
-                      <span className="px-2.5 py-1 bg-gray-50 border border-gray-100 text-gray-500 text-[11px] font-bold rounded-sm whitespace-nowrap">
-                        {company.location || 'Remote'}
-                      </span>
-                      <span className="px-2.5 py-1 bg-gray-50 border border-gray-100 text-gray-500 text-[11px] font-bold rounded-sm whitespace-nowrap flex items-center gap-1.5">
-                        <Globe className="size-3 text-gray-400" />
-                        {company.industry || 'Tech'}
-                      </span>
-                  </div>
-                  
-                  <div className="mt-auto flex gap-3">
-                    <Link 
-                      to={`/company-detail?id=${company._id}`} 
-                      state={{ company }}
-                      className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-[13px] font-bold py-2.5 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center"
-                    >
-                      View Details
-                    </Link>
-                    {company.website && (
-                      <button 
-                        onClick={() => window.open(company.website, '_blank')}
-                        className="p-2.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center group-hover:bg-[#ff5a00] group-hover:text-white group-hover:border-[#ff5a00]"
+                    
+                    <div className="mt-4 flex gap-3">
+                      <Link 
+                        to={`/company-detail?id=${company._id}`} 
+                        state={{ company }}
+                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-[13px] font-bold py-2.5 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center"
                       >
-                        <ExternalLink className="size-4" />
-                      </button>
-                    )}
+                        View Details
+                      </Link>
+                      {company.website && (
+                        <button 
+                          onClick={() => window.open(company.website, '_blank')}
+                          className="p-2.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center group-hover:bg-[#ff5a00] group-hover:text-white group-hover:border-[#ff5a00]"
+                        >
+                          <ExternalLink className="size-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

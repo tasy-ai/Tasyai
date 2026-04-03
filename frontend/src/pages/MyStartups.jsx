@@ -78,26 +78,30 @@ const MyStartups = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ y: -4 }}
-                    className="bg-white border border-gray-200 shadow-sm flex flex-col transition-all hover:shadow-md group"
+                    className="bg-white border border-gray-200 shadow-sm flex flex-col transition-all hover:shadow-md group overflow-hidden"
                   >
-                    <div className="p-8 flex flex-col h-full relative">
+                    {/* Banner Header - approx 20% of card height */}
+                    <div className="h-32 w-full relative bg-slate-50 flex items-center justify-center shrink-0 border-b border-gray-100">
+                        <div className="absolute inset-0 opacity-10 bg-grain"></div>
                         
                         {/* Status Badge */}
-                        <div className="absolute top-6 right-6 px-2.5 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-sm">
+                        <div className="absolute top-4 right-4 px-2.5 py-1 bg-white border border-gray-200 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-sm z-10 shadow-sm">
                             {startup.fundingStage || 'EARLY STAGE'}
                         </div>
 
-                        {/* Logo */}
-                        <div className="w-16 h-16 rounded-lg bg-[#F8F7F4] border border-gray-100 flex items-center justify-center mb-6 overflow-hidden shrink-0">
+                        {/* Centered Logo */}
+                        <div className="w-16 h-16 rounded-lg bg-white border border-gray-100 flex items-center justify-center z-10 overflow-hidden shadow-sm">
                             {startup.logo ? (
-                                <img src={startup.logo} alt={startup.name} className="w-full h-full object-cover" />
+                                <img src={startup.logo} alt={startup.name} className="w-full h-full object-contain p-2" />
                             ) : (
                                 <Building2 className="size-6 text-gray-400" strokeWidth={2} />
                             )}
                         </div>
+                    </div>
 
+                    <div className="p-8 flex flex-col flex-1">
                         {/* Title & Tagline */}
-                        <div className="mb-4 pr-16">
+                        <div className="mb-4">
                             <h3 className="text-[22px] font-black text-gray-900 leading-tight mb-2 group-hover:text-[#ff5a00] transition-colors">{startup.name}</h3>
                             <p className="text-[14px] text-gray-500 font-medium italic line-clamp-1">"{startup.tagline || 'Building the future.'}"</p>
                         </div>
