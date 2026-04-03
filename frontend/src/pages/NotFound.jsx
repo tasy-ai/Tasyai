@@ -1,211 +1,123 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Rocket, 
-  LayoutDashboard, 
-  Compass,
-  Bug
+  ArrowLeft, 
+  Home, 
+  Compass, 
+  Zap, 
+  ShieldCheck, 
+  Search,
+  LayoutDashboard
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 
 const NotFound = () => {
-  return (
-    <div className="min-h-screen bg-[#020617] font-sans overflow-x-hidden antialiased">
-      <SEO 
-        title="404 - Page Not Found"
-        description="The page you are looking for doesn't exist. Find your way back to Tasyai."
-      />
-      {/* Global Styles */}
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
-        body {
-          font-family: 'Inter', sans-serif;
-        }
-        
-        .glass-card {
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .hero-404 {
-          background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.1) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-        
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-      `}</style>
-
-      {/* Background Elements */}
-      <div className="fixed inset-0 z-0">
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.4, 0.5, 0.4]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute w-[500px] h-[500px] -top-20 -left-20 bg-[#4245f0] rounded-full blur-[80px] opacity-40"
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.15, 1],
-            opacity: [0.3, 0.4, 0.3]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute w-[400px] h-[400px] bottom-10 right-10 bg-teal-500 rounded-full blur-[80px] opacity-40"
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.08, 1],
-            opacity: [0.15, 0.25, 0.15]
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-          className="absolute w-[300px] h-[300px] top-1/2 left-1/3 bg-indigo-600 rounded-full blur-[80px]"
-        />
-        
-        {/* Grain Overlay */}
-        <div 
-          className="absolute inset-0 pointer-events-none opacity-[0.03]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
-          }}
-        />
-      </div>
-
-      <div className="relative z-10 flex h-screen w-full flex-col">
-        {/* Header */}
-        <header className="flex items-center justify-between px-8 lg:px-20 py-6">
-          <div className="flex items-center gap-3 text-white cursor-pointer group">
-            <div className="size-8 bg-[#4245f0] rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform">
-              <Rocket className="text-white size-5" />
-            </div>
-            <h2 className="text-white text-xl font-bold leading-tight tracking-tight group-hover:text-[#4245f0] transition-colors">Tasyai</h2>
-          </div>
-          
-          <div className="flex items-center gap-8">
-            <nav className="hidden md:flex items-center gap-9">
-              {['Discover', 'Projects', 'Network'].map((item) => (
-                <a 
-                  key={item}
-                  href="#" 
-                  className="text-slate-300 hover:text-white text-sm font-medium transition-colors relative group"
-                >
-                  {item}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#4245f0] transition-all group-hover:w-full" />
-                </a>
-              ))}
-            </nav>
-            <button className="bg-white/10 hover:bg-white/20 border border-white/10 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all backdrop-blur-md hover:border-white/20">
-              Support
-            </button>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col items-center justify-center px-4 relative">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="glass-card max-w-2xl w-full rounded-xl p-12 text-center relative overflow-hidden"
-          >
-            {/* Visual Element: Floating Node Illustration */}
-            <div className="absolute -top-12 -right-12 opacity-20 transform rotate-12">
-              <div className="w-64 h-64 border-4 border-dashed border-[#4245f0] rounded-full animate-spin-slow"></div>
-            </div>
-
-            <div className="relative z-10">
-              {/* 404 Hero */}
-              <div className="relative inline-block">
-                <span className="text-[140px] md:text-[180px] font-black leading-none hero-404 select-none tracking-tighter">
-                  404
-                </span>
-                <div className="absolute inset-0 flex items-center justify-center opacity-40 blur-sm select-none pointer-events-none">
-                  <span className="text-[140px] md:text-[180px] font-black leading-none text-[#4245f0]">404</span>
-                </div>
-              </div>
-
-              {/* Typography */}
-              <h1 className="text-white text-4xl md:text-5xl font-extrabold mb-4 mt-2 tracking-tight">Lost in Space?</h1>
-              <p className="text-slate-400 text-lg max-w-md mx-auto leading-relaxed mb-10">
-                The page you are looking for doesn't exist or has been moved. Let's get you back to collaborating.
-              </p>
-
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <motion.button 
-                  whileHover={{ y: -2, boxShadow: '0 0 30px rgba(66,69,240,0.4)' }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-br from-[#4245f0] to-[#6366f1] text-white px-8 py-4 rounded-xl font-bold text-base transition-all"
-                >
-                  <LayoutDashboard className="size-5" />
-                  Go to Dashboard
-                </motion.button>
+    return (
+        <div className="min-h-screen bg-[#FDFCFB] font-sans flex flex-col items-center justify-center relative overflow-hidden px-6 antialiased">
+            <SEO 
+                title="404 - Path Not Found | Tasyai" 
+                description="The route you are looking for has shifted. Return to the core mission." 
+            />
+            
+            {/* Background Aesthetics */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-[radial-gradient(circle_at_center,rgba(255,90,0,0.03),transparent_70%)]"></div>
+                {/* Minimal Grid Layer */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000005_1px,transparent_1px),linear-gradient(to_bottom,#00000005_1px,transparent_1px)] bg-[size:60px_60px]"></div>
                 
-                <motion.button 
-                  whileHover={{ y: -2, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 glass-card text-white px-8 py-4 rounded-xl font-bold text-base transition-all"
-                >
-                  <Compass className="size-5" />
-                  Back to Discover
-                </motion.button>
-              </div>
+                {/* Rotating Elements */}
+                <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                    className="absolute -top-32 -right-32 size-96 border border-gray-100 rounded-full opacity-40 md:opacity-100"
+                ></motion.div>
+                <motion.div 
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
+                    className="absolute -bottom-48 -left-48 size-[500px] border border-gray-100 rounded-full opacity-40 md:opacity-100"
+                ></motion.div>
             </div>
 
-            {/* Floating Illustration */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              className="mt-12 flex justify-center"
-            >
-              <div className="relative w-64 h-64">
-                <div className="absolute inset-0 bg-[#4245f0]/20 rounded-full blur-2xl animate-pulse"></div>
-                {/* Astronaut Image */}
-                <img 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqSRd469v379HZ3B6UB5pn4nEUrwRqrQ-H5J6uX-uFQGC7b8UMqt27ILEYXbNiWjCF3nrdqJ9Kk7-SFldNWfOjGZln-aH7xbFHCIQlF2SzuCppHrsYNhR6_rY5TD9I6NjrStkNIECdiEXevOnCsASgWh8iDRvCy8y7j2Ua6hkIWMNQ-krDM8C19zP2xLfdTzGn0jRBeeHcKH465S8XEx_quCQ0GK3Eg1ONqEE4NeVrjKzp-UpQlFtQ6niMsVdxkTSAnLYHWIktnAU" 
-                  alt="Lost Astronaut" 
-                  className="relative z-10 w-full h-full object-cover rounded-2xl shadow-2xl border border-white/10"
-                />
-              </div>
-            </motion.div>
-          </motion.div>
+            {/* Main Content */}
+            <main className="relative z-10 text-center flex flex-col items-center">
+                
+                {/* 404 Hero Typography */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative mb-12"
+                >
+                    <h1 className="text-[120px] md:text-[220px] font-black text-gray-900 leading-none tracking-tighter mix-blend-darken select-none opacity-5">
+                        404
+                    </h1>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                         <div className="size-24 md:size-32 bg-white shadow-2xl rounded-3xl flex items-center justify-center transform rotate-12 hover:rotate-0 transition-transform duration-500 group border border-gray-100">
+                             <Search className="size-10 md:size-14 text-[#ff5a00] group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+                         </div>
+                    </div>
+                </motion.div>
 
-          {/* Bottom Links */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-12 flex items-center gap-6 text-slate-500 text-sm font-medium"
-          >
-            <a href="#" className="hover:text-[#4245f0] transition-colors flex items-center gap-1 group">
-              <Bug className="size-4 group-hover:rotate-12 transition-transform" />
-              Report a bug
-            </a>
-            <span className="size-1 bg-slate-700 rounded-full"></span>
-            <a href="#" className="hover:text-[#4245f0] transition-colors">Help Center</a>
-            <span className="size-1 bg-slate-700 rounded-full"></span>
-            <a href="#" className="hover:text-[#4245f0] transition-colors">System Status</a>
-          </motion.div>
-        </main>
+                {/* Text Content */}
+                <div className="max-w-xl mx-auto space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-50 text-[#ff5a00] text-[10px] font-black uppercase tracking-[0.2em] rounded-sm mb-6">
+                            <Zap className="size-3" strokeWidth={3} fill="currentColor" /> Route Displaced
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter leading-tight mb-6">
+                            Lost your way, <br/><span className="text-gray-400">founder?</span>
+                        </h2>
+                        <p className="text-lg text-gray-500 font-medium leading-relaxed max-w-sm mx-auto italic">
+                            "The path you are looking for has shifted. Talent must hold its place accordingly."
+                        </p>
+                    </motion.div>
 
-        {/* Footer Decoration */}
-        <footer className="py-8 text-center text-slate-600 text-xs tracking-widest uppercase">
-          © 2024 Tasyai Ecosystem. All rights reserved.
-        </footer>
-      </div>
-    </div>
-  );
+                    {/* Actions */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-10"
+                    >
+                        <Link 
+                            to="/dashboard"
+                            className="w-full sm:w-auto px-10 py-5 bg-[#ff5a00] hover:bg-[#e04e00] text-white font-black text-[13px] uppercase tracking-[0.2em] rounded-sm transition-all shadow-xl shadow-orange-500/20 transform active:scale-95 flex items-center justify-center gap-3"
+                        >
+                            <LayoutDashboard className="size-4" strokeWidth={3} />
+                            Return to Ship
+                        </Link>
+                        
+                        <Link 
+                            to="/"
+                            className="w-full sm:w-auto px-10 py-5 bg-white border border-gray-200 hover:border-gray-300 text-gray-900 font-bold text-[13px] uppercase tracking-[0.2em] rounded-sm transition-all shadow-sm flex items-center justify-center gap-3"
+                        >
+                            <Home className="size-4 text-gray-400" strokeWidth={3} />
+                            Go Home
+                        </Link>
+                    </motion.div>
+                </div>
+
+                {/* Footer Quote */}
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.4 }}
+                    transition={{ delay: 0.6 }}
+                    className="mt-24 pt-12 border-t border-gray-100/50 w-full flex flex-col items-center"
+                >
+                    <p className="text-[11px] font-black uppercase tracking-[0.3em] text-gray-400">Tasyai Ecosystem v1.2</p>
+                    <div className="flex gap-4 mt-6 opacity-30">
+                        <Link to="/faq" className="text-[10px] uppercase font-bold hover:text-[#ff5a00] transition-colors">FAQ</Link>
+                        <Link to="/guidelines" className="text-[10px] uppercase font-bold hover:text-[#ff5a00] transition-colors">Guidelines</Link>
+                        <Link to="/security" className="text-[10px] uppercase font-bold hover:text-[#ff5a00] transition-colors">Security</Link>
+                    </div>
+                </motion.div>
+            </main>
+        </div>
+    );
 };
 
 export default NotFound;

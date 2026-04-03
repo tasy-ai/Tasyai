@@ -22,6 +22,8 @@ import FAQ from './pages/FAQ'
 import Guidelines from './pages/Guidelines'
 import Security from './pages/Security'
 import Lists from './pages/Lists'
+import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from "@clerk/clerk-react";
@@ -125,6 +127,8 @@ function App() {
           <Route path="/guidelines" element={<Guidelines />} />
           <Route path="/security" element={<Security />} />
           <Route path="/lists" element={<Lists />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
           
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />

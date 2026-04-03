@@ -253,41 +253,52 @@ const EntryPoints = () => {
       <h2 className="text-3xl font-black text-center text-[#1a1a1a] mb-12 tracking-tight">Choose Your Entry Point</h2>
       <div className="grid md:grid-cols-2 gap-6 w-full max-w-4xl mx-auto">
         {/* Founder Mode */}
-        <div className="relative overflow-hidden rounded-3xl aspect-[4/5] bg-gradient-to-br from-[#2a2a2a] to-[#111111] group cursor-pointer flex items-end p-8 md:p-12 hover:-translate-y-2 transition-transform duration-300">
-          <div className="absolute inset-0 opacity-40 mix-blend-overlay">
-             <div className="absolute top-10 left-10 w-64 h-64 bg-orange-600 rounded-full blur-[100px]"></div>
-             <div className="absolute bottom-10 right-10 w-64 h-64 bg-red-800 rounded-full blur-[100px]"></div>
+        <Link to="/register" className="relative overflow-hidden rounded-3xl aspect-[4/5] bg-gray-900 group cursor-pointer flex items-end p-8 md:p-12 hover:-translate-y-2 transition-all duration-500 shadow-2xl">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            <img 
+              src="/images/founder_mode.png" 
+              alt="Founder Mode" 
+              className="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
           </div>
           
           <div className="relative z-10 w-full">
-            <span className="inline-block px-3 py-1 bg-[#e75c13] text-white text-[10px] font-bold uppercase tracking-widest rounded mb-4">MODE: ALPHA</span>
-            <h3 className="text-4xl font-black text-white mb-4">Founder Mode</h3>
-            <p className="text-white/70 font-medium max-w-[200px] mb-8 text-sm leading-relaxed">
+            <span className="inline-block px-3 py-1 bg-[#e75c13] text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-sm mb-6">MODE: ALPHA</span>
+            <h3 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tighter">Founder Mode</h3>
+            <p className="text-white/80 font-medium max-w-[240px] mb-8 text-[15px] leading-relaxed">
               Build the core team that scales your vision from zero to one.
             </p>
-            <div className="size-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
-              <ArrowRight className="text-[#1a1a1a] size-6" />
+            <div className="size-14 bg-white rounded-2xl flex items-center justify-center shadow-2xl transform group-hover:rotate-45 transition-transform">
+              <ArrowRight className="text-[#1a1a1a] size-7" strokeWidth={3} />
             </div>
           </div>
-        </div>
+        </Link>
 
         {/* Talent Mode */}
-        <div className="relative overflow-hidden rounded-3xl aspect-[4/5] bg-gradient-to-br from-[#404040] to-[#222222] group cursor-pointer flex items-end p-8 md:p-12 hover:-translate-y-2 transition-transform duration-300">
-           <div className="absolute inset-0 opacity-20">
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+        <Link to="/register" className="relative overflow-hidden rounded-3xl aspect-[4/5] bg-gray-900 group cursor-pointer flex items-end p-8 md:p-12 hover:-translate-y-2 transition-all duration-500 shadow-2xl">
+           {/* Background Image */}
+           <div className="absolute inset-0">
+            <img 
+              src="/images/talent_mode.png" 
+              alt="Talent Mode" 
+              className="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
           </div>
 
           <div className="relative z-10 w-full">
-            <span className="inline-block px-3 py-1 bg-[#e75c13] text-white text-[10px] font-bold uppercase tracking-widest rounded mb-4">MODE: BETA</span>
-            <h3 className="text-4xl font-black text-white mb-4">Talent Mode</h3>
-            <p className="text-white/70 font-medium max-w-[200px] mb-8 text-sm leading-relaxed">
+            <span className="inline-block px-3 py-1 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-sm mb-6">MODE: BETA</span>
+            <h3 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tighter">Talent Mode</h3>
+            <p className="text-white/80 font-medium max-w-[240px] mb-8 text-[15px] leading-relaxed">
               Apply your skills where they are truly needed. No corporate fluff.
             </p>
-            <div className="size-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
-              <Zap className="text-[#e75c13] size-6" />
+            <div className="size-14 bg-[#ff5a00] rounded-2xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform">
+              <Zap className="text-white size-7" fill="currentColor" />
             </div>
           </div>
-        </div>
+        </Link>
       </div>
     </section>
   );
@@ -353,14 +364,12 @@ const Footer = () => {
           <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-xs">
             © 2024 Spatial Canvas. A YC-inspired Platform<br/>for world class builders.
           </p>
-        </div>
-
-        <div>
+        </div>        <div>
           <h4 className="font-bold text-[10px] tracking-widest uppercase text-gray-400 mb-6">Network</h4>
           <ul className="space-y-4">
-            <li><Link to="/founders" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Founders</Link></li>
-            <li><Link to="/talent" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Talent</Link></li>
-            <li><Link to="/showcase" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Showcase</Link></li>
+            <li><Link to="/found-talent" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Founders</Link></li>
+            <li><Link to="/found-talent" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Talent</Link></li>
+            <li><Link to="/dashboard" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Showcase</Link></li>
           </ul>
         </div>
 
@@ -386,7 +395,6 @@ const Footer = () => {
               <div>
                 <h4 className="font-bold text-[10px] tracking-widest uppercase text-gray-400 mb-6">Social</h4>
                 <ul className="space-y-4">
-                  <li><a href="#" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">Twitter</a></li>
                   <li><a href="#" className="text-sm font-bold text-gray-700 hover:text-[#e75c13] transition-colors">LinkedIn</a></li>
                 </ul>
               </div>
