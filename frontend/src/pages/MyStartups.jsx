@@ -131,10 +131,10 @@ const MyStartups = () => {
                         {/* Footer Action */}
                         <button 
                             onClick={() => navigate(`/company-detail?id=${startup._id}`)}
-                            className="w-full py-3 bg-white border border-gray-200 text-gray-900 font-bold text-[13px] rounded-sm hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm flex items-center justify-center gap-2 group/btn"
+                            className="w-full py-3 bg-[#ff5a00] hover:bg-[#e04e00] text-white font-bold text-[13px] rounded-sm transition-all shadow-sm flex items-center justify-center gap-2 group/btn uppercase tracking-wider h-11"
                         >
                             Manage Profile
-                            <ArrowRight className="size-4 text-gray-400 group-hover/btn:text-[#ff5a00] transition-colors" strokeWidth={2.5} />
+                            <ArrowRight className="size-4 text-white/70 group-hover/btn:text-white transition-colors" strokeWidth={2.5} />
                         </button>
                     </div>
                   </motion.div>

@@ -149,22 +149,14 @@ const SavedCompanies = () => {
                         </span>
                     </div>
                     
-                    <div className="mt-4 flex gap-3">
+                    <div className="mt-4 flex">
                       <Link 
                         to={`/company-detail?id=${company._id}`} 
                         state={{ company }}
-                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-[13px] font-bold py-2.5 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center"
+                        className="flex-1 bg-[#ff5a00] hover:bg-[#e04e00] text-white text-[13px] font-bold py-2.5 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center uppercase tracking-wider h-10"
                       >
                         View Details
                       </Link>
-                      {company.website && (
-                        <button 
-                          onClick={() => window.open(company.website, '_blank')}
-                          className="p-2.5 bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center group-hover:bg-[#ff5a00] group-hover:text-white group-hover:border-[#ff5a00]"
-                        >
-                          <ExternalLink className="size-4" />
-                        </button>
-                      )}
                     </div>
                   </div>
                 </div>
