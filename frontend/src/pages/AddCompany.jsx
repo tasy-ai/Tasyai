@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import companyService from '../services/companyService';
+import authService from '../services/authService';
+import { useUser } from "@clerk/clerk-react";
 import { toast, Toaster } from 'react-hot-toast';
 
 const AddCompany = () => {
@@ -26,10 +28,12 @@ const AddCompany = () => {
     logo: '',
     location: '',
     website: '',
-    customBenefits: []
+    customBenefits: [],
+    questions: []
   });
 
   const [newBenefit, setNewBenefit] = useState('');
+  const [newQuestion, setNewQuestion] = useState('');
 
   const [openings, setOpenings] = useState([
     { role: '', experience: 'Junior (1-2 years)', techStack: [], workModel: 'Remote', collaboration: 'Equity Only (Co-founder)' }
@@ -63,6 +67,17 @@ const AddCompany = () => {
     );
   };
 
+  const addQuestion = () => {
+    if (newQuestion.trim()) {
+      setFormData(prev => ({ ...prev, questions: [...prev.questions, newQuestion.trim()] }));
+      setNewQuestion('');
+    }
+  };
+
+  const removeQuestion = (index) => {
+    setFormData(prev => ({ ...prev, questions: prev.questions.filter((_, i) => i !== index) }));
+  };
+
   const addOpening = () => setOpenings([...openings, { role: '', experience: 'Junior (1-2 years)', techStack: [], workModel: 'Remote', collaboration: 'Equity Only (Co-founder)' }]);
   
   const handleLogoUpload = (e) => {
@@ -88,6 +103,7 @@ const AddCompany = () => {
         logo: formData.logo,
         benefits: [...selectedBenefits, ...formData.customBenefits],
         openings: openings.map(o => ({ ...o })),
+        questions: formData.questions,
         location: formData.location || 'Remote',
         website: formData.website
       };
@@ -325,6 +341,50 @@ const AddCompany = () => {
                           <Plus className="size-4 text-gray-400 mb-1" strokeWidth={3} />
                           <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Custom Perk</span>
                       </div>
+                  </div>
+              </section>
+
+              {/* Section 4: Custom Application Questions */}
+              <section>
+                  <h2 className="text-[15px] font-black text-gray-900 mb-6 pb-2 border-b border-gray-200">Custom Application Questions</h2>
+                  <p className="text-[12px] text-gray-500 font-medium mb-6">Add specific questions you want applicants to answer. This helps you filter for the right talent faster.</p>
+                  
+                  <div className="space-y-4 mb-6">
+                      {formData.questions.map((q, idx) => (
+                          <div key={idx} className="flex items-center gap-3 bg-white border border-gray-200 p-4 rounded-sm group">
+                              <span className="text-[13px] font-bold text-gray-400 w-6">0{idx + 1}</span>
+                              <p className="flex-1 text-[13px] font-medium text-gray-900">{q}</p>
+                              <button 
+                                  onClick={() => removeQuestion(idx)}
+                                  className="p-2 text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                              >
+                                  <Trash2 className="size-4" strokeWidth={2.5} />
+                              </button>
+                          </div>
+                      ))}
+                      
+                      {formData.questions.length === 0 && (
+                          <div className="text-center py-10 bg-white border border-dashed border-gray-200 rounded-sm">
+                              <p className="text-[13px] text-gray-400 font-medium italic">No custom questions added yet.</p>
+                          </div>
+                      )}
+                  </div>
+
+                  <div className="flex gap-2">
+                      <input 
+                          value={newQuestion}
+                          onChange={(e) => setNewQuestion(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && addQuestion()}
+                          placeholder="e.g. What is your experience with distributed systems?"
+                          className="flex-1 bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#ff5a00] focus:border-[#ff5a00] transition-all placeholder:text-gray-400"
+                      />
+                      <button 
+                          onClick={addQuestion}
+                          disabled={!newQuestion.trim()}
+                          className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold text-[13px] rounded-sm transition-colors disabled:opacity-50"
+                      >
+                          Add Question
+                      </button>
                   </div>
               </section>
 

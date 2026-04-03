@@ -14,6 +14,7 @@ const createCompany = async (req, res) => {
             logo, 
             benefits, 
             openings, 
+            questions,
             website, 
             location 
         } = req.body;
@@ -27,6 +28,7 @@ const createCompany = async (req, res) => {
             logo,
             benefits,
             openings,
+            questions,
             website,
             location,
             creator: req.user._id
