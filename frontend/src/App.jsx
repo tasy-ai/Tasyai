@@ -18,6 +18,10 @@ import OnboardingChatbot from './pages/OnboardingChatbot'
 import SavedCompanies from './pages/SavedCompanies'
 import MyInterests from './pages/MyInterests'
 import Messages from './pages/Messages'
+import FAQ from './pages/FAQ'
+import Guidelines from './pages/Guidelines'
+import Security from './pages/Security'
+import Lists from './pages/Lists'
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from "@clerk/clerk-react";
@@ -117,6 +121,10 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/sso-callback" element={<SsoCallback />} />  
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/guidelines" element={<Guidelines />} />
+          <Route path="/security" element={<Security />} />
+          <Route path="/lists" element={<Lists />} />
           
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />

@@ -38,14 +38,11 @@ const CompanyDetail = () => {
   const [joinStep, setJoinStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [joinAnswers, setJoinAnswers] = useState({
-    experience: '',
-    benefitsAcceptance: '',
-    duration: '',
     customAnswers: {}
   });
   const [selectedRole, setSelectedRole] = useState(null);
   const hasCustomQuestions = company?.questions?.length > 0;
-  const totalSteps = hasCustomQuestions ? 4 : 3;
+  const totalSteps = 1;
 
   const queryParams = new URLSearchParams(location.search);
   const companyId = queryParams.get('id');
@@ -171,12 +168,9 @@ const CompanyDetail = () => {
             userEmail: user.email,
             companyName: company.name,
             appliedRole: selectedRole || 'General Interest',
-            experience: joinAnswers.experience,
-            benefitsAcceptance: joinAnswers.benefitsAcceptance,
-            durationMonths: joinAnswers.duration,
             customAnswers: hasCustomQuestions 
               ? company.questions.map((q, i) => `Q: ${q}\nA: ${joinAnswers.customAnswers[i]}`).join('\n\n')
-              : 'N/A',
+              : 'User has expressed general interest. No custom questions were provided.',
             _subject: `🚀 New Team Member Interest: ${user.name} for ${company.name}${selectedRole ? ` as ${selectedRole}` : ''}`,
           }),
         }
@@ -187,14 +181,12 @@ const CompanyDetail = () => {
         // Send in-app notification to the company creator
         if (company.creator) {
           await notificationService.addNotification({
-            recipient: company.creator,
-            sender: user._id || user.id,
-            title: 'New Application Received',
-            message: `${user.name} applied for "${selectedRole || 'General Interest'}" at ${company.name}`,
-            type: 'company',
-            iconName: 'Zap',
-            hasActions: true
-          });
+              recipient: typeof company.creator === 'string' ? company.creator : company.creator._id,
+              type: 'application',
+              message: `${user.name} applied for "${selectedRole || 'General Interest'}" at ${company.name}`,
+              relatedCompany: company._id,
+              relatedUser: user._id
+            });
         }
 
         toast.success("Interest submitted! The team will contact you soon.");
@@ -555,201 +547,64 @@ const CompanyDetail = () => {
                 </div>
 
                 <AnimatePresence mode="wait">
-                  {/* Step 1 */}
-                  {joinStep === 1 && (
-                    <motion.div
-                      key="step1"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.2 }}
-                      className="space-y-4"
-                    >
-                      <label className="block text-[14px] font-bold text-gray-900">Tell us about your relevant experience</label>
-                      <textarea
-                        autoFocus
-                        value={joinAnswers.experience}
-                        onChange={(e) => setJoinAnswers({ ...joinAnswers, experience: e.target.value })}
-                        className="w-full h-32 bg-gray-50 border border-gray-200 rounded-sm p-4 text-gray-900 focus:ring-1 focus:ring-[#ff5a00] focus:border-[#ff5a00] outline-none transition-all resize-none placeholder:text-gray-400 font-medium text-[14px]"
-                        placeholder="Project leads, specific tech expertise..."
-                      />
-                      <button
-                        disabled={!joinAnswers.experience.trim()}
-                        onClick={() => setJoinStep(2)}
-                        className="w-full py-3.5 bg-[#ff5a00] hover:bg-[#e04e00] text-white font-bold text-[14px] rounded-sm transition-all disabled:opacity-50"
-                      >
-                        Next Question
-                      </button>
-                    </motion.div>
-                  )}
-
-                  {/* Step 2: Custom Questions (Conditionally inserted) or Benefits */}
-                  {joinStep === 2 && (
-                    <motion.div
-                      key="step2"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.2 }}
-                      className="space-y-6"
-                    >
-                      {hasCustomQuestions ? (
-                        <>
-                          <div className="space-y-5 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
-                            {company.questions.map((q, idx) => (
-                              <div key={idx} className="space-y-2">
-                                <label className="block text-[13px] font-black uppercase tracking-widest text-[#ff5a00]">Question 0{idx + 1}</label>
-                                <p className="text-[14px] font-bold text-gray-900 mb-2">{q}</p>
-                                <textarea 
-                                  value={joinAnswers.customAnswers[idx] || ''}
-                                  onChange={(e) => setJoinAnswers({
-                                    ...joinAnswers,
-                                    customAnswers: { ...joinAnswers.customAnswers, [idx]: e.target.value }
-                                  })}
-                                  className="w-full h-24 bg-gray-50 border border-gray-200 rounded-sm p-3 text-gray-900 focus:border-[#ff5a00] outline-none transition-all placeholder:text-gray-400 font-medium text-[13px]"
-                                  placeholder="Your answer..."
-                                />
-                              </div>
-                            ))}
-                          </div>
-                          <div className="flex gap-3 pt-2">
-                             <button onClick={() => setJoinStep(1)} className="flex-1 py-3.5 bg-white text-gray-600 font-bold rounded-sm border border-gray-200 text-[14px]">Back</button>
-                             <button 
-                                onClick={() => setJoinStep(3)} 
-                                disabled={company.questions.some((_, i) => !joinAnswers.customAnswers[i]?.trim())}
-                                className="flex-[2] py-3.5 bg-[#ff5a00] text-white font-bold rounded-sm disabled:opacity-50 text-[14px]"
-                             >
-                               Next Step
-                             </button>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <label className="block text-[14px] font-bold text-gray-900 mb-2">Do you accept the offered benefits and equity structure?</label>
-                          <div className="flex flex-col gap-2">
-                            {["Yes, fully accept", "Interested, need discussion"].map(opt => (
-                              <button
-                                key={opt}
-                                onClick={() => setJoinAnswers({ ...joinAnswers, benefitsAcceptance: opt })}
-                                className={`w-full p-4 rounded-sm border text-[14px] font-bold transition-all text-left ${joinAnswers.benefitsAcceptance === opt
-                                  ? 'bg-orange-50 border-orange-200 text-[#ff5a00]'
-                                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                                  }`}
-                              >
-                                {opt}
-                              </button>
-                            ))}
-                          </div>
-                          <div className="flex gap-3 pt-4">
-                            <button onClick={() => setJoinStep(1)} className="flex-1 py-3.5 bg-white text-gray-600 font-bold rounded-sm border border-gray-200 text-[14px]">Back</button>
-                            <button 
-                               disabled={!joinAnswers.benefitsAcceptance} 
-                               onClick={() => setJoinStep(3)} 
-                               className="flex-[2] py-3.5 bg-[#ff5a00] text-white font-bold rounded-sm disabled:opacity-50 text-[14px]"
-                            >
-                               Next Step
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </motion.div>
-                  )}
-
-                  {/* Step 3: Benefits (if questions) or Duration (if no questions) */}
-                  {joinStep === 3 && (
-                    <motion.div
-                      key="step3"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.2 }}
-                      className="space-y-4"
-                    >
-                      {hasCustomQuestions ? (
-                         <>
-                            <label className="block text-[14px] font-bold text-gray-900 mb-2">Do you accept the offered benefits and equity structure?</label>
-                            <div className="flex flex-col gap-2">
-                              {["Yes, fully accept", "Interested, need discussion"].map(opt => (
-                                <button
-                                  key={opt}
-                                  onClick={() => setJoinAnswers({ ...joinAnswers, benefitsAcceptance: opt })}
-                                  className={`w-full p-4 rounded-sm border text-[14px] font-bold transition-all text-left ${joinAnswers.benefitsAcceptance === opt
-                                    ? 'bg-orange-50 border-orange-200 text-[#ff5a00]'
-                                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                                    }`}
-                                >
-                                  {opt}
-                                </button>
-                              ))}
+                  <motion.div
+                    key="application-step"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-6"
+                  >
+                    {hasCustomQuestions ? (
+                      <>
+                        <div className="space-y-5 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                          {company.questions.map((q, idx) => (
+                            <div key={idx} className="space-y-2">
+                              <label className="block text-[13px] font-black uppercase tracking-widest text-[#ff5a00]">Question 0{idx + 1}</label>
+                              <p className="text-[14px] font-bold text-gray-900 mb-2">{q}</p>
+                              <textarea 
+                                value={joinAnswers.customAnswers[idx] || ''}
+                                onChange={(e) => setJoinAnswers({
+                                  ...joinAnswers,
+                                  customAnswers: { ...joinAnswers.customAnswers, [idx]: e.target.value }
+                                })}
+                                className="w-full h-24 bg-gray-50 border border-gray-200 rounded-sm p-3 text-gray-900 focus:border-[#ff5a00] outline-none transition-all placeholder:text-gray-400 font-medium text-[13px]"
+                                placeholder="Your answer..."
+                              />
                             </div>
-                            <div className="flex gap-3 pt-4">
-                              <button onClick={() => setJoinStep(2)} className="flex-1 py-3.5 bg-white text-gray-600 font-bold rounded-sm border border-gray-200 text-[14px]">Back</button>
-                              <button 
-                                 disabled={!joinAnswers.benefitsAcceptance} 
-                                 onClick={() => setJoinStep(4)} 
-                                 className="flex-[2] py-3.5 bg-[#ff5a00] text-white font-bold rounded-sm disabled:opacity-50 text-[14px]"
-                              >
-                                 Next Step
-                              </button>
-                            </div>
-                         </>
-                      ) : (
-                        <>
-                          <label className="block text-[14px] font-bold text-gray-900 lowercaseFirst">How many months can you commit to this venture?</label>
-                          <input
-                            type="number" min="1" autoFocus
-                            value={joinAnswers.duration}
-                            onChange={(e) => setJoinAnswers({ ...joinAnswers, duration: e.target.value })}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-sm p-4 text-gray-900 focus:border-[#ff5a00] outline-none transition-all font-medium text-[14px]"
-                            placeholder="e.g. 6"
-                          />
-                          <div className="flex gap-3 pt-4">
-                            <button onClick={() => setJoinStep(2)} className="flex-1 py-3.5 bg-white text-gray-600 font-bold rounded-sm border border-gray-200 text-[14px]">Back</button>
-                            <button 
-                               disabled={!joinAnswers.duration || isSubmitting} 
-                               onClick={handleJoinSubmit} 
-                               className="flex-[2] py-3.5 bg-[#ff5a00] text-white font-bold rounded-sm disabled:opacity-50 flex items-center justify-center gap-2"
-                            >
-                               {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
-                               {isSubmitting ? 'Submitting...' : 'Submit Application'}
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </motion.div>
-                  )}
-
-                  {/* Step 4: Duration (only if questions) */}
-                  {joinStep === 4 && hasCustomQuestions && (
-                    <motion.div
-                      key="step4"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.2 }}
-                      className="space-y-4"
-                    >
-                      <label className="block text-[14px] font-bold text-gray-900">How many months can you commit to this venture?</label>
-                      <input
-                        type="number" min="1" autoFocus
-                        value={joinAnswers.duration}
-                        onChange={(e) => setJoinAnswers({ ...joinAnswers, duration: e.target.value })}
-                        className="w-full bg-gray-50 border border-gray-200 rounded-sm p-4 text-gray-900 focus:border-[#ff5a00] outline-none transition-all font-medium text-[14px]"
-                        placeholder="e.g. 6"
-                      />
-                      <div className="flex gap-3 pt-4">
-                        <button onClick={() => setJoinStep(3)} className="flex-1 py-3.5 bg-white text-gray-600 font-bold rounded-sm border border-gray-200 text-[14px]">Back</button>
+                          ))}
+                        </div>
                         <button 
-                           disabled={!joinAnswers.duration || isSubmitting} 
-                           onClick={handleJoinSubmit} 
-                           className="flex-[2] py-3.5 bg-[#ff5a00] text-white font-bold rounded-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                          onClick={handleJoinSubmit} 
+                          disabled={isSubmitting || company.questions.some((_, i) => !joinAnswers.customAnswers[i]?.trim())}
+                          className="w-full py-4 bg-[#ff5a00] hover:bg-[#e04e00] text-white font-bold rounded-sm transition-all disabled:opacity-50 text-[14px] flex items-center justify-center gap-2"
                         >
-                           {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
-                           {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                          {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+                          {isSubmitting ? 'Submitting...' : 'Submit Application'}
                         </button>
-                      </div>
-                    </motion.div>
-                  )}
+                      </>
+                    ) : (
+                      <>
+                        <div className="py-8 text-center space-y-4">
+                          <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto">
+                            <Rocket className="size-8 text-[#ff5a00]" />
+                          </div>
+                          <div>
+                            <h4 className="text-[16px] font-black text-gray-900 mb-1">Confirm your interest</h4>
+                            <p className="text-gray-500 text-[13px] font-medium px-4">Tap below to share your profile with {company.name} and let them know you're interested in joining the team.</p>
+                          </div>
+                        </div>
+                        <button 
+                          onClick={handleJoinSubmit} 
+                          disabled={isSubmitting}
+                          className="w-full py-4 bg-[#ff5a00] hover:bg-[#e04e00] text-white font-bold rounded-sm transition-all disabled:opacity-50 text-[14px] flex items-center justify-center gap-2"
+                        >
+                          {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+                          {isSubmitting ? 'Confirm & Submit' : 'Confirm & Submit'}
+                        </button>
+                      </>
+                    )}
+                  </motion.div>
                 </AnimatePresence>
               </div>
             </motion.div>

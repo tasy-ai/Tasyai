@@ -131,43 +131,7 @@ const ProfileExpansion = () => {
           {/* White Card Wrapper */}
           <div className="bg-white border border-gray-200 shadow-sm w-full relative">
               
-              {/* Fake StartupCollab Orange Top Navbar inside the card to match the mock exactly */}
-              <div className="bg-[#ff5a00] w-full flex flex-col md:flex-row items-center justify-between px-6 py-3 text-white">
-                  <div className="flex items-center gap-4">
-                      {/* Logo Area */}
-                      <div className="flex items-center gap-2">
-                          <div className="bg-white p-1 rounded-sm">
-                              <Box className="size-5 text-[#ff5a00]" strokeWidth={3} />
-                          </div>
-                          <span className="font-extrabold text-[17px] tracking-tight">StartupCollab</span>
-                      </div>
-                      <div className="hidden md:flex items-center gap-3 text-[13px] font-bold text-white/80">
-                          <span className="text-white/40">|</span>
-                          <a href="#" className="hover:text-white transition-colors">explore</a>
-                          <span className="text-white/40">|</span>
-                          <a href="#" className="hover:text-white transition-colors">network</a>
-                          <span className="text-white/40">|</span>
-                          <a href="#" className="hover:text-white transition-colors">projects</a>
-                          <span className="text-white/40">|</span>
-                          <a href="#" className="hover:text-white transition-colors">messages</a>
-                      </div>
-                  </div>
-                  
-                  <div className="hidden md:flex items-center gap-4">
-                      <div className="relative">
-                          Search
-                          <input 
-                              type="text" 
-                              placeholder="search" 
-                              className="bg-white/20 border-none outline-none text-white placeholder:text-white/60 text-[12px] px-3 py-1.5 rounded-sm w-48 font-medium"
-                          />
-                      </div>
-                      <div className="flex items-center gap-3 text-[13px] font-bold">
-                          <span>{candidate.name.toLowerCase().replace(' ', '_')}</span>
-                          <a href="#" className="text-black/60 hover:text-black transition-colors">logout</a>
-                      </div>
-                  </div>
-              </div>
+
 
               {/* Profile Hero Section */}
               <div className="p-8 pb-10 flex flex-col md:flex-row items-start gap-6 border-b border-gray-100">
