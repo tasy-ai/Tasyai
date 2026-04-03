@@ -226,14 +226,11 @@ const MyInterests = () => {
                       )}
                     </div>
                     
-                    <div className="mt-4 flex gap-3">
-                      <button className="flex-1 bg-[#ff5a00] hover:bg-[#e04e00] text-white text-[13px] font-bold py-2.5 rounded-sm transition-colors shadow-sm">
-                        Apply Now
-                      </button>
+                    <div className="mt-4 flex">
                       <Link 
                         to={`/company-detail?id=${company._id}`} 
                         state={{ company }}
-                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-[13px] font-bold py-2.5 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center"
+                        className="flex-1 bg-[#ff5a00] hover:bg-[#e04e00] text-white text-[13px] font-bold py-2.5 rounded-sm transition-colors text-center shadow-sm flex items-center justify-center uppercase tracking-wider h-10"
                       >
                         View Details
                       </Link>
