@@ -30,27 +30,30 @@ const FoundTalent = () => {
         const data = await authService.getUsers();
         // Fallback exact mock data if database is empty or sparse, to match the visual
         const baseMocks = [
-          { id: '1', name: 'Marcus Thorne', experience: '8 Years Exp', location: 'London', image: 'https://i.pravatar.cc/150?img=11', matchScore: 98, badge: 'TOP 5% TALENT', badgeType: 'green', quote: 'Passionate about scaling series-A startups through design-led engineering and high-performance React architectures.', skills: [{ name: 'REACT' }, { name: 'NODE.JS' }, { name: 'AWS' }] },
-          { id: '2', name: 'Elena Rodriguez', experience: '6 Years Exp', location: 'Madrid', image: 'https://ui-avatars.com/api/?name=Elena+Rodriguez&background=0D1B2A&color=fff', matchScore: 94, badge: 'UI/UX SPECIALIST', badgeType: 'blue', quote: 'Specialized in creating seamless design systems that bridge the gap between aesthetics and functionality.', skills: [{ name: 'FIGMA' }, { name: 'TAILWIND' }, { name: 'MOTION' }] },
-          { id: '3', name: 'Julian Vosh', experience: '10 Years Exp', location: 'Remote', image: 'https://i.pravatar.cc/150?img=12', matchScore: 91, badge: 'FORMER CTO', badgeType: 'orange', quote: 'Experienced product leader with a focus on AI-driven SaaS growth and high-level technical strategy.', skills: [{ name: 'LEADERSHIP' }, { name: 'MLOPS' }] },
+          { id: '1', name: 'Marcus Thorne', experience: '8 Years Exp', location: 'London', image: 'https://i.pravatar.cc/150?img=11', matchScore: 98, badge: 'Lead UI Designer', badgeType: 'green', quote: 'Passionate about scaling series-A startups through design-led engineering and high-performance React architectures.', skills: [{ name: 'REACT' }, { name: 'FIGMA' }, { name: 'UX' }] },
+          { id: '2', name: 'Elena Rodriguez', experience: '6 Years Exp', location: 'Madrid', image: 'https://ui-avatars.com/api/?name=Elena+Rodriguez&background=0D1B2A&color=fff', matchScore: 94, badge: 'Full-Stack Developer', badgeType: 'blue', quote: 'Specialized in creating seamless design systems that bridge the gap between aesthetics and functionality.', skills: [{ name: 'JAVA' }, { name: 'REACT' }, { name: 'SQL' }] },
+          { id: '3', name: 'Julian Vosh', experience: '10 Years Exp', location: 'Remote', image: 'https://i.pravatar.cc/150?img=12', matchScore: 91, badge: 'Product Manager', badgeType: 'orange', quote: 'Experienced product leader with a focus on AI-driven SaaS growth and high-level technical strategy.', skills: [{ name: 'STRATEGY' }, { name: 'AGILE' }] },
+          { id: '4', name: 'Sarah Chen', experience: '4 Years Exp', location: 'San Francisco', image: 'https://i.pravatar.cc/150?img=26', matchScore: 89, badge: 'Growth Marketer', badgeType: 'green', quote: 'Data-driven growth marketer specialized in user acquisition and product-led growth strategies.', skills: [{ name: 'SEO' }, { name: 'ANALYTICS' }] },
         ];
 
         let mappedUsers = [];
 
-        if (data && data.length >= 3) {
+        if (data && data.length > 0) {
           mappedUsers = data.map((u, index) => {
             const mockColors = ['green', 'blue', 'orange'];
+            const mockRoles = ['Lead UI Designer', 'Full-Stack Developer', 'Product Manager', 'Growth Marketer'];
+            const userRole = u.role || mockRoles[index % mockRoles.length];
             return {
               id: u._id,
               name: u.name,
-              experience: `${u.experience || '3'} Years Exp`,
+              experience: `${u.experience || '3+'} Years Exp`,
               location: u.country || 'Remote',
               image: u.profilePicture || `https://ui-avatars.com/api/?name=${u.name}&background=random`,
               matchScore: Math.floor(Math.random() * 20) + 80,
-              badge: u.role?.toUpperCase() || 'SPECIALIST',
+              badge: userRole,
               badgeType: mockColors[index % mockColors.length],
               quote: u.motto || 'Looking for an exciting new role in a fast-paced environment.',
-              skills: u.skills ? u.skills.map(s => ({ name: s.toUpperCase() })) : [{ name: 'REACT' }],
+              skills: u.skills ? u.skills.map(s => ({ name: s.toUpperCase() })) : [{ name: 'PRODUCTIVE' }],
               candidateData: u
             };
           });
@@ -68,6 +71,11 @@ const FoundTalent = () => {
 
     fetchUsers();
   }, []);
+
+  const filteredUsers = users.filter(user => {
+    if (activeRole.includes('All Roles')) return true;
+    return user.badge === activeRole;
+  });
 
   const getBadgeStyle = (type) => {
     switch (type) {
@@ -138,7 +146,7 @@ const FoundTalent = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {users.map((candidate, index) => (
+              {filteredUsers.map((candidate, index) => (
                 <motion.div
                   key={candidate.id}
                   initial={{ opacity: 0, y: 15 }}

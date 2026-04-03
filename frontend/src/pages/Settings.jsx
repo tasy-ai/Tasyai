@@ -229,13 +229,14 @@ const Settings = () => {
                                               <span className="text-[10px] font-bold uppercase tracking-wider">Upload</span>
                                           </div>
                                       )}
-                                      <div className="flex-1">
-                                          <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Profile Picture URL</label>
+                                      <div className="flex-1 pt-2">
                                           <div className="flex flex-col sm:flex-row gap-3">
-                                              <input 
-                                                  type="text" name="profilePicture" placeholder="Paste image URL..." value={profile.profilePicture} onChange={handleProfileChange}
-                                                  className="flex-1 bg-white border border-gray-200 rounded-sm px-4 py-2.5 text-[13px] text-gray-900 focus:outline-none focus:border-[#ff5a00] transition-colors" 
-                                              />
+                                              <button 
+                                                  onClick={() => document.getElementById('imageUpload').click()}
+                                                  className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-bold text-[13px] rounded-sm transition-colors shadow-sm"
+                                              >
+                                                  Choose Local Image
+                                              </button>
                                               <input 
                                                   type="file" id="imageUpload" accept="image/*" className="hidden"
                                                   onChange={async (e) => {
@@ -249,7 +250,7 @@ const Settings = () => {
                                                   }}
                                               />
                                           </div>
-                                          <p className="text-[11px] text-gray-500 font-medium mt-3">Supported formats: JPG, PNG, GIF. Max size 2MB.</p>
+                                          <p className="text-[11px] text-gray-500 font-medium mt-3 italic">* Selected image will be stored as your new profile avatar.</p>
                                       </div>
                                   </div>
 
@@ -372,16 +373,7 @@ const Settings = () => {
                           <section className="bg-white border border-gray-200 shadow-sm p-8 rounded-sm">
                               <h2 className="text-[17px] font-black text-gray-900 mb-6 pb-4 border-b border-gray-100">Privacy & Security</h2>
                               <div className="space-y-4">
-                                  <div className="flex items-center justify-between p-5 bg-white border border-gray-200 rounded-sm hover:border-[#ff5a00] cursor-pointer transition-colors group">
-                                      <div className="flex items-center gap-4">
-                                          <div className="p-3 bg-gray-100 rounded-sm"><Lock className="size-5 text-gray-600" /></div>
-                                          <div>
-                                              <p className="text-gray-900 font-bold text-[14px]">Change Password</p>
-                                              <p className="text-[13px] text-gray-500 font-medium">Update your security credentials</p>
-                                          </div>
-                                      </div>
-                                      <ChevronRight className="size-5 text-gray-400 group-hover:text-[#ff5a00] transition-colors" strokeWidth={2.5}/>
-                                  </div>
+                             
                                   
                                   <div className="flex items-center justify-between p-5 bg-white border border-gray-200 rounded-sm hover:border-[#ff5a00] cursor-pointer transition-colors group">
                                       <div className="flex items-center gap-4">
