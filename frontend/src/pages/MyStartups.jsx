@@ -111,7 +111,9 @@ const MyStartups = () => {
                            {startup.description}
                         </p>
 
-                        {/* Stats Row */}
+          
+
+          
                         <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100 mb-8 mt-auto">
                             <div>
                                 <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Open Roles</div>
