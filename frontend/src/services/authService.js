@@ -49,6 +49,19 @@ const login = async (email, password) => {
     }
 };
 
+const adminLogin = async (email, password) => {
+    try {
+        const response = await axios.post(`${API_URL}/admin/login`, { email, password });
+        if (response.data) {
+            localStorage.setItem('user', JSON.stringify(response.data));
+        }
+        return response.data;
+    } catch (error) {
+        console.error('Admin login error:', error.response?.data || error.message);
+        throw error;
+    }
+};
+
 const logout = () => {
     localStorage.removeItem('user');
 };
@@ -152,6 +165,7 @@ const submitFallbackRequest = async (fallbackData) => {
 const authService = {
     register,
     login,
+    adminLogin,
     googleLogin,
     logout,
     getProfile,
