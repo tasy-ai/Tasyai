@@ -24,6 +24,16 @@ import Security from './pages/Security'
 import Lists from './pages/Lists'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
+
+// Admin Views
+import AdminLayout from './components/layout/AdminLayout'
+import AdminRoute from './components/auth/AdminRoute'
+import AdminLogin from './pages/admin/AdminLogin'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AnalyticsHub from './pages/admin/AnalyticsHub'
+import UserManagement from './pages/admin/UserManagement'
+import CompanyVerification from './pages/admin/CompanyVerification'
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from "@clerk/clerk-react";
@@ -39,9 +49,14 @@ const AuthSync = ({ children }) => {
 
   useEffect(() => {
     const sync = async () => {
-      if (!clerkLoaded) return;
-      
       const localUser = authService.getCurrentUser();
+
+      // Bypass Clerk sync entirely for admin sessions
+      if (location.pathname.startsWith('/admin') || localUser?.role === 'admin') {
+         return;
+      }
+
+      if (!clerkLoaded) return;
       
       // 1. Handle Signed In State
       if (clerkSignedIn) {
@@ -146,6 +161,18 @@ function App() {
           </Route>
 
           <Route path="/OnboardingChatbot" element={<OnboardingChatbot />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route element={<AdminRoute />}>
+              <Route element={<AdminLayout />}>
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/analytics" element={<AnalyticsHub />} />
+                  <Route path="/admin/users" element={<UserManagement />} />
+                  <Route path="/admin/companies" element={<CompanyVerification />} />
+              </Route>
+          </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthSync>

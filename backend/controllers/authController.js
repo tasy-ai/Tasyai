@@ -80,6 +80,41 @@ const authUser = async (req, res) => {
     }
 };
 
+// @desc    Auth admin & get token
+// @route   POST /api/auth/admin/login
+// @access  Public
+const authAdmin = async (req, res) => {
+    const { email, password } = req.body;
+    
+    // Find user and include password field
+    const user = await User.findOne({ email: email ? email.toLowerCase() : '' }).select('+password');
+
+    if (!user) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    if (user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied: You are not an administrator' });
+    }
+
+    const isMatch = await user.matchPassword(password);
+    
+    if (isMatch) {
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            token: generateToken(user._id),
+            isOnboarded: user.isOnboarded,
+            profilePicture: user.profilePicture
+        });
+    } else {
+        res.status(401).json({ message: 'Invalid credentials' });
+    }
+};
+
+
 // @desc    Get user profile (protected)
 // @route   GET /api/auth/profile
 // @access  Private
@@ -393,6 +428,7 @@ const submitFallbackResetRequest = async (req, res) => {
 module.exports = {
     registerUser,
     authUser,
+    authAdmin,
     getUserProfile,
     updateUserProfile,
     getAllUsers,
